@@ -57,12 +57,41 @@ export default function useFetchUser() {
     }
 
 
+    const DELETE_USER = async (userId: number): Promise<void> => {
+      loading.value = true
+      error.value = null
+
+      try {
+        const response = await fetch(`https://money-pie-3.fly.dev/api/v1/users/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`)
+        }
+
+        const data = await response.json()
+        console.log('Données reçues après suppression:', data)
+        user.value = null
+       } catch(err){
+          error.value = err
+          console.error('Erreur lors de la récupération de l\'utilisateur:', err)
+        } finally {
+          loading.value = false
+        }
+      }
+
+
   return {
     user,
     loading,
     error,
     GET_USER_BY_ID,
-    POST_USER
+    POST_USER,
+    DELETE_USER,
   }
 }
 
