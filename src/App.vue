@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+
+
+
 </script>
 
 <template>
@@ -7,5 +10,7 @@ import { RouterView } from 'vue-router'
   <a class="link m-2" href="/budget">budget </a>
   <a class="link m-2" href="/">Home d</a>
   <RouterView />
+
+
 
 </template>
