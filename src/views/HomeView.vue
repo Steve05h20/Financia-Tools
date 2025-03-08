@@ -6,3 +6,4 @@
     <button class="btn btn-primary">Button</button>
   </main>
 </template>
+../components/AddressComponent.vue
