@@ -31,7 +31,7 @@ const validateUserId = (userId: number): void => {
 const validateEmail = (email: string): void => {
   console.assert(
     typeof email === 'string' && email.includes('@'),
-    "⚠️ L'email doit être une chaîne de caractères valide"
+    "L'email doit être une chaîne de caractères valide"
   );
 };
 
