@@ -1,126 +1,164 @@
 import { ref } from 'vue'
 import type { IUser } from "@/models/user.interface"
 
+const API_URL = "https://money-pie-3.fly.dev/api/v1/users";
+
+enum ErrorMessage {
+  USER_NOT_FOUND = "Utilisateur non trouvé",
+  USER_DETAILS_NOT_FOUND = "Données pour l'utilsateur non trouvées",
+  SERVER_ERROR = "Erreur lors de la récupération des détails bancaires",
+  INVALID_USER_ID = "Le paramètre userId doit être un nombre entier positif"
+}
+
+const handleErrorResponse = (status: number, errorData: {message: string} ): never => {
+  if (status === 404) {
+    if (errorData.message?.includes("not found")) {
+      throw new Error(ErrorMessage.USER_NOT_FOUND);
+    }
+    if (errorData.message?.includes("does not have any saved user details")) {
+      throw new Error(ErrorMessage.USER_DETAILS_NOT_FOUND);
+    }
+  }
+  throw new Error(ErrorMessage.SERVER_ERROR);
+};
+
+const validateUserId = (userId: number): void => {
+  if (typeof userId !== 'number' || userId < 0 || !Number.isInteger(userId)) {
+    throw new Error(ErrorMessage.INVALID_USER_ID)
+  }
+}
+
 export default function useFetchUser() {
-  const user = ref<IUser | null>(null)
+  const user = ref<IUser | undefined>()
   const loading = ref<boolean>(false)
-  const error = ref<any>(null)
+  const error = ref<string | null>(null)
 
-  const GET_USER_BY_ID = async (userId: number): Promise<void> => {
-    loading.value = true
-    error.value = null
-
+  async function GET_USER_BY_ID(userId: number): Promise<void> {
+    validateUserId(userId);
+    error.value = null;
     try {
-      const response = await fetch(`https://money-pie-3.fly.dev/api/v1/users/${userId}`)
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`)
+      loading.value = true;
+      const response = await fetch(`${API_URL}/${userId}`);
+      switch (response.status) {
+        case 200: {
+          const data = await response.json();
+          console.log('Données utilisateur reçues:', data);
+          if (!data) {
+            throw new Error(ErrorMessage.USER_NOT_FOUND);
+          }
+          user.value = data;
+          break;
+        }
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
+        }
       }
-      const data = await response.json()
-      console.log('Données reçues:', data)
-      user.value = data
-      }
-     catch (err) {
-      error.value = err
-      console.error('Erreur lors de la récupération de l\'utilisateur:', err)
+    } catch (err: unknown) {
+      user.value = undefined;
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
     } finally {
-      loading.value = false
+      loading.value = false;
     }
   }
 
   const POST_USER = async (newUser: IUser): Promise<void> => {
-    loading.value = true
-    error.value = null
-
+    error.value = null;
     try {
-      const response = await fetch('https://money-pie-3.fly.dev/api/v1/users', {
-        method: 'POST',
+      loading.value = true;
+      const response = await fetch(API_URL, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(newUser)
-      })
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`)
+        body: JSON.stringify(newUser),
+      });
+      switch (response.status) {
+        case 200:
+        case 201: {
+          const data = await response.json();
+          user.value = data;
+          break;
+        }
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
+        }
       }
-
-      const data = await response.json()
-      console.log('Données reçues après création:', data)
-      user.value = data
-     } catch(err){
-        error.value = err
-        console.error('Erreur lors de la récupération de l\'utilisateur:', err)
-      } finally {
-        loading.value = false
-      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
     }
+  }
 
-    const PUT_USER = async (userId: number, userData: IUser): Promise<void> => {
-      loading.value = true
-      error.value = null
-
-      try {
-        const response = await fetch(`https://money-pie-3.fly.dev/api/v1/users/${userId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-        })
-
-        if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`)
+  const PUT_USER_BY_ID = async (userId: number, userData: IUser): Promise<void> => {
+    validateUserId(userId);
+    error.value = null;
+    try {
+      loading.value = true;
+      const response = await fetch(`${API_URL}/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+      switch (response.status) {
+        case 200: {
+          const data = await response.json();
+          user.value = data;
+          break;
         }
-
-        const data = await response.json()
-        console.log('Données reçues après création:', data)
-        user.value = data
-       } catch(err){
-          error.value = err
-          console.error('Erreur lors de la récupération de l\'utilisateur:', err)
-        } finally {
-          loading.value = false
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
         }
       }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
+    }
+  }
 
 
-    const DELETE_USER = async (userId: number): Promise<void> => {
-      loading.value = true
-      error.value = null
-
-      try {
-        const response = await fetch(`https://money-pie-3.fly.dev/api/v1/users/${userId}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        })
-
-        if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`)
+  const DELETE_USER_BY_ID = async (userId: number): Promise<void> => {
+    validateUserId(userId);
+    error.value = null;
+    try {
+      loading.value = true;
+      const response = await fetch(`${API_URL}/${userId}`, {
+        method: "DELETE",
+      });
+      switch (response.status) {
+        case 200: {
+          user.value = undefined;
+          break;
         }
-
-        const data = await response.json()
-        console.log('Données reçues après suppression:', data)
-        user.value = null
-       } catch(err){
-          error.value = err
-          console.error('Erreur lors de la récupération de l\'utilisateur:', err)
-        } finally {
-          loading.value = false
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
         }
       }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
+    }
+  }
 
 
   return {
     user,
     loading,
     error,
+    validateUserId,
+    handleErrorResponse,
     GET_USER_BY_ID,
     POST_USER,
-    PUT_USER,
-    DELETE_USER,
+    PUT_USER_BY_ID,
+    DELETE_USER_BY_ID,
   }
 }
 
