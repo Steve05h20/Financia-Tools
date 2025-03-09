@@ -67,11 +67,68 @@ export const useFetchBankingDetails = () => {
     }
   }
 
+  const putBankingDetailsByUserId = async (userId: number, details: IBankingDetails) => {
+    validateUserId(userId);
+    error.value = null;
 
-  // async function putBankingDetailsByUserId(userId: number, details: IBankingDetails) {}
-  // async function deleteBankingDetailsByUserId(userId: number) {}
+    try {
+      loading.value = true;
+      const response = await fetch(API_URL.replace("{userId}", userId.toString()), {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(details),
+      });
 
-  return { bankingDetails, loading, error, getBankingDetailsByUserId };
+      switch (response.status) {
+        case 200: {
+          getBankingDetailsByUserId(userId);
+          break;
+        }
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
+        }
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  const deleteBankingDetailsByUserId = async (userId: number) => {
+    validateUserId(userId);
+    error.value = null;
+
+    try {
+      loading.value = true;
+      const response = await fetch(API_URL.replace("{userId}", userId.toString()), {
+        method: "DELETE",
+      });
+
+      switch (response.status) {
+        case 200: {
+          bankingDetails.value = undefined;
+          getBankingDetailsByUserId(userId);
+          break;
+        }
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
+        }
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+
+
+  return { bankingDetails, loading, error, getBankingDetailsByUserId, putBankingDetailsByUserId ,deleteBankingDetailsByUserId};
 };
 
 
