@@ -189,8 +189,6 @@ export default function useFetchUser() {
     user,
     loading,
     error,
-    validateUserId,
-    handleErrorResponse,
     GET_USER_BY_ID,
     GET_USER_BY_EMAIL,
     POST_USER,
