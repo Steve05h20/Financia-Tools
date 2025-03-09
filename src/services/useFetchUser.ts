@@ -28,6 +28,13 @@ const validateUserId = (userId: number): void => {
   }
 }
 
+const validateEmail = (email: string): void => {
+  console.assert(
+    typeof email === 'string' && email.includes('@'),
+    "⚠️ L'email doit être une chaîne de caractères valide"
+  );
+};
+
 export default function useFetchUser() {
   const user = ref<IUser | undefined>()
   const loading = ref<boolean>(false)
@@ -39,6 +46,35 @@ export default function useFetchUser() {
     try {
       loading.value = true;
       const response = await fetch(`${API_URL}/${userId}`);
+      switch (response.status) {
+        case 200: {
+          const data = await response.json();
+          console.log('Données utilisateur reçues:', data);
+          if (!data) {
+            throw new Error(ErrorMessage.USER_NOT_FOUND);
+          }
+          user.value = data;
+          break;
+        }
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
+        }
+      }
+    } catch (err: unknown) {
+      user.value = undefined;
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function GET_USER_BY_EMAIL( email: string): Promise<void> {
+    validateEmail(email);
+    error.value = null;
+    try {
+      loading.value = true;
+      const response = await fetch(`${API_URL}/email/${email}`);
       switch (response.status) {
         case 200: {
           const data = await response.json();
@@ -156,6 +192,7 @@ export default function useFetchUser() {
     validateUserId,
     handleErrorResponse,
     GET_USER_BY_ID,
+    GET_USER_BY_EMAIL,
     POST_USER,
     PUT_USER_BY_ID,
     DELETE_USER_BY_ID,
