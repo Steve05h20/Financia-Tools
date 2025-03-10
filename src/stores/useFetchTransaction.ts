@@ -19,6 +19,8 @@ const handleErrorResponse = (status: number, errorData: {message: string} ): nev
     if (errorData.message?.includes("any transactions with id:")) {
       throw new Error(ErrorMessage.TRANSACTION_BY_ID_NOT_FOUND);
     }
+  }  if (status === 500) {
+    throw new Error(errorData.message);
   }
   throw new Error(ErrorMessage.SERVER_ERROR);
 };
@@ -35,6 +37,15 @@ const validateTransactionId = (transactionId: number): void => {
     typeof transactionId === 'number' && transactionId >= 0,
     ErrorMessage.INVALID_TRANSACTION_ID
   );
+}
+
+const validateTransaction = (transaction: Omit<ITransaction, "id" | "user">): void => {
+  if (!transaction || typeof transaction !== 'object') {
+    throw new Error("La transaction doit être un objet valide");
+  }
+  if (typeof transaction.amount !== 'number' || transaction.amount <= 0) {
+    throw new Error("Le montant doit être un nombre positif");
+  }
 }
 
 export const useFetchTransaction = () => {
@@ -79,7 +90,10 @@ export const useFetchTransaction = () => {
       switch (response.status) {
         case 200: {
           const data = await response.json()
-        transactions.value = data
+          if (data.length === 0) {
+            throw new Error(ErrorMessage.TRANSACTION_BY_ID_NOT_FOUND);
+          }
+          transactions.value = data
           break
         }
         default: {
@@ -93,7 +107,88 @@ export const useFetchTransaction = () => {
     }
   }
 
+  const DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID = async (userId: number, transactionId: number) => {
+    validateUserId(userId)
+    validateTransactionId(transactionId)
+    const url = API_URL.replace("{userId}", userId.toString()) + "/" + transactionId.toString()
+    loading.value = true
+    try {
+      const response = await fetch(url, { method: 'DELETE' })
+      switch (response.status) {
+        case 200: {
+          GET_TRANSACTIONS_BY_USER_ID(userId)
+          break
+        }
+        default: {
+          handleErrorResponse(response.status, await response.json())
+        }
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+    } finally {
+      loading.value = false
+    }
+  }
 
+  const CREATE_TRANSACTION_BY_USER_ID = async (userId: number, transaction: Omit<ITransaction, "id" | "user">) => {
+    validateUserId(userId)
+    validateTransaction(transaction)
+    const url = API_URL.replace("{userId}", userId.toString())
+    loading.value = true
+    try {
+     const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(transaction)
+      })
+      switch (response.status) {
+        case 201: {
+          const data = await response.json()
+          transactions.value = data
+          break
+        }
+        default: {
+          handleErrorResponse(response.status, await response.json())
+        }
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+    } finally {
+      loading.value = false
+  }}
 
-  return { transactions, loading, error, GET_TRANSACTIONS_BY_USER_ID, GET_TRANSACTIONS_BY_USER_ID_AND_TRANSACTION_ID }
+  const UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID = async (userId: number, transactionId: number, transaction: ITransaction) => {
+    validateUserId(userId)
+    validateTransactionId(transactionId)
+    validateTransaction(transaction)
+    const url = API_URL.replace("{userId}", userId.toString()) + "/" + transactionId.toString()
+    loading.value = true
+    try {
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(transaction),
+      })
+      switch (response.status) {
+        case 200: {
+          const data = await response.json()
+          transactions.value = data
+          break
+        }
+        default: {
+          handleErrorResponse(response.status, await response.json())
+        }
+      }
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return { transactions, loading, error, GET_TRANSACTIONS_BY_USER_ID, GET_TRANSACTIONS_BY_USER_ID_AND_TRANSACTION_ID, DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID, CREATE_TRANSACTION_BY_USER_ID, UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID}
 }

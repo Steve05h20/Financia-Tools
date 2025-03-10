@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { useFetchTransaction } from './stores/useFetchTransaction';
-import { onMounted } from 'vue';
 
-const useTransactionService = useFetchTransaction();
-
-onMounted(() => {
-  useTransactionService.GET_TRANSACTIONS_BY_USER_ID(1);
-})
+import { EFrequency, EType, type ITransaction } from './models/transaction.interface';
 
 
 
+  const Transaction1: Omit<ITransaction, "id" | "user"> = {
+  description: "Facture d'électricité",
+  category: "Factures",
+  amount: 85.50,
+  type: EType.EXPENSE,
+  isDone: false,
+  startDate: new Date(),
+  endDate: new Date(),
+  frequency: EFrequency.Monthly
+}
+
+const updateTransaction: ITransaction = {
+  ...Transaction1,amount: 200
+}
 
 
 
