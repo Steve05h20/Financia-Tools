@@ -66,6 +66,10 @@ export const useFetchAddress = () => {
           if (!data || !Array.isArray(data)) {
             throw new Error(ErrorMessage.ADDRESS_NOT_FOUND)
           }
+          // Correction 1: Vérifier si le tableau est vide et générer une erreur si c'est le cas
+          if (data.length === 0) {
+            throw new Error(ErrorMessage.ADDRESS_NOT_FOUND)
+          }
           addresses.value = data
           break
         }
@@ -133,7 +137,6 @@ export const useFetchAddress = () => {
 
       switch (response.status) {
         case 200: {
-
           await getAddressesByUserId(userId)
           break
         }
@@ -168,12 +171,16 @@ export const useFetchAddress = () => {
       switch (response.status) {
         case 200:
         case 204: {
-
+          // Correction 2: Assurer une comparaison correcte des types d'adresse lors du filtrage
+          // Convertir les deux côtés en chaînes et faire une comparaison insensible à la casse
           if (addresses.value.length > 0) {
-
-            addresses.value = addresses.value.filter(a => a.type.toString() !== addressType.toString())
+            addresses.value = addresses.value.filter(
+              a => a.type.toString().toUpperCase() !== addressType.toString().toUpperCase()
+            )
           }
-          if (addressByType.value && addressByType.value.type.toString() === addressType.toString()) {
+
+          if (addressByType.value &&
+            addressByType.value.type.toString().toUpperCase() === addressType.toString().toUpperCase()) {
             addressByType.value = null
           }
           break
