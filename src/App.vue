@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import Header from './components/HeaderPage.vue'
 </script>
 
 <template>
-  <a class="link m-2" href="/profile">profil </a>
-  <a class="link m-2" href="/budget">budget </a>
-  <a class="link m-2" href="/">Home d</a>
+  <Header />
   <RouterView />
-
+  <footer>
+    <h1>Footer</h1>
+  </footer>
 </template>
+
