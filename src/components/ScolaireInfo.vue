@@ -1,8 +1,29 @@
 <script lang="ts" setup>
+import Input from './Input.vue'
 </script>
 
 <template>
-  <p>Infos scolaires</p>
+  <h2>Renseignements sur l'établissement scolaire</h2>
+
+  <div>
+    <span class="label">Nom de l'établissement</span>
+    <Input />
+  </div>
+
+  <div>
+    <span class="label">Champ d'études</span>
+    <Input />
+  </div>
+
+  <div>
+    <span class="label">Date de début</span>
+    <Input />
+  </div>
+
+  <div>
+    <span class="label">Date de fin</span>
+    <Input />
+  </div>
 </template>
 
 <style>

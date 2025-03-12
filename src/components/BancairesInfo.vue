@@ -2,7 +2,19 @@
 </script>
 
 <template>
-  <p>Infos bancaires</p>
+
+  <h2>Renseignements bancaires</h2>
+
+  <div>
+    <span class="label">Institution bancaire</span>
+    <Input />
+  </div>
+
+  <div>
+    <span class="label">Numéro de compte</span>
+    <Input />
+  </div>
+
 </template>
 
 <style>
