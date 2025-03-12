@@ -1,14 +1,9 @@
 import type { IAddress } from '@/models/address.interface'
+import { EAddressType } from '@/models/address.interface'
 import { ref } from 'vue'
 
 const API_URL = 'https://money-pie-3.fly.dev/api/v1/users/{userId}/addresses'
 const API_URL_BY_TYPE = 'https://money-pie-3.fly.dev/api/v1/users/{userId}/addresses/{addressType}'
-
-
-enum EAddressType {
-  PERSONAL = 'PERSONAL',
-  WORK = 'WORK'
-}
 
 enum ErrorMessage {
   USER_NOT_FOUND = 'Utilisateur non trouvé',
@@ -66,7 +61,7 @@ export const useFetchAddress = () => {
           if (!data || !Array.isArray(data)) {
             throw new Error(ErrorMessage.ADDRESS_NOT_FOUND)
           }
-          // Correction 1: Vérifier si le tableau est vide et générer une erreur si c'est le cas
+
           if (data.length === 0) {
             throw new Error(ErrorMessage.ADDRESS_NOT_FOUND)
           }
@@ -96,7 +91,7 @@ export const useFetchAddress = () => {
     try {
       const url = API_URL_BY_TYPE
         .replace('{userId}', userId.toString())
-        .replace('{addressType}', addressType)
+        .replace('{addressType}', addressType.toString())
 
       const response = await fetch(url)
 
@@ -162,7 +157,7 @@ export const useFetchAddress = () => {
     try {
       const url = API_URL_BY_TYPE
         .replace('{userId}', userId.toString())
-        .replace('{addressType}', addressType)
+        .replace('{addressType}', addressType.toString())
 
       const response = await fetch(url, {
         method: 'DELETE',
@@ -171,8 +166,7 @@ export const useFetchAddress = () => {
       switch (response.status) {
         case 200:
         case 204: {
-          // Correction 2: Assurer une comparaison correcte des types d'adresse lors du filtrage
-          // Convertir les deux côtés en chaînes et faire une comparaison insensible à la casse
+
           if (addresses.value.length > 0) {
             addresses.value = addresses.value.filter(
               a => a.type.toString().toUpperCase() !== addressType.toString().toUpperCase()

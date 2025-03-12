@@ -1,6 +1,6 @@
 import type { IUser } from "./user.interface"
 
-enum EAddressType {
+export enum EAddressType {
   "PERSONAL",
   "WORK",
 
