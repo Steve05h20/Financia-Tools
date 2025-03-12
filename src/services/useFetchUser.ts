@@ -6,7 +6,7 @@ const API_URL = "https://money-pie-3.fly.dev/api/v1/users";
 enum ErrorMessage {
   USER_NOT_FOUND = "Utilisateur non trouvé",
   USER_DETAILS_NOT_FOUND = "Données pour l'utilsateur non trouvées",
-  SERVER_ERROR = "Erreur lors de la récupération des détails bancaires",
+  SERVER_ERROR = "Erreur lors de la récupération des données de l'utilisateur",
   INVALID_USER_ID = "Le paramètre userId doit être un nombre entier positif"
 }
 
