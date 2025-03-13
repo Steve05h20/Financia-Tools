@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Input from '../Input.vue';
+import Label from '../Label.vue';
 </script>
 
 <template>
@@ -6,13 +8,13 @@
     <h2 class="my-6">Renseignements bancaires</h2>
 
     <div>
-      <span class="label w-full">Institution bancaire</span>
-      <Input />
+      <Label text="Institution bancaire" htmlFor="bankingInst" required />
+      <Input id="bankingInst" />
     </div>
 
     <div>
-      <span class="label w-full">Numéro de compte</span>
-      <Input />
+      <Label text="Numéro de compte" htmlFor="accountNb" required />
+      <Input id="accountNb" />
     </div>
   </div>
 

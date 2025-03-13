@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Input from '../Input.vue'
+import Label from '../Label.vue'
 </script>
 
 <template>
@@ -8,31 +9,31 @@ import Input from '../Input.vue'
 
     <div class="flex flex-col lg:flex-row justify-center lg:justify-start mx-auto">
       <div>
-        <span class="label w-full">Nom</span>
-        <Input />
+        <Label text="Nom" htmlFor="name" required />
+        <Input id="name" />
       </div>
 
       <div>
-        <span class="label w-full">Prénom</span>
-        <Input />
+        <Label text="Prénom" htmlFor="firstName" required />
+        <Input id="firstName" />
       </div>
 
       <div>
-        <span class="label w-full">Date de naissance</span>
-        <Input type="date" />
+        <Label text="Date de naissance" htmlFor="dob" required />
+        <Input type="date" id="dob" />
       </div>
 
     </div>
 
     <div class="flex flex-col lg:flex-row justify-center lg:justify-start lg:pt-10 mx-auto w-full">
       <div>
-        <span class="label w-full">Numéro de téléphone</span>
+        <Label text="Numéro de téléphone" htmlFor="tel" required />
         <Input type="tel"/>
       </div>
 
       <div>
-        <span class="label w-full">Adresse email</span>
-        <Input type="email" />
+        <Label text="Adresse courriel" htmlFor="email" required />
+        <Input type="email" id="email" />
       </div>
 
     </div>

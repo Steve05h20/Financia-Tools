@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Input from '../Input.vue'
+import Label from '../Label.vue'
 </script>
 
 <template>
@@ -7,13 +8,13 @@ import Input from '../Input.vue'
   <h2 class="my-6">Renseignements sur l'établissement scolaire</h2>
   <div class="flex flex-col justify-center mx-auto max-w-lg">
     <div>
-      <span class="label w-full">Nom de l'établissement</span>
-      <Input />
+      <Label text="Nom de l'établissement" htmlFor="schoolName" required />
+      <Input id="schoolName" />
     </div>
 
     <div>
-      <span class="label w-full">Champ d'études</span>
-      <Input type="select" :options="[
+      <Label text="Champ d'études" htmlFor="schoolName" required />
+      <Input id="schoolName" type="select" :options="[
         {value: 'default', label: 'Choisir un champ d\'études'},
         {value: 'informatique', label: 'Informatique'},
         {value: 'ingenerie', label: 'Ingénierie'},
@@ -28,12 +29,12 @@ import Input from '../Input.vue'
     </div>
 
     <div>
-      <span class="label w-full">Date de début</span>
-      <Input type="date" />
+      <Label text="Date de début" htmlFor="schoolStartDate" required />
+      <Input id="schoolStartDate" type="date" />
     </div>
 
     <div>
-      <span class="label w-full">Date de fin</span>
+      <Label text="Date de fin" htmlFor="schoolEndDate" required />
       <Input type="date"/>
     </div>
   </div>
