@@ -17,12 +17,12 @@ import Input from '../Input.vue'
 
   <div>
     <span class="label">Date de début</span>
-    <Input />
+    <Input type="date" />
   </div>
 
   <div>
     <span class="label">Date de fin</span>
-    <Input />
+    <Input type="date"/>
   </div>
 </template>
 

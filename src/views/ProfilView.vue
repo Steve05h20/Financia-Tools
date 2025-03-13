@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import PersonnelInfo from '@/components/PersonnelInfo.vue'
-import AdressesInfo from '@/components/AdressesInfo.vue'
-import ScolaireInfo from '@/components/ScolaireInfo.vue'
-import BancairesInfo from '@/components/BancairesInfo.vue'
+import PersonnelInfo from '@/components/Profil/PersonnelInfo.vue'
+import AdressesInfo from '@/components/Profil/AdressesInfo.vue'
+import ScolaireInfo from '@/components/Profil/ScolaireInfo.vue'
+import BancairesInfo from '@/components/Profil/BancairesInfo.vue'
 </script>
 
 <template>

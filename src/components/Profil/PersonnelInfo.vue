@@ -17,17 +17,17 @@ import Input from '../Input.vue'
 
   <div>
     <span class="label">Date de naissance</span>
-    <Input />
+    <Input type="date" />
   </div>
 
   <div>
     <span class="label">Numéro de téléphone</span>
-    <Input />
+    <Input type="tel"/>
   </div>
 
   <div>
     <span class="label">Adresse email</span>
-    <Input />
+    <Input type="email" />
   </div>
 </template>
 
