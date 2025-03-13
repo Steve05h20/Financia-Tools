@@ -1,6 +1,6 @@
 import type { IUser } from "./user.interface"
 
-enum EFrequency {
+export enum EFrequency {
   Daily = 1,
   Weekly = 7,
   BiWeekly = 14,
@@ -8,9 +8,9 @@ enum EFrequency {
   Unlimited = -1
 }
 
-enum EType {
-  "Revenue",
-  "Expense"
+export enum EType {
+  REVENUE = "Revenue",
+  EXPENSE = "Expense"
 }
 
 export interface ITransaction{
