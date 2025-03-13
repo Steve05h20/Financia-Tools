@@ -1,9 +1,10 @@
 import type { IAddress } from '@/models/address.interface'
 import { EAddressType } from '@/models/address.interface'
+
 import { ref } from 'vue'
 
 const API_URL = 'https://money-pie-3.fly.dev/api/v1/users/{userId}/addresses'
-const API_URL_BY_TYPE = 'https://money-pie-3.fly.dev/api/v1/users/{userId}/addresses/{addressType}'
+
 
 enum ErrorMessage {
   USER_NOT_FOUND = 'Utilisateur non trouvé',
@@ -12,6 +13,8 @@ enum ErrorMessage {
   SERVER_ERROR = 'Erreur lors de la récupération des adresses',
   INVALID_USER_ID = '⚠️ Le paramètre userId doit être un nombre entier positif',
   INVALID_ADDRESS_TYPE = '⚠️ Le type d\'adresse n\'est pas valide',
+  NOTADDRESS_PERSONAL = ' ⚠️ L\'utilisateur n\'a pas d\'adresse personnelle',
+  NOTADDRESS_WORK = '⚠️ L\'utilisateur n\'a pas d\'adresse professionnelle',
 }
 
 const handleErrorResponse = (status: number, errorData: { message: string }): never => {
@@ -22,8 +25,11 @@ const handleErrorResponse = (status: number, errorData: { message: string }): ne
     if (errorData.message?.includes('does not have any addresses')) {
       throw new Error(ErrorMessage.ADDRESS_NOT_FOUND)
     }
-    if (errorData.message?.includes('does not have address of type')) {
-      throw new Error(ErrorMessage.ADDRESS_TYPE_NOT_FOUND)
+    if (errorData.message?.includes('does not have an address of type PERSONAL')) {
+      throw new Error(ErrorMessage.NOTADDRESS_PERSONAL)
+    }
+    if (errorData.message?.includes('does not have an address of type WORK')) {
+      throw new Error(ErrorMessage.NOTADDRESS_WORK)
     }
   }
   throw new Error(ErrorMessage.SERVER_ERROR)
@@ -42,7 +48,6 @@ const validateAddressType = (addressType: EAddressType): void => {
 
 export const useFetchAddress = () => {
   const addresses = ref<IAddress[]>([])
-  const addressByType = ref<IAddress | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -89,19 +94,22 @@ export const useFetchAddress = () => {
     loading.value = true
 
     try {
-      const url = API_URL_BY_TYPE
-        .replace('{userId}', userId.toString())
-        .replace('{addressType}', addressType.toString())
+      const url = API_URL
+        .replace('{userId}', userId.toString()) + addressType
+
 
       const response = await fetch(url)
 
       switch (response.status) {
         case 200: {
           const data = await response.json()
-          if (!data) {
-            throw new Error(ErrorMessage.ADDRESS_TYPE_NOT_FOUND)
+          if (!data && addressType === EAddressType.PERSONAL) {
+            throw new Error(ErrorMessage.NOTADDRESS_PERSONAL)
+          } else {
+            throw new Error(ErrorMessage.NOTADDRESS_WORK)
           }
-          addressByType.value = data
+
+          addresses.value = data
           break
         }
         default: {
@@ -110,7 +118,7 @@ export const useFetchAddress = () => {
         }
       }
     } catch (err: unknown) {
-      addressByType.value = null
+      addresses.value = null
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
     } finally {
       loading.value = false
@@ -118,7 +126,7 @@ export const useFetchAddress = () => {
   }
 
 
-  const putAddressesByUserId = async (userId: number, addressData: IAddress): Promise<void> => {
+  const putAddressesByUserId = async (userId: number, addressData: Partial<EAddressType>): Promise<void> => {
     validateUserId(userId)
     error.value = null
     loading.value = true
@@ -155,28 +163,20 @@ export const useFetchAddress = () => {
     loading.value = true
 
     try {
-      const url = API_URL_BY_TYPE
-        .replace('{userId}', userId.toString())
-        .replace('{addressType}', addressType.toString())
+      const url = API_URL.replace('{userId}', userId.toString()) + addressType
+
 
       const response = await fetch(url, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
       })
 
       switch (response.status) {
         case 200:
         case 204: {
 
-          if (addresses.value.length > 0) {
-            addresses.value = addresses.value.filter(
-              a => a.type.toString().toUpperCase() !== addressType.toString().toUpperCase()
-            )
-          }
+          await getAddressesByUserId(userId)
 
-          if (addressByType.value &&
-            addressByType.value.type.toString().toUpperCase() === addressType.toString().toUpperCase()) {
-            addressByType.value = null
-          }
           break
         }
         default: {
@@ -193,7 +193,6 @@ export const useFetchAddress = () => {
 
   return {
     addresses,
-    addressByType,
     loading,
     error,
     getAddressesByUserId,
