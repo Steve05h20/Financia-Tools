@@ -35,7 +35,7 @@ import Label from '../Label.vue'
 
     <div>
       <Label text="Date de fin" htmlFor="schoolEndDate" required />
-      <Input type="date"/>
+      <Input id="schoolEndDate" type="date"/>
     </div>
   </div>
 
