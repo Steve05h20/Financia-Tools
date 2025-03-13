@@ -3,26 +3,26 @@ import Input from '../Input.vue'
 </script>
 
 <template>
+
+  <h2 class="my-6">Renseignements sur l'établissement scolaire</h2>
   <div class="flex flex-col justify-center mx-auto max-w-lg">
-    <h2 class="my-6">Renseignements sur l'établissement scolaire</h2>
-
     <div>
-      <span class="label">Nom de l'établissement</span>
+      <span class="label w-full">Nom de l'établissement</span>
       <Input />
     </div>
 
     <div>
-      <span class="label">Champ d'études</span>
+      <span class="label w-full">Champ d'études</span>
       <Input />
     </div>
 
     <div>
-      <span class="label">Date de début</span>
+      <span class="label w-full">Date de début</span>
       <Input type="date" />
     </div>
 
     <div>
-      <span class="label">Date de fin</span>
+      <span class="label w-full">Date de fin</span>
       <Input type="date"/>
     </div>
   </div>
