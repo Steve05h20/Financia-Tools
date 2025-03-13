@@ -15,7 +15,7 @@ const handleErrorResponse = (status: number, errorData: { message: string }): ne
     if (errorData.message?.includes('not found')) {
       throw new Error(ErrorMessage.USER_NOT_FOUND)
     }
-    if (errorData.message?.includes('does not have any school details')) {
+    if (errorData.message?.includes('does not have any saved school details')) {
       throw new Error(ErrorMessage.SCHOOL_DETAILS_NOT_FOUND)
     }
   }
@@ -31,7 +31,7 @@ export const useFetchSchoolDetails = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const getSchoolDetailsByUserId = async (userId: number): Promise<void> => {
+  const GET_SCHOOL_DETAILS_BY_USER_ID = async (userId: number): Promise<void> => {
     validateUserId(userId)
     error.value = null
     loading.value = true
@@ -61,7 +61,7 @@ export const useFetchSchoolDetails = () => {
     }
   }
 
-  const putSchoolDetailsByUserId = async (userId: number, details: ISchoolDetails) => {
+  const PUT_SCHOOL_DETAILS_BY_USER_ID = async (userId: number, details: ISchoolDetails) => {
     validateUserId(userId)
     error.value = null
     loading.value = true
@@ -75,7 +75,7 @@ export const useFetchSchoolDetails = () => {
 
       switch (response.status) {
         case 200: {
-          getSchoolDetailsByUserId(userId)
+          GET_SCHOOL_DETAILS_BY_USER_ID(userId)
           break
         }
         default: {
@@ -90,7 +90,7 @@ export const useFetchSchoolDetails = () => {
     }
   }
 
-  const deleteSchoolDetailsByUserId = async (userId: number) => {
+  const DELETE_SCHOOL_DETAILS_BY_USER_ID = async (userId: number) => {
     validateUserId(userId)
     error.value = null
     loading.value = true
@@ -121,8 +121,8 @@ export const useFetchSchoolDetails = () => {
     schoolDetails,
     loading,
     error,
-    getSchoolDetailsByUserId,
-    putSchoolDetailsByUserId,
-    deleteSchoolDetailsByUserId,
+    GET_SCHOOL_DETAILS_BY_USER_ID,
+    PUT_SCHOOL_DETAILS_BY_USER_ID,
+    DELETE_SCHOOL_DETAILS_BY_USER_ID,
   }
 }
