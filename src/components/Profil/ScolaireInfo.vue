@@ -13,7 +13,18 @@ import Input from '../Input.vue'
 
     <div>
       <span class="label w-full">Champ d'études</span>
-      <Input />
+      <Input type="select" :options="[
+        {value: 'default', label: 'Choisir un champ d\'études'},
+        {value: 'informatique', label: 'Informatique'},
+        {value: 'ingenerie', label: 'Ingénierie'},
+        {value: 'sante', label: 'Médecine/Santé'},
+        {value: 'droit', label: 'Droit'},
+        {value: 'sciencesSociales', label: 'Sciences Sociales'},
+        {value: 'sciences', label: 'Sciences'},
+        {value: 'arts', label: 'Arts et Design'},
+        {value: 'education', label: 'Éducation'},
+        {value: 'communication', label: 'Communication'},
+      ]"/>
     </div>
 
     <div>
