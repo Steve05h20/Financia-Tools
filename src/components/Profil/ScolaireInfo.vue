@@ -3,27 +3,30 @@ import Input from '../Input.vue'
 </script>
 
 <template>
-  <h2>Renseignements sur l'établissement scolaire</h2>
+  <div class="flex flex-col justify-center mx-auto max-w-lg">
+    <h2 class="my-6">Renseignements sur l'établissement scolaire</h2>
 
-  <div>
-    <span class="label">Nom de l'établissement</span>
-    <Input />
+    <div>
+      <span class="label">Nom de l'établissement</span>
+      <Input />
+    </div>
+
+    <div>
+      <span class="label">Champ d'études</span>
+      <Input />
+    </div>
+
+    <div>
+      <span class="label">Date de début</span>
+      <Input type="date" />
+    </div>
+
+    <div>
+      <span class="label">Date de fin</span>
+      <Input type="date"/>
+    </div>
   </div>
 
-  <div>
-    <span class="label">Champ d'études</span>
-    <Input />
-  </div>
-
-  <div>
-    <span class="label">Date de début</span>
-    <Input type="date" />
-  </div>
-
-  <div>
-    <span class="label">Date de fin</span>
-    <Input type="date"/>
-  </div>
 </template>
 
 <style>
