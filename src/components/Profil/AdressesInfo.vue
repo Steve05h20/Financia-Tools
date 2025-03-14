@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Input from '../Input.vue'
 import Label from '../Label.vue'
+import Select from '../Select.vue'
 import { ref } from 'vue'
 import type { IAddress } from '@/models/address.interface'
 import { EAddressType, EProvince, ECountry } from '@/models/address.interface'
@@ -38,8 +39,8 @@ const address = ref<Partial<IAddress>>({
 
   <div class="flex flex-col lg:flex-row justify-center lg:justify-start mx-auto lg:pt-10">
     <div>
-      <Label text="province" htmlFor="province" required />
-      <Input v-model="address.province" type="select" placeholder="Choisir une province" id="province"
+      <Label text="Province" htmlFor="province" required />
+      <Select v-model="address.province" placeholder="Choisissez une province" type="select" id="province"
         :options="[
           { value: EProvince.QC, label: 'Québec' },
           { value: EProvince.ON, label: 'Ontario' },
@@ -59,7 +60,7 @@ const address = ref<Partial<IAddress>>({
     <div>
   </div>
       <Label text="pays" htmlFor="pays" required />
-      <Input type="select" placeholder="placeholder" id="pays"
+      <Select v-model="address.country" type="select" placeholder="Choisissez un pays" id="pays"
       :options="[
           { value: ECountry.CA, label: 'Canada' }
         ]"
