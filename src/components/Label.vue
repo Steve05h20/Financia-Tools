@@ -8,6 +8,7 @@ interface LabelProps {
 }
 
 withDefaults(defineProps<LabelProps>(), {
+  text: '',
   htmlFor: '',
   required: false,
 });
@@ -20,6 +21,3 @@ withDefaults(defineProps<LabelProps>(), {
     <span v-if="required" >*</span>
   </label>
 </template>
-
-<style>
-</style>
