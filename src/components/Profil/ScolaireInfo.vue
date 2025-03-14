@@ -3,6 +3,7 @@ import Input from '../Input.vue'
 import Label from '../Label.vue'
 import { ref } from 'vue'
 import type { ISchoolDetails } from '@/models/schoolDetails.interface'
+import { EFieldOfStudy } from '@/models/schoolDetails.interface'
 
 const schoolDetails = ref<Partial<ISchoolDetails>>({
   schoolName: '',
@@ -26,15 +27,15 @@ const schoolDetails = ref<Partial<ISchoolDetails>>({
       <Label text="Champ d'études" htmlFor="fieldOfStudy" required />
       <Input v-model="schoolDetails.fieldOfStudy"  placeholder="placeholder" id="fieldOfStudy" type="select" :options="[
         {value: 'default', label: 'Choisir un champ d\'études'},
-        {value: 'informatique', label: 'Informatique'},
-        {value: 'ingenerie', label: 'Ingénierie'},
-        {value: 'sante', label: 'Médecine/Santé'},
-        {value: 'droit', label: 'Droit'},
-        {value: 'sciencesSociales', label: 'Sciences Sociales'},
-        {value: 'sciences', label: 'Sciences'},
-        {value: 'arts', label: 'Arts et Design'},
-        {value: 'education', label: 'Éducation'},
-        {value: 'communication', label: 'Communication'},
+        {value: EFieldOfStudy.informatique, label: 'Informatique'},
+        {value: EFieldOfStudy.ingenerie, label: 'Ingénierie'},
+        {value: EFieldOfStudy.sante, label: 'Médecine/Santé'},
+        {value: EFieldOfStudy.droit, label: 'Droit'},
+        {value: EFieldOfStudy.sciencesSociales, label: 'Sciences Sociales'},
+        {value: EFieldOfStudy.sciences, label: 'Sciences'},
+        {value: EFieldOfStudy.arts, label: 'Arts et Design'},
+        {value: EFieldOfStudy.education, label: 'Éducation'},
+        {value: EFieldOfStudy.communication, label: 'Communication'},
       ]"/>
     </div>
 
