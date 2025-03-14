@@ -94,8 +94,7 @@ export const useFetchAddress = () => {
     loading.value = true
 
     try {
-      const url = API_URL
-        .replace('{userId}', userId.toString()) + addressType
+      const url = API_URL.replace('{userId}', userId.toString())+"/"+addressType
 
 
       const response = await fetch(url)
@@ -103,13 +102,14 @@ export const useFetchAddress = () => {
       switch (response.status) {
         case 200: {
           const data = await response.json()
-          if (!data && addressType === EAddressType.PERSONAL) {
+          if (!data) {
+            if (addressType === EAddressType.PERSONAL) {
             throw new Error(ErrorMessage.NOTADDRESS_PERSONAL)
           } else {
             throw new Error(ErrorMessage.NOTADDRESS_WORK)
-          }
-
+          }}
           addresses.value = data
+
           break
         }
         default: {
@@ -118,7 +118,7 @@ export const useFetchAddress = () => {
         }
       }
     } catch (err: unknown) {
-      addresses.value = null
+      addresses.value = []
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
     } finally {
       loading.value = false
@@ -163,7 +163,7 @@ export const useFetchAddress = () => {
     loading.value = true
 
     try {
-      const url = API_URL.replace('{userId}', userId.toString()) + addressType
+      const url = API_URL.replace('{userId}', userId.toString()) + "/" + addressType
 
 
       const response = await fetch(url, {
