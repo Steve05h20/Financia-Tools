@@ -3,7 +3,6 @@ import type { IUser } from "./user.interface"
 export enum EAddressType {
   PERSONAL = 'PERSONAL',
   WORK = 'WORK',
-
 }
 
 export enum EProvince {
@@ -24,8 +23,6 @@ export enum EProvince {
 
 export enum ECountry {
   CANADA = "CA",
-
-
 }
 
 export interface IAddress {
