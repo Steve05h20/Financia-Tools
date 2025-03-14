@@ -1,31 +1,28 @@
 import type { IUser } from "./user.interface"
 
-enum EAddressType {
-  "PERSONAL",
-  "WORK",
-
+export enum EAddressType {
+  PERSONAL = 'PERSONAL',
+  WORK = 'WORK',
 }
 
-enum EProvince {
-  "QC",
-  "ON",
-  "BC",
-  "AB",
-  "MB",
-  "SK",
-  "NS",
-  "NB",
-  "NL",
-  "PE",
-  "NT",
-  "NU",
-  "YT"
+export enum EProvince {
+  QUEBEC = "QC",
+  ONTARIO = "ON",
+  BRITISH_COLUMBIA = "BC",
+  ALBERTA = "AB",
+  MANITOBA = "MB",
+  SASKATCHEWAN = "SK",
+  NOVA_SCOTIA = "NS",
+  NEW_BRUNSWICK = "NB",
+  NEWFOUNDLAND_LABRADOR = "NL",
+  PRINCE_EDWARD_ISLAND = "PE",
+  NORTHWEST_TERRITORIES = "NT",
+  NUNAVUT = "NU",
+  YUKON = "YT"
 }
 
-enum ECountry {
-  "CA",
-
-
+export enum ECountry {
+  CANADA = "CA",
 }
 
 export interface IAddress {

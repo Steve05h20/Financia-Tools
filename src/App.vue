@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-
-
 import Header from './components/HeaderPage.vue'
 import Notification from './components/ToastNotification.vue';
-
-
 
 
 </script>
