@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import PersonnelInfo from '@/components/Profil/PersonnelInfo.vue'
-import AdressesInfo from '@/components/Profil/AdressesInfo.vue'
-import ScolaireInfo from '@/components/Profil/ScolaireInfo.vue'
-import BancairesInfo from '@/components/Profil/BancairesInfo.vue'
+import UserInfo from '@/components/Profil/UserInfo.vue';
+import BankingInfo from '@/components/Profil/BankingInfo.vue';
+import AddressInfo from '@/components/Profil/AddressInfo.vue';
+import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
 </script>
 
 <template>
@@ -12,26 +12,26 @@ import BancairesInfo from '@/components/Profil/BancairesInfo.vue'
 
       <section class="mb-8 lg:col-span-4 border-2 w-full">
         <div class="w-full p-4">
-          <PersonnelInfo />
+          <UserInfo />
         </div>
       </section>
 
       <section class="mb-8 lg:col-span-4 border-2 w-full">
         <div class="w-full p-4">
-          <AdressesInfo />
+          <AddressInfo />
         </div>
       </section>
 
 
       <section class="mb-8 lg:col-span-2 border-2 w-full">
         <div class="w-full p-4">
-          <ScolaireInfo />
+          <SchoolInfo />
         </div>
       </section>
 
       <section class="mb-8 lg:col-span-2 border-2 w-full">
         <div class="w-full p-4">
-          <BancairesInfo />
+          <BankingInfo />
         </div>
       </section>
     </div>
