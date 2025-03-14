@@ -2,14 +2,17 @@
 import { defineProps, withDefaults } from 'vue';
 
 interface Option {
-  value: string;
+  value: string | number;
   label: string;
 }
 
-withDefaults(defineProps<{
-  type?: 'text' | 'email' | 'date' | 'tel' | 'password' | 'number' | 'select';
-  options?: Option[];
-}>(), {
+interface Props {
+  type: 'text' | 'email' | 'date' | 'tel' | 'password' | 'number' | 'select';
+  placeholder: string;
+  options: Option[];
+}
+
+withDefaults(defineProps<Props>(), {
   type: 'text',
   options: () => []
 });
@@ -26,7 +29,7 @@ withDefaults(defineProps<{
   </div>
 
   <div>
-    <input :type="type" placeholder="Type here" class="input input-ghost my-1" />
+    <input :type="type" :placeholder="placeholder" class="input input-ghost my-1" />
   </div>
 
 </template>
