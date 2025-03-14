@@ -1,12 +1,12 @@
 import type { IUser } from "./user.interface"
 
-enum EAddressType {
+export enum EAddressType {
   "PERSONAL",
   "WORK",
 
 }
 
-enum EProvince {
+export enum EProvince {
   "QC",
   "ON",
   "BC",
@@ -22,7 +22,7 @@ enum EProvince {
   "YT"
 }
 
-enum ECountry {
+export enum ECountry {
   "CA",
 
 
