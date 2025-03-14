@@ -1,6 +1,16 @@
 <script lang="ts" setup>
 import Input from '../Input.vue'
 import Label from '../Label.vue'
+import { ref } from 'vue'
+import type { ISchoolDetails } from '@/models/schoolDetails.interface'
+
+const schoolDetails = ref<Partial<ISchoolDetails>>({
+  schoolName: '',
+  fieldOfStudy: '',
+  startDate: new Date(),
+  projectedEndDate: new Date(),
+})
+
 </script>
 
 <template>
@@ -9,12 +19,12 @@ import Label from '../Label.vue'
   <div class="flex flex-col justify-center mx-auto max-w-lg">
     <div>
       <Label text="Nom de l'établissement" htmlFor="schoolName" required />
-      <Input id="schoolName" />
+      <Input v-model="schoolDetails.schoolName"  placeholder="placeholder" id="schoolName" />
     </div>
 
     <div>
-      <Label text="Champ d'études" htmlFor="schoolName" required />
-      <Input id="schoolName" type="select" :options="[
+      <Label text="Champ d'études" htmlFor="fieldOfStudy" required />
+      <Input v-model="schoolDetails.fieldOfStudy"  placeholder="placeholder" id="fieldOfStudy" type="select" :options="[
         {value: 'default', label: 'Choisir un champ d\'études'},
         {value: 'informatique', label: 'Informatique'},
         {value: 'ingenerie', label: 'Ingénierie'},
@@ -29,13 +39,13 @@ import Label from '../Label.vue'
     </div>
 
     <div>
-      <Label text="Date de début" htmlFor="schoolStartDate" required />
-      <Input id="schoolStartDate" type="date" />
+      <Label text="Date de début" htmlFor="startDate" required />
+      <Input v-model="schoolDetails.startDate" placeholder="placeholder" id="startDate" type="date" />
     </div>
 
     <div>
-      <Label text="Date de fin" htmlFor="schoolEndDate" required />
-      <Input id="schoolEndDate" type="date"/>
+      <Label text="Date de fin" htmlFor="projectedEndDate" required />
+      <Input  v-model="schoolDetails.projectedEndDate" placeholder="placeholder" id="projectedEndDate" type="date"/>
     </div>
   </div>
 
