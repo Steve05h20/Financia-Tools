@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import Input from '../Input.vue'
 import Label from '../Label.vue'
 import Select from '../Select.vue'
+import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { IAddress } from '@/models/address.interface'
 import { EAddressType, EProvince, ECountry } from '@/models/address.interface'
@@ -21,20 +21,32 @@ const address = ref<Partial<IAddress>>({
 
   <h2 class="my-6">Addresses</h2>
  <div class="flex flex-col lg:flex-row justify-center lg:justify-start mx-auto">
-    <div>
-      <Label text="Addresse" htmlFor="addresse" required />
-      <Input v-model="address" type="text" placeholder="placeholder" id="addresse" />
-    </div>
 
-    <div>
-      <Label text="rue" htmlFor="streetName" required />
-      <Input v-model="address.streetName" type="text" placeholder="placeholder" id="streetName" />
-    </div>
+    <InputLabelDiv
+      labelText="Addresse"
+      htmlFor="addresse"
+      required
+      v-model="address.streetNumber"
+      placeholder="placeholder"
+    />
 
-    <div>
-      <Label text="ville" htmlFor="city" required />
-      <Input v-model="address.city" type="text" placeholder="placeholder" id="ville" />
-    </div>
+    <InputLabelDiv
+      labelText="Rue"
+      htmlFor="streetName"
+      required
+      v-model="address.streetName"
+      placeholder="placeholder"
+    />
+
+
+    <InputLabelDiv
+      labelText="Ville"
+      htmlFor="city"
+      required
+      v-model="address.city"
+      placeholder="placeholder"
+    />
+
   </div>
 
   <div class="flex flex-col lg:flex-row justify-center lg:justify-start mx-auto lg:pt-10">

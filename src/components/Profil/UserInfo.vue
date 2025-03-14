@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import Input from '../Input.vue'
 import Label from '../Label.vue'
+import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { IUser} from '@/models/user.interface'
 
 const user = ref<Partial<IUser>>({
   lastName: '',
   firstName: '',
-  birthDate: new Date(),
+  birthDate: undefined,
   phone: '',
   email: ''
 })
@@ -18,33 +19,51 @@ const user = ref<Partial<IUser>>({
     <h2 class="my-8">Renseignements personnels</h2>
 
     <div class="flex flex-col lg:flex-row justify-center lg:justify-start mx-auto">
-      <div>
-        <Label text="Nom" htmlFor="lastName" required />
-        <Input v-model="user.lastName" placeholder="placeholder" id="lastName" />
-      </div>
+      <InputLabelDiv
+        labelText="Nom de famille"
+        htmlFor="lastName"
+        required
+        v-model="user.lastName"
+        placeholder="placeholder"
+      />
 
-      <div>
-        <Label text="Prénom" htmlFor="firstName" required />
-        <Input v-model="user.firstName" placeholder="placeholder" id="firstName" />
-      </div>
+      <InputLabelDiv
+        labelText="Prénom"
+        htmlFor="firstName"
+        required
+        v-model="user.firstName"
+        placeholder="placeholder"
+      />
 
-      <div>
-        <Label text="Date de naissance" htmlFor="birthDate" required />
-        <Input v-model="user.birthDate" placeholder="placeholder" type="date" id="birthDate" />
-      </div>
+      <InputLabelDiv
+        labelText="Date de naissance"
+        htmlFor="birthDate"
+        required
+        v-model="user.birthDate"
+        placeholder="placeholder"
+        type="date"
+      />
 
     </div>
 
     <div class="flex flex-col lg:flex-row justify-center lg:justify-start lg:pt-10 mx-auto w-full">
-      <div>
-        <Label text="Numéro de téléphone" htmlFor="phone" required />
-        <Input v-model="user.phone" placeholder="placeholder" type="tel" id="phone"/>
-      </div>
+      <InputLabelDiv
+        labelText="Téléphone"
+        htmlFor="phone"
+        required
+        v-model="user.phone"
+        placeholder="placeholder"
+        type="tel"
+      />
 
-      <div>
-        <Label text="Adresse courriel" htmlFor="email" required />
-        <Input v-model="user.email" placeholder="placeholder" type="email" id="email" />
-      </div>
+     <InputLabelDiv
+        labelText="Courriel"
+        htmlFor="email"
+        required
+        v-model="user.email"
+        placeholder="placeholder"
+        type="email"
+    />
 
     </div>
 </template>
