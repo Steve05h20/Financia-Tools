@@ -4,10 +4,10 @@ import type { ISchoolDetails } from "./schoolDetails.interface"
 import type { ITransaction } from "./transaction.interface"
 
 export interface IUser {
-  id?: number
+  id?: number | undefined
   firstName: string,
   lastName?: string,
-  birthDate?: Date,
+  birthDate?: Date | string,
   isActive: boolean,
   phone?: string,
   email: string,
