@@ -140,6 +140,7 @@ export const useUserStore = defineStore('user', () => {
     schoolDetailsService,
     bankingDetailsService,
     notificationService,
+    transactionService,
 
     // Méthodes utilitaires
     resetUser,
