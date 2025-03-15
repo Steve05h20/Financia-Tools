@@ -12,8 +12,7 @@ const bankingDetails= ref<Partial<IBankingDetails>>({
 
 
 <template>
-  <div class="flex flex-col justify-center mx-auto max-w-lg">
-    <h2 class="my-6">Renseignements bancaires</h2>
+  <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-5 transition-all">
 
     <InputLabelDiv
       labelText="Nom de l'institution"

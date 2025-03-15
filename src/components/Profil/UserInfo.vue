@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import Input from '../Input.vue'
-import Label from '../Label.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { IUser} from '@/models/user.interface'
@@ -16,9 +14,8 @@ const user = ref<Partial<IUser>>({
 
 <template>
 
-    <h2 class="my-8">Renseignements personnels</h2>
 
-    <div class="flex flex-col lg:flex-row justify-center lg:justify-start mx-auto">
+    <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-5 transition-all">
       <InputLabelDiv
         labelText="Nom de famille"
         htmlFor="lastName"
@@ -44,9 +41,6 @@ const user = ref<Partial<IUser>>({
         type="date"
       />
 
-    </div>
-
-    <div class="flex flex-col lg:flex-row justify-center lg:justify-start lg:pt-10 mx-auto w-full">
       <InputLabelDiv
         labelText="Téléphone"
         htmlFor="phone"

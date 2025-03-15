@@ -7,25 +7,23 @@ export enum EAddressType {
 }
 
 export enum EProvince {
-  "QC",
-  "ON",
-  "BC",
-  "AB",
-  "MB",
-  "SK",
-  "NS",
-  "NB",
-  "NL",
-  "PE",
-  "NT",
-  "NU",
-  "YT"
+  QUEBEC = "QC",
+  ONTARIO = "ON",
+  BRITISH_COLUMBIA = "BC",
+  ALBERTA = "AB",
+  MANITOBA = "MB",
+  SASKATCHEWAN = "SK",
+  NOVA_SCOTIA = "NS",
+  NEW_BRUNSWICK = "NB",
+  NEWFOUNDLAND_LABRADOR = "NL",
+  PRINCE_EDWARD_ISLAND = "PE",
+  NORTHWEST_TERRITORIES = "NT",
+  NUNAVUT = "NU",
+  YUKON = "YT"
 }
 
 export enum ECountry {
-  "CA",
-
-
+  CANADA = "CA",
 }
 
 export interface IAddress {

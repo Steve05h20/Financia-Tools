@@ -3,9 +3,9 @@ import { RouterLink } from 'vue-router'
 
 </script>
 <template>
-  <header class="navbar bg-base-300 text-base-content flex justify-around">
+  <header class="navbar bg-base-300 text-base-content flex justify-around max-sm:hidden">
     <h1>Logo</h1>
-    <nav class="flex gap-8">
+    <nav class="flex gap-8 ">
       <RouterLink
         class="btn"
         :class="{ 'btn-secondary': $route.path === '/' }"

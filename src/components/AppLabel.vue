@@ -16,8 +16,8 @@ withDefaults(defineProps<LabelProps>(), {
 </script>
 
 <template>
-  <label :for="htmlFor" class="label w-full">
+  <label :for="htmlFor" class="label w-full text-info">
     {{ text }}
-    <span v-if="required" >*</span>
+    <span v-if="required" class="text-error" >*</span>
   </label>
 </template>

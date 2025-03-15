@@ -1,15 +1,13 @@
 <script lang="ts" setup>
+import type { ECountry, EProvince } from '@/models/address.interface';
+import type { EFieldOfStudy } from '@/models/schoolDetails.interface';
 import { defineProps, defineEmits, withDefaults } from 'vue';
 
-interface Option {
-  value: string | number;
-  label: string;
-}
 
 interface Props {
   modelValue: string | number;
   placeholder?: string;
-  options?: Option[];
+  options?: EFieldOfStudy[] | EProvince[] | ECountry[];
 }
 
 withDefaults(defineProps<Props>(), {
@@ -31,13 +29,13 @@ const updateValue = (event: Event) => {
 <template>
 
   <select
-    class="select select-ghost my-1"
+    class="select select-ghost bg-slate-50 my-1"
     :value="modelValue"
     @change="updateValue"
   >
     <option value="" disabled>{{ placeholder }}</option>
-    <option v-for="option in options" :key="option.value" :value="option.value">
-      {{ option.label }}
+    <option v-for="option in options" :key="option" :value="option">
+      {{ option }}
     </option>
   </select>
 

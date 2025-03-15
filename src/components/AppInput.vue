@@ -32,7 +32,7 @@ const updateValue = (event: Event) => {
       :value="modelValue"
       :id="id"
       @input="updateValue"
-      class="input input-ghost my-1" />
+      class="input input-ghost bg-slate-50 my-1 w-full" />
   </div>
 
 </template>

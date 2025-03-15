@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Input from './Input.vue';
-import Label from './Label.vue';
+import AppInput from './AppInput.vue';
+import AppLabel from './AppLabel.vue';
 import { defineProps, withDefaults } from 'vue';
 
 interface InputLabelDivProps {
@@ -8,26 +8,32 @@ interface InputLabelDivProps {
   htmlFor: string;
   required?: boolean;
   modelValue: string | number | Date | undefined;
+  type?: 'text' | 'email' | 'date' | 'tel' | 'password' | 'number' | 'select';
+  placeholder?: string;
 }
 
 withDefaults(defineProps<InputLabelDivProps>(), {
   required: false,
+  type: 'text',
+  placeholder: '',
 });
 
 const emit = defineEmits(['update:modelValue']);
 </script>
 
 <template>
-  <div>
-    <Label
+  <div class="">
+    <AppLabel
       :text="labelText"
       :htmlFor="htmlFor"
       :required="required"
     />
-    <Input
+    <AppInput
       :id="htmlFor"
+      :type="type"
+      :placeholder="placeholder"
       :modelValue="modelValue"
-      @update:modelValue="value => emit('update:modelValue', value)"
+      @update:modelValue="(value: any) => emit('update:modelValue', value)"
       v-bind="$attrs"
     />
   </div>
