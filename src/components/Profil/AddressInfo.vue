@@ -68,7 +68,7 @@ const address = ref<Partial<IAddress>>({
     <div>
 
               <AppLabel text="pays" htmlFor="pays" required />
-            <AppSelect v-model="address.country" type="select" placeholder="Choisissez un pays" id="pays"
+            <AppSelect v-model="address.country" placeholder="Choisissez un pays" id="pays"
             :options="[
               ECountry.CANADA
               ]"
