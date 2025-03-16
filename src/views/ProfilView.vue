@@ -1,10 +1,24 @@
+
 <script lang="ts" setup>
 import UserInfo from '@/components/Profil/UserInfo.vue';
 import BankingInfo from '@/components/Profil/BankingInfo.vue';
 import AddressInfo from '@/components/Profil/AddressInfo.vue';
 import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
-</script>
 
+import { useUserStore } from '@/stores/useUserSotre';
+import { onMounted } from 'vue';
+
+
+const userStore = useUserStore();
+
+//connextion simulée test@test.com
+onMounted(() => {
+  userStore.loadUserData("test@test.com");
+});
+
+
+
+</script>
 <template>
   <div class="container mx-auto px-4 py-10">
 

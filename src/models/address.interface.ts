@@ -1,9 +1,8 @@
 import type { IUser } from "./user.interface"
 
 export enum EAddressType {
-  "PERSONAL",
-  "WORK",
-
+  PERSONAL = 'PERSONAL',
+  WORK = 'WORK',
 }
 
 export enum EProvince {
