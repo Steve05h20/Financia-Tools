@@ -1,23 +1,14 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-
 </script>
 <template>
   <header class="navbar bg-base-300 text-base-content flex justify-around">
     <h1>Logo</h1>
     <nav class="flex gap-8">
-      <RouterLink
-        class="btn"
-        :class="{ 'btn-secondary': $route.path === '/' }"
-        to="/"
-      >
+      <RouterLink class="btn" :class="{ 'btn-secondary': $route.path === '/' }" to="/">
         Home
       </RouterLink>
-      <RouterLink
-        class="btn"
-        :class="{ 'btn-secondary': $route.path === '/budget' }"
-        to="/budget"
-      >
+      <RouterLink class="btn" :class="{ 'btn-secondary': $route.path === '/budget' }" to="/budget">
         Budget
       </RouterLink>
       <RouterLink
@@ -27,9 +18,20 @@ import { RouterLink } from 'vue-router'
       >
         Profile
       </RouterLink>
-      <button class="btn btn-ghost">S'inscrire</button>
-      <button class="btn btn-primary">Se connecter</button>
+      <RouterLink
+        class="btn"
+        :class="{ 'btn-ghost': $route.path === '/inscription' }"
+        to="/inscription"
+      >
+        S'inscrire
+      </RouterLink>
+      <RouterLink
+        class="btn"
+        :class="{ 'btn-ghost': $route.path === '/connexion' }"
+        to="/connexion"
+      >
+        Se connecter
+      </RouterLink>
     </nav>
   </header>
 </template>
-
