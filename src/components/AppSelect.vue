@@ -5,7 +5,7 @@ import { defineProps, defineEmits, withDefaults } from 'vue';
 
 
 interface Props {
-  modelValue: string | number;
+  modelValue: string | undefined;
   placeholder?: string;
   options?: EFieldOfStudy[] | EProvince[] | ECountry[];
 }
