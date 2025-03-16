@@ -30,7 +30,7 @@ const schoolDetails = ref<Partial<ISchoolDetails>>({
 
     <div>
       <AppLabel text="Champ d'études" htmlFor="fieldOfStudy" required />
-      <AppSelect v-model="schoolDetails.fieldOfStudy" id="fieldOfStudy" type="select"
+      <AppSelect v-model="schoolDetails.fieldOfStudy" id="fieldOfStudy"
       :options="[
           EFieldOfStudy.INFORMATIQUE,
           EFieldOfStudy.INGENIERIE,

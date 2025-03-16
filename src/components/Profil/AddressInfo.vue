@@ -47,7 +47,7 @@ const address = ref<Partial<IAddress>>({
 
     <div>
       <AppLabel text="Province" htmlFor="province" required />
-      <AppSelect v-model="address.province" placeholder="Choisissez une province" type="select" id="province"
+      <AppSelect v-model="address.province" placeholder="Choisissez une province" id="province"
         :options="[
           EProvince.QUEBEC,
           EProvince.ONTARIO,
