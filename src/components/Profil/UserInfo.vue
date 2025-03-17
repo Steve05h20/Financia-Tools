@@ -2,6 +2,7 @@
 import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { IUser} from '@/models/user.interface'
+import { useValidationStore } from '@/stores/profil/validationStore'
 
 const user = ref<Partial<IUser>>({
   lastName: '',
@@ -10,28 +11,103 @@ const user = ref<Partial<IUser>>({
   phone: '',
   email: ''
 })
+
+const validationStore = useValidationStore();
+const errors = ref<{ [key: string]: string }>({
+  lastName: '',
+  firstName: '',
+  birthDate: '',
+  phone: '',
+  email: ''
+});
+
+const validateLastName = () => {
+  if(!user.value.lastName) {
+    errors.value.lastName = "Le nom est requis";
+    return;
+  }
+
+  errors.value.lastName = validationStore.validateTextLength(
+    user.value.lastName, 2, 50
+  );
+};
+
+const validateFirstName = () => {
+ if(!user.value.firstName) {
+    errors.value.firstName = "Le prénom est requis";
+    return;
+  }
+
+  errors.value.firstName = validationStore.validateTextLength(
+    user.value.firstName, 2, 50
+  );
+};
+
+const validateBirthDate = () => {
+  errors.value.birthDate = validationStore.validatePrevDate(user.value.birthDate);
+};
+
+const validatePhone = () => {
+  errors.value.phone = validationStore.validatePhone(user.value.phone);
+};
+
+const validateEmail = () => {
+  errors.value.email = validationStore.validateEmail(user.value.email);
+};
+
+/*
+For validation tests
+
+const validateForm = () => {
+  validateLastName();
+  validateFirstName();
+  validateBirthDate();
+  validatePhone();
+  validateEmail();
+
+  return validationStore.isFormValid(errors.value);
+};
+
+const isFormValid = () => {
+  return Object.values(errors.value).every(error => error === '');
+};
+*/
 </script>
 
-<template>
 
-
-    <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-5 transition-all">
+ <template>
+  <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-5 transition-all">
+    <div>
       <InputLabelDiv
         labelText="Nom de famille"
         htmlFor="lastName"
         required
         v-model="user.lastName"
         placeholder="placeholder"
+        @input="validateLastName"
+        @blur="validateLastName"
       />
+      <div v-if="errors.lastName" class="text-red-500 text-sm mt-1">
+        {{ errors.lastName }}
+      </div>
+    </div>
 
+    <div>
       <InputLabelDiv
         labelText="Prénom"
         htmlFor="firstName"
         required
         v-model="user.firstName"
         placeholder="placeholder"
+        @input="validateFirstName"
+        @blur="validateFirstName"
       />
+      <div v-if="errors.firstName" class="text-red-500 text-sm mt-1">
+        {{ errors.firstName }}
+      </div>
+    </div>
 
+    <div>
       <InputLabelDiv
         labelText="Date de naissance"
         htmlFor="birthDate"
@@ -39,28 +115,59 @@ const user = ref<Partial<IUser>>({
         v-model="user.birthDate"
         placeholder="placeholder"
         type="date"
+        @input="validateBirthDate"
+        @blur="validateBirthDate"
       />
+      <div v-if="errors.birthDate" class="text-red-500 text-sm mt-1">
+        {{ errors.birthDate }}
+      </div>
+    </div>
 
+    <div>
       <InputLabelDiv
         labelText="Téléphone"
         htmlFor="phone"
         required
         v-model="user.phone"
-        placeholder="placeholder"
+        placeholder="123-456-7890"
         type="tel"
+        @input="validatePhone"
+        @blur="validatePhone"
       />
+      <div v-if="errors.phone" class="text-red-500 text-sm mt-1">
+        {{ errors.phone }}
+      </div>
+    </div>
 
-     <InputLabelDiv
+    <div>
+      <InputLabelDiv
         labelText="Courriel"
         htmlFor="email"
         required
         v-model="user.email"
-        placeholder="placeholder"
+        placeholder="exemple@domaine.com"
         type="email"
-    />
-
+        @input="validateEmail"
+        @blur="validateEmail"
+      />
+      <div v-if="errors.email" class="text-red-500 text-sm mt-1">
+        {{ errors.email }}
+      </div>
     </div>
+  </div>
+
+  <!--
+    For validation tests
+    <button
+    @click="validateForm"
+    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    :disabled="!isFormValid()"
+  >
+    Valider
+  </button>
+  -->
 </template>
+
 
 <style>
 </style>

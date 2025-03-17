@@ -4,6 +4,7 @@ import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { ISchoolDetails } from '@/models/schoolDetails.interface'
 import { EFieldOfStudy } from '@/models/schoolDetails.interface'
+import { useValidationStore } from '@/stores/profil/validationStore'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 
@@ -14,24 +15,80 @@ const schoolDetails = ref<Partial<ISchoolDetails>>({
   projectedEndDate: undefined,
 })
 
+const validationStore = useValidationStore();
+const errors = ref<{ [key: string]: string }>({
+  schoolName: '',
+  fieldOfStudy: '',
+  startDate: '',
+  projectedEndDate: '',
+});
+
+const validateSchoolName = () => {
+  if(!schoolDetails.value.schoolName) {
+    errors.value.schoolName = "Le nom de l'établissement scolaire est requis";
+    return;
+  }
+
+  errors.value.schoolName = validationStore.validateTextLength(
+    schoolDetails.value.schoolName, 2, 50
+  );
+};
+
+const validateFieldOfStudy = () => {
+  errors.value.fieldOfStudy = validationStore.validateSelect(schoolDetails.value.fieldOfStudy);
+};
+
+const validateStartDate = () => {
+  errors.value.startDate = schoolDetails.value.startDate ? '' : "La date de début est requise";
+};
+
+const validateProjectedEndDate = () => {
+  errors.value.projectedEndDate = validationStore.validateFutureDate(schoolDetails.value.projectedEndDate);
+};
+
+const validateForm = () => {
+  validateSchoolName();
+  validateFieldOfStudy();
+  validateStartDate();
+  validateProjectedEndDate();
+
+  return validationStore.isFormValid(errors.value);
+};
+
+const isFormValid = () => {
+  return Object.values(errors.value).every(error => error === '');
+};
+
 </script>
 
 <template>
 
 
   <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-5 transition-all">
-    <InputLabelDiv
-      labelText="Nom de l'établissement"
-      htmlFor="schoolName"
-      required
-      v-model="schoolDetails.schoolName"
-      placeholder="placeholder"
-    />
+    <div>
+      <InputLabelDiv
+        labelText="Nom de l'établissement"
+        htmlFor="schoolName"
+        required
+        v-model="schoolDetails.schoolName"
+        placeholder="placeholder"
+        @input="validateSchoolName"
+        @blur="validateSchoolName"
+      />
+      <div v-if="errors.schoolName" class="text-red-500 text-sm mt-1">
+        {{ errors.schoolName }}
+    </div>
+    </div>
+
 
     <div>
       <AppLabel text="Champ d'études" htmlFor="fieldOfStudy" required />
-      <AppSelect v-model="schoolDetails.fieldOfStudy" id="fieldOfStudy"
-      :options="[
+      <AppSelect
+        v-model="schoolDetails.fieldOfStudy"
+        id="fieldOfStudy"
+        @input="validateFieldOfStudy"
+        @blur="validateFieldOfStudy"
+       :options="[
           EFieldOfStudy.INFORMATIQUE,
           EFieldOfStudy.INGENIERIE,
           EFieldOfStudy.SANTE,
@@ -41,27 +98,53 @@ const schoolDetails = ref<Partial<ISchoolDetails>>({
           EFieldOfStudy.ARTS,
           EFieldOfStudy.EDUCATION,
       ]" />
+      <div v-if="errors.fieldOfStudy" class="text-red-500 text-sm mt-1">
+        {{ errors.fieldOfStudy }}
+      </div>
     </div>
 
-    <InputLabelDiv
-      labelText="Date de début"
-      htmlFor="startDate"
-      required
-      v-model="schoolDetails.startDate"
-      placeholder="placeholder"
-      type="date"
+    <div>
+      <InputLabelDiv
+        labelText="Date de début"
+        htmlFor="startDate"
+        required
+        v-model="schoolDetails.startDate"
+        placeholder="placeholder"
+        type="date"
+        @input="validateStartDate"
+        @blur="validateStartDate"
       />
+      <div v-if="errors.startDate" class="text-red-500 text-sm mt-1">
+        {{ errors.startDate }}
+      </div>
+    </div>
 
-    <InputLabelDiv
-      labelText="Date de fin prévue"
-      htmlFor="projectedEndDate"
-      required
-      v-model="schoolDetails.projectedEndDate"
-      placeholder="placeholder"
-      type="date"
-    />
-
+    <div>
+       <InputLabelDiv
+        labelText="Date de fin prévue"
+        htmlFor="projectedEndDate"
+        required
+        v-model="schoolDetails.projectedEndDate"
+        placeholder="placeholder"
+        type="date"
+        @input="validateProjectedEndDate"
+        @blur="validateProjectedEndDate"
+      />
+      <div v-if="errors.projectedEndDate" class="text-red-500 text-sm mt-1">
+        {{ errors.projectedEndDate }}
+      </div>
+    </div>
   </div>
+<!--
+  For validation tests
+
+  <button
+    @click="validateForm"
+    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    :disabled="!isFormValid()"
+  >
+    Valider
+  </button> -->
 
 </template>
 

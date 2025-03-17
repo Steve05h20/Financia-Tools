@@ -17,101 +17,124 @@ const address = ref<Partial<IAddress>>({
 })
 
 const validationStore = useValidationStore();
-const error = ref<{ [key: string]: string }>({});
+const errors = ref<{ [key: string]: string }>({
+  streetNumber: '',
+  streetName: '',
+  city: '',
+  province: '',
+  country: ''
+});
+
+const validateStreetNumber = () => {
+  errors.value.streetNumber = address.value.streetNumber ? '' : "Le numéro de rue est requis";
+};
+
+const validateStreetName = () => {
+  if(!address.value.streetName) {
+    errors.value.streetName = "Le nom de rue est requis";
+    return;
+  }
+
+  errors.value.streetName = validationStore.validateTextLength(
+    address.value.streetName, 2, 50
+  );
+};
+
+const validateCity = () => {
+  if(!address.value.city) {
+    errors.value.city = "La ville est requise";
+    return;
+  }
+  errors.value.city = validationStore.validateTextLength(
+    address.value.city, 2, 50
+  );
+};
+
+const validateProvince = () => {
+  errors.value.province = validationStore.validateSelect(address.value.province);
+};
+
+const validateCountry = () => {
+  errors.value.country = validationStore.validateSelect(address.value.country);
+};
+
+/*
+For validation tests
 
 const validateForm = () => {
-  let hasError = false;
-  error.value = {};
+  validateStreetNumber();
+  validateStreetName();
+  validateCity();
+  validateProvince();
+  validateCountry();
 
- // Validation du numéro de rue
- if (!address.value.streetNumber) {
-    error.value.streetNumber = "Le numéro d'adresse est requis";
-    hasError = true;
-  }
+  return validationStore.isFormValid(errors.value);
+};
 
-  // Validation du nom de rue
-  if (!address.value.streetName) {
-    error.value.streetName = "Le nom de rue est requis";
-    hasError = true;
-  } else {
-    const streetNameLengthValidation = validationStore.validateTextLength(address.value.streetName, 4, 50);
-    if (!streetNameLengthValidation.isValid) {
-      error.value.streetName = "Le nom de la rue doit contenir entre 4 et 50 caractères.";
-      hasError = true;
-    }
-  }
-
-  // Validation de la ville
-  if (!address.value.city) {
-    error.value.city = "La ville est requise";
-    hasError = true;
-  } else {
-    const cityLengthValidation = validationStore.validateTextLength(address.value.city, 4, 50);
-    if (!cityLengthValidation.isValid) {
-      error.value.city = "La ville doit contenir entre 4 et 50 caractères.";
-      hasError = true;
-    }
-  }
-
-  // Validation de la province
-  const provinceValidation = validationStore.validateSelect(address.value.province);
-  if (!provinceValidation.isValid) {
-    error.value.province = "Veuillez choisir une province.";
-    hasError = true;
-  }
-
-  // Validation du pays
-  const countryValidation = validationStore.validateSelect(address.value.country);
-  if (!countryValidation.isValid) {
-    error.value.country = "Veuillez choisir un pays.";
-    hasError = true;
-  }
-
-  return !hasError;
-}
-
+const isFormValid = () => {
+  return Object.values(errors.value).every(error => error === '');
+}; */
 </script>
 
 <template>
  <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-5 transition-all">
 
-    <InputLabelDiv
+  <div>
+     <InputLabelDiv
       labelText="Addresse"
       htmlFor="addresse"
       required
       v-model="address.streetNumber"
       placeholder="placeholder"
+      @input="validateStreetNumber"
+      @blur="validateStreetNumber"
     />
-    <div v-if="error.streetNumber" class="text-red-500 text-sm mt-1">
-        {{ error.streetNumber }}
+    <div v-if="errors.streetNumber" class="text-red-500 text-sm mt-1">
+        {{ errors.streetNumber }}
     </div>
+  </div>
 
+
+  <div>
     <InputLabelDiv
       labelText="Rue"
       htmlFor="streetName"
       required
       v-model="address.streetName"
       placeholder="placeholder"
+      @input="validateStreetName"
+      @blur="validateStreetName"
     />
-    <div v-if="error.streetName" class="text-red-500 text-sm mt-1">
-        {{ error.streetName }}
+    <div v-if="errors.streetName" class="text-red-500 text-sm mt-1">
+        {{ errors.streetName }}
     </div>
+  </div>
 
 
+  <div>
     <InputLabelDiv
       labelText="Ville"
       htmlFor="city"
       required
       v-model="address.city"
       placeholder="placeholder"
+      @input="validateCity"
+      @blur="validateCity"
     />
-    <div v-if="error.city" class="text-red-500 text-sm mt-1">
-        {{ error.city }}
+    <div v-if="errors.city" class="text-red-500 text-sm mt-1">
+        {{ errors.city }}
     </div>
+  </div>
+
 
     <div>
       <AppLabel text="Province" htmlFor="province" required />
-      <AppSelect v-model="address.province" placeholder="Choisissez une province" id="province"
+      <AppSelect
+        v-model="address.province"
+        placeholder="Choisissez une province"
+        id="province"
+        @change="validateProvince"
+        @blur="validateProvince"
         :options="[
           EProvince.QUEBEC,
           EProvince.ONTARIO,
@@ -129,25 +152,39 @@ const validateForm = () => {
         ]"
       />
     </div>
-    <div v-if="error.province" class="text-red-500 text-sm mt-1">
-        {{ error.province }}
+    <div v-if="errors.province" class="text-red-500 text-sm mt-1">
+        {{ errors.province }}
     </div>
     <div>
-
-        <AppLabel text="pays" htmlFor="pays" required />
-        <AppSelect v-model="address.country" placeholder="Choisissez un pays" id="pays"
+      <AppLabel text="pays" htmlFor="pays" required />
+      <AppSelect
+        v-model="address.country"
+        placeholder="Choisissez un pays"
+        id="pays"
+        @change="validateCountry"
+        @blur="validateCountry"
         :options="[
           ECountry.CANADA
           ]"
-        />
-        <div v-if="error.contry" class="text-red-500 text-sm mt-1">
-            {{ error.contry }}
-        </div>
-
-
+      />
+      <div v-if="errors.country" class="text-red-500 text-sm mt-1">
+          {{ errors.country }}
       </div>
 
+
+    </div>
+
 </div>
+<!--
+  For validation tests
+
+  <button
+    @click="validateForm"
+    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    :disabled="!isFormValid()"
+  >
+    Valider
+  </button> -->
 </template>
 
 <style>
