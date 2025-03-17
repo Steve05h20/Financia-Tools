@@ -4,6 +4,7 @@ import UserInfo from '@/components/Profil/UserInfo.vue';
 import BankingInfo from '@/components/Profil/BankingInfo.vue';
 import AddressInfo from '@/components/Profil/AddressInfo.vue';
 import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
+import HeaderProfil from '@/components/Profil/HeaderProfil.vue';
 
 import { useUserStore } from '@/stores/useUserSotre';
 import { onMounted } from 'vue';
@@ -21,6 +22,7 @@ onMounted(() => {
 </script>
 <template>
   <div class="container mx-auto px-4 py-10">
+    <HeaderProfil />
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
 
