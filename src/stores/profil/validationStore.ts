@@ -1,68 +1,97 @@
 import { defineStore } from "pinia";
 
 export const useValidationStore = defineStore('validation', () => {
-  // Type pour retours de validation
-  type ValidationResult = {
-    isValid: boolean;
-    errorMessage: string;
-  };
 
-  // Fonction pour créer résultat de validation
-  const createResult = (isValid: boolean, message: string = ''): ValidationResult => {
-    return { isValid, errorMessage: isValid ? '' : message };
-  };
-
-  const validateEmail = (email: string): ValidationResult => {
-    if (!email) return createResult(false, "Entrez une adresse email");
+  const validateEmail = (email: string | undefined): string => {
+    if (!email) return "Entrez une adresse email";
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return createResult(regex.test(email), "Format d'email invalide");
+    return regex.test(email) ? '' : "Format d'email invalide";
   };
 
-  const validateText = (text: string): ValidationResult => {
-    if (!text) return createResult(false, "Ce champ est requis");
+  const validateText = (text: string | undefined): string => {
+    if (!text) return "Ce champ est requis";
     const regex = /^[a-zA-Z]+$/;
-    return createResult(regex.test(text), "Le texte doit contenir uniquement des lettres");
+    return regex.test(text) ? '' : "Le texte doit contenir uniquement des lettres";
   };
 
-  const validateTextLength = (text: string, min: number, max: number): ValidationResult => {
-    if (!text) return createResult(false, "Ce champ est requis");
-    const isValid = text.length >= min && text.length <= max;
-    return createResult(isValid, `Le texte doit contenir entre ${min} et ${max} caractères`);
+  const validateTextLength = (text: string | undefined, min: number, max: number): string => {
+    if (!text) return "Ce champ est requis";
+    return (text.length >= min && text.length <= max)
+      ? ''
+      : `Doit contenir entre ${min} et ${max} caractères`;
   };
 
-  const validatePhone = (phone: string): ValidationResult => {
-    if (!phone) return createResult(false, "Numéro de téléphone requis");
+  const validatePhone = (phone: string | undefined): string => {
+    if (!phone) return "Numéro de téléphone requis";
     const regex = /^\d{3}-\d{3}-\d{4}$/;
-    return createResult(regex.test(phone), "Format de téléphone invalide (ex: 123-456-7890)");
+    return regex.test(phone) ? '' : "Format de téléphone invalide (ex: 123-456-7890)";
   };
 
-  const validateDate = (date: Date | null): ValidationResult => {
-    if (!date) return createResult(false, "Entrez une date");
+  const validatePrevDate = (date: Date | string | undefined): string => {
+    if (!date) return "Entrez une date";
+
+    let dateObj: Date;
+
+    if (typeof date === 'string') {
+      dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        return "Format de date invalide";
+      }
+    } else {
+      dateObj = date;
+    }
+
     const dateToday = new Date();
-    return createResult(date >= dateToday, "La date doit être future ou aujourd'hui");
+    return dateObj < dateToday ? '' : "La date doit être passée";
   };
 
-  const validateAccountInfo = (value: string): ValidationResult => {
-    if (!value) return createResult(false, "Numéro de compte requis");
+  const validateFutureDate = (date: Date | string | undefined): string => {
+    if (!date) return "Entrez une date";
+
+    let dateObj: Date;
+
+    if (typeof date === 'string') {
+      dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        return "Format de date invalide";
+      }
+    } else {
+      dateObj = date;
+    }
+
+    const today = new Date();
+    const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const dateObjNormalized = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+
+    return dateObjNormalized >= todayNormalized ? '' : "La date doit être aujourd'hui ou future";
+  };
+
+  const validateAccountInfo = (value: string | undefined): string => {
+    if (!value) return "Numéro de compte requis";
     const regex = /^\d{12}$/;
-    return createResult(regex.test(value), "Le numéro de compte doit contenir 12 chiffres");
+    return regex.test(value) ? '' : "Le numéro de compte doit contenir 12 chiffres";
   };
 
-  const validateSelect = (value: string | number | null | undefined): ValidationResult => {
-    if (value === null || value === undefined) return createResult(false, "Sélectionnez une option");
-    if (typeof value === 'string' && value.trim() === '') return createResult(false, "Sélectionnez une option");
-    if (typeof value === 'number' && isNaN(value)) return createResult(false, "Sélectionnez une option valide");
-    return createResult(true);
+  const validateSelect = (value: string | number | null | undefined): string => {
+    if (value === null || value === undefined) return "Sélectionnez une option";
+    if (typeof value === 'string' && value.trim() === '') return "Sélectionnez une option";
+    if (typeof value === 'number' && isNaN(value)) return "Sélectionnez une option valide";
+    return '';
   };
 
+  const isFormValid = (errors: Record<string, string>): boolean => {
+    return Object.values(errors).every(error => error === '');
+  };
 
   return {
     validateEmail,
     validateText,
     validateTextLength,
     validatePhone,
-    validateDate,
+    validatePrevDate,
+    validateFutureDate,
     validateAccountInfo,
     validateSelect,
+    isFormValid
   };
 });
