@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router'
+import HeaderAvatar from './HeaderAvatar.vue';
+import { useUserStore } from '@/stores/useUserSotre';
 
+const userStore = useUserStore()
 const isMenuOpen = ref(false);
 
 </script>
@@ -14,35 +17,42 @@ const isMenuOpen = ref(false);
         <i  v-else class="material-symbols-outlined">close</i>
       </button>
     </div>
-    <nav class="flex gap-8 max-sm:flex-col m-4 w-full justify-center max-sm:h-screen" :class="{ 'max-sm:hidden ': !isMenuOpen }">
-      <RouterLink
-        class="btn max-sm:btn-xl"
-        :class="{ 'btn-neutral': $route.path === '/' }"
-        to="/"
-        @click="isMenuOpen = false"
-      >
-        Home
-      </RouterLink>
-      <RouterLink
-        class="btn max-sm:btn-xl"
-        :class="{ 'btn-neutral': $route.path === '/budget' }"
-        to="/budget"
-        @click="isMenuOpen = false"
-      >
-        Budget
-      </RouterLink>
-      <RouterLink
-        class="btn max-sm:btn-xl"
-        :class="{ 'btn-neutral': $route.path === '/profile' }"
-        to="/profile"
-        @click="isMenuOpen = false"
-      >
-        Profile
-      </RouterLink>
-      <button class="btn max-sm:btn-xl btn-outline btn-primary border-2 border-primary" @click="isMenuOpen = false">S'inscrire</button>
-      <button class="btn max-sm:btn-xl btn-primary" @click="isMenuOpen = false">Se connecter</button>
-    </nav>
+    <nav class="flex gap-8 max-sm:flex-col m-4 w-full items-center justify-end max-sm:justify-start max-lg:justify-center max-sm:h-screen" :class="{ 'max-sm:hidden ': !isMenuOpen }">
 
+        <RouterLink
+          class="btn max-sm:btn-xl"
+          :class="{ 'btn-neutral': $route.path === '/' }"
+          to="/"
+          @click="isMenuOpen = false"
+          v-if="userStore.isConnected"
+        >
+          Home
+        </RouterLink>
+        <RouterLink
+          class="btn max-sm:btn-xl"
+          :class="{ 'btn-neutral': $route.path === '/budget' }"
+          to="/budget"
+          @click="isMenuOpen = false"
+          v-if="userStore.isConnected"
+        >
+          Budget
+        </RouterLink>
+        <RouterLink
+          class="btn max-sm:btn-xl"
+          :class="{ 'btn-neutral': $route.path === '/profile' }"
+          to="/profile"
+          @click="isMenuOpen = false"
+          v-if="userStore.isConnected"
+        >
+          Profile
+        </RouterLink>
+
+      <div v-if="!userStore.isConnected" class="flex justify-between items-center gap-8">
+        <button class="btn max-sm:btn-xl btn-outline btn-primary border-2 border-primary " @click="isMenuOpen = false">S'inscrire</button>
+        <button class="btn max-sm:btn-xl btn-primary " @click="isMenuOpen = false">Se connecter</button>
+      </div>
+      <HeaderAvatar :userName="userStore.user.firstName" v-else/>
+    </nav>
   </header>
 </template>
 
