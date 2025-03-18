@@ -17,6 +17,8 @@ export const useUserStore = defineStore('user', () => {
   const bankingDetailsService = useFetchBankingDetails();
   const notificationService = useNotification();
 
+  const isConnected = ref(false)
+
   // État
   const user = ref<IUser>({
     id: 0,
@@ -133,6 +135,7 @@ export const useUserStore = defineStore('user', () => {
     user,
     error,
     loading,
+    isConnected,
 
     // Services
     userService,
