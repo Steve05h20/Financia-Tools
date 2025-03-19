@@ -26,11 +26,11 @@ export const useBudgetStore = defineStore('budget', () => {
   }
 
 
-  const addTransactionByType = async (transaction: Omit<ITransaction, "id" | "type">,type: EType) => {
+  const addTransactionByType = async (transaction: Omit<ITransaction, "id" | "type">, type: EType) => {
     if (typeof userStore.user.id !== 'number') {
       throw new Error("ID utilisateur non valide");
     }
-    await transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {...transaction, type});
+    await transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, { ...transaction, type });
     await loadTransactions();
   }
 
