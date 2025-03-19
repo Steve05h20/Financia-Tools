@@ -23,6 +23,9 @@ onMounted(() => {
 </script>
 <template>
   <div class="container mx-auto px-4 py-10">
+    <div v-if="userStore.loading" class="flex justify-center items-center h-64">
+      <div class="text-xl">Chargement des données...</div>
+    </div>
 
     <div class="flex justify-between items-center mb-8">
       <HeaderProfil />
