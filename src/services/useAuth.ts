@@ -1,4 +1,5 @@
-import { reactive, computed } from 'vue'
+import { defineStore } from 'pinia'
+import { ref, reactive, computed } from 'vue'
 import useFetchUser from '@/services/useFetchUser'
 import type { IUser } from '@/models/user.interface'
 import useNotification from '@/services/useNotification' // Importez useNotification
@@ -15,7 +16,7 @@ enum ErrorMessage {
 }
 
 // Création du store d'authentification
-export const useAuth = () => {
+export const useAuth = defineStore('auth', () => {
   const { message } = useNotification() // Utilisez useNotification
 
   // État global de l'authentification
@@ -37,6 +38,9 @@ export const useAuth = () => {
 
   // Appel API du service User
   const userService = useFetchUser()
+
+  // Utilisateur actuel avec ref
+  const user = ref<IUser | null>(null) // Utilisateur actuel avec ref= ref<IUser | null>(null)
 
   /*=======================================================================
     Validation des champs
@@ -197,6 +201,7 @@ export const useAuth = () => {
 
   return {
     stateAcount,
+    user,
     connecterUtilisateur,
     creerUtilisateur,
     deconnexion,
@@ -209,4 +214,4 @@ export const useAuth = () => {
     isPasswordValid,
     isUserNameValid,
   }
-}
+})

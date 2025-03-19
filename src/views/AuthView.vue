@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuth } from '@/stores/authStore'
+import { useAuth } from '@/services/useAuth'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -28,10 +28,7 @@ const handleSubmit = async (e: Event) => {
 
 <template>
   <div class="h-screen flex items-center justify-center bg-white">
-    <form
-      @submit.prevent="handleSubmit"
-      class="space-y-4 w-96 p-8 bg-gray-50 rounded-lg shadow-md"
-    >
+    <form @submit.prevent="handleSubmit" class="space-y-4 w-96 p-8 bg-gray-50 rounded-lg shadow-md">
       <h1 class="text-2xl font-medium text-center">
         {{ isSignUp ? 'Inscrivez-vous' : 'Connectez-vous' }}
       </h1>
