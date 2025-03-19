@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { useValidationStore } from '@/stores/profil/validationStore'
+import { useValidationStore } from '@/stores/profil/UseValidationStore'
 import type { IAddress } from '@/models/address.interface'
 import { EAddressType, EProvince, ECountry } from '@/models/address.interface'
 

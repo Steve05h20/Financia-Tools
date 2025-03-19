@@ -4,7 +4,7 @@ import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { ISchoolDetails } from '@/models/schoolDetails.interface'
 import { EFieldOfStudy } from '@/models/schoolDetails.interface'
-import { useValidationStore } from '@/stores/profil/validationStore'
+import { useValidationStore } from '@/stores/profil/UseValidationStore'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 

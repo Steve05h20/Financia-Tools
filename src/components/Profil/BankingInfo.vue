@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue';
-import { useValidationStore } from '@/stores/profil/validationStore';
+import { useValidationStore } from '@/stores/profil/UseValidationStore';
 import { ref } from 'vue';
 import type { IBankingDetails } from '@/models/bankingDetails.interface'
 

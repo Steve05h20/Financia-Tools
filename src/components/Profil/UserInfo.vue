@@ -2,7 +2,7 @@
 import InputLabelDiv from '../InputLabelDiv.vue'
 import { ref } from 'vue'
 import type { IUser} from '@/models/user.interface'
-import { useValidationStore } from '@/stores/profil/validationStore'
+import { useValidationStore } from '@/stores/profil/UseValidationStore'
 
 const user = ref<Partial<IUser>>({
   lastName: '',
