@@ -1,13 +1,15 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import type { ISchoolDetails } from '@/models/schoolDetails.interface'
 import { EFieldOfStudy } from '@/models/schoolDetails.interface'
 import { useValidationStore } from '@/stores/profil/UseValidationStore'
 import { useEditStore } from '@/stores/profil/useEditStore'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
+import { useUserStore } from '@/stores/useUserSotre'
 
+const userStore = useUserStore();
 const validationStore = useValidationStore();
 const editStore = useEditStore();
 
@@ -64,19 +66,18 @@ const isFormValid = () => {
 onMounted(() => {
   editStore.registerValidation(validateForm);
 });
-
 </script>
 
 <template>
 
 
   <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-5 transition-all">
-    <div>
+    <div v-if="userStore.user && userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0">
       <InputLabelDiv
         labelText="Nom de l'établissement"
         htmlFor="schoolName"
         required
-        v-model="schoolDetails.schoolName"
+        v-model="userStore.user.schoolDetails[0].schoolName"
         placeholder="placeholder"
         @input="validateSchoolName"
         @blur="validateSchoolName"
@@ -87,10 +88,10 @@ onMounted(() => {
     </div>
 
 
-    <div>
+    <div v-if="userStore.user && userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0">
       <AppLabel text="Champ d'études" htmlFor="fieldOfStudy" required />
       <AppSelect
-        v-model="schoolDetails.fieldOfStudy"
+        v-model="userStore.user.schoolDetails[0].fieldOfStudy"
         id="fieldOfStudy"
         @input="validateFieldOfStudy"
         @blur="validateFieldOfStudy"
@@ -109,12 +110,12 @@ onMounted(() => {
       </div>
     </div>
 
-    <div>
+    <div v-if="userStore.user && userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0">
       <InputLabelDiv
         labelText="Date de début"
         htmlFor="startDate"
         required
-        v-model="schoolDetails.startDate"
+        v-model="userStore.user.schoolDetails[0].startDate"
         placeholder="placeholder"
         type="date"
         @input="validateStartDate"
@@ -125,12 +126,12 @@ onMounted(() => {
       </div>
     </div>
 
-    <div>
+    <div v-if="userStore.user && userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0">
        <InputLabelDiv
         labelText="Date de fin prévue"
         htmlFor="projectedEndDate"
         required
-        v-model="schoolDetails.projectedEndDate"
+        v-model="userStore.user.schoolDetails[0].projectedEndDate"
         placeholder="placeholder"
         type="date"
         @input="validateProjectedEndDate"
@@ -141,17 +142,6 @@ onMounted(() => {
       </div>
     </div>
   </div>
-<!--
-  For validation tests
-
-  <button
-    @click="validateForm"
-    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-    :disabled="!isFormValid()"
-  >
-    Valider
-  </button> -->
-
 </template>
 
 <style>

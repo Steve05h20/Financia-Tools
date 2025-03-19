@@ -4,9 +4,12 @@ import { ref, onMounted } from 'vue'
 import type { IUser} from '@/models/user.interface'
 import { useValidationStore } from '@/stores/profil/UseValidationStore'
 import { useEditStore } from '@/stores/profil/useEditStore'
+import { useUserStore } from '@/stores/useUserSotre'
 
+const userStore = useUserStore();
 const validationStore = useValidationStore();
 const editStore = useEditStore();
+
 
 const user = ref<Partial<IUser>>({
   lastName: '',
@@ -87,7 +90,7 @@ onMounted(() => {
         labelText="Nom de famille"
         htmlFor="lastName"
         required
-        v-model="user.lastName"
+        v-model="userStore.user.lastName"
         placeholder="placeholder"
         @input="validateLastName"
         @blur="validateLastName"
@@ -102,7 +105,7 @@ onMounted(() => {
         labelText="Prénom"
         htmlFor="firstName"
         required
-        v-model="user.firstName"
+        v-model="userStore.user.firstName"
         placeholder="placeholder"
         @input="validateFirstName"
         @blur="validateFirstName"
@@ -117,7 +120,7 @@ onMounted(() => {
         labelText="Date de naissance"
         htmlFor="birthDate"
         required
-        v-model="user.birthDate"
+        v-model="userStore.user.birthDate"
         placeholder="placeholder"
         type="date"
         @input="validateBirthDate"
@@ -133,7 +136,7 @@ onMounted(() => {
         labelText="Téléphone"
         htmlFor="phone"
         required
-        v-model="user.phone"
+        v-model="userStore.user.phone"
         placeholder="123-456-7890"
         type="tel"
         @input="validatePhone"
@@ -149,7 +152,7 @@ onMounted(() => {
         labelText="Courriel"
         htmlFor="email"
         required
-        v-model="user.email"
+        v-model="userStore.user.email"
         placeholder="exemple@domaine.com"
         type="email"
         @input="validateEmail"

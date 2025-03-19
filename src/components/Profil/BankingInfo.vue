@@ -4,9 +4,11 @@ import { ref, onMounted } from 'vue';
 import type { IBankingDetails } from '@/models/bankingDetails.interface'
 import { useValidationStore } from '@/stores/profil/UseValidationStore'
 import { useEditStore } from '@/stores/profil/useEditStore'
+import { useUserStore } from '@/stores/useUserSotre'
 
 const validationStore = useValidationStore();
 const editStore = useEditStore();
+const userStore = useUserStore();
 
 const bankingDetails= ref<Partial<IBankingDetails>>({
   institutionName: '',
@@ -54,12 +56,12 @@ onMounted(() => {
 <template>
   <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-5 transition-all">
 
-    <div>
+    <div v-if="userStore.user && userStore.user.bankingDetails && userStore.user.bankingDetails.length > 0">
       <InputLabelDiv
         labelText="Nom de l'institution"
         htmlFor="institutionName"
         required
-        v-model="bankingDetails.institutionName"
+        v-model="userStore.user.bankingDetails[0].institutionName"
         placeholder="placeholder"
         @input="validateinstitutionName"
         @blur="validateinstitutionName"
@@ -69,12 +71,12 @@ onMounted(() => {
       </div>
     </div>
 
-    <div>
+    <div v-if="userStore.user && userStore.user.bankingDetails && userStore.user.bankingDetails.length > 0">
        <InputLabelDiv
         labelText="Numéro de compte"
         htmlFor="accountinfo"
         required
-        v-model="bankingDetails.accountinfo"
+        v-model="userStore.user.bankingDetails[0].accountinfo"
         placeholder="placeholder"
         @input="validateAccountInfo"
         @blur="validateAccountInfo"
