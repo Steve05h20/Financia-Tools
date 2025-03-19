@@ -1,8 +1,12 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { IUser} from '@/models/user.interface'
 import { useValidationStore } from '@/stores/profil/UseValidationStore'
+import { useEditStore } from '@/stores/profil/useEditStore'
+
+const validationStore = useValidationStore();
+const editStore = useEditStore();
 
 const user = ref<Partial<IUser>>({
   lastName: '',
@@ -12,7 +16,6 @@ const user = ref<Partial<IUser>>({
   email: ''
 })
 
-const validationStore = useValidationStore();
 const errors = ref<{ [key: string]: string }>({
   lastName: '',
   firstName: '',
@@ -55,8 +58,6 @@ const validateEmail = () => {
   errors.value.email = validationStore.validateEmail(user.value.email);
 };
 
-/*
-For validation tests
 
 const validateForm = () => {
   validateLastName();
@@ -65,13 +66,17 @@ const validateForm = () => {
   validatePhone();
   validateEmail();
 
-  return validationStore.isFormValid(errors.value);
+  return isFormValid();
 };
 
 const isFormValid = () => {
   return Object.values(errors.value).every(error => error === '');
 };
-*/
+
+onMounted(() => {
+  editStore.registerValidation(validateForm);
+});
+
 </script>
 
 
@@ -155,17 +160,6 @@ const isFormValid = () => {
       </div>
     </div>
   </div>
-
-  <!--
-    For validation tests
-    <button
-    @click="validateForm"
-    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-    :disabled="!isFormValid()"
-  >
-    Valider
-  </button>
-  -->
 </template>
 
 

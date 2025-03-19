@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue';
-import { useValidationStore } from '@/stores/profil/UseValidationStore';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { IBankingDetails } from '@/models/bankingDetails.interface'
+import { useValidationStore } from '@/stores/profil/UseValidationStore'
+import { useEditStore } from '@/stores/profil/useEditStore'
+
+const validationStore = useValidationStore();
+const editStore = useEditStore();
 
 const bankingDetails= ref<Partial<IBankingDetails>>({
   institutionName: '',
   accountinfo: ''
 })
 
-const validationStore = useValidationStore();
 const errors = ref<{ [key: string]: string }>({
   institutionName: '',
   accountinfo: ''
@@ -30,17 +33,20 @@ const validateAccountInfo = () => {
   errors.value.accountinfo = validationStore.validateAccountInfo(bankingDetails.value.accountinfo);
 }
 
-/*
-For validation tests
-
 const validateForm = () => {
   validateinstitutionName();
   validateAccountInfo();
+
+  return isFormValid();
 };
 
 const isFormValid = () => {
   return Object.values(errors.value).every(error => error === '');
-}; */
+};
+
+onMounted(() => {
+  editStore.registerValidation(validateForm);
+});
 
 </script>
 
@@ -78,20 +84,7 @@ const isFormValid = () => {
       </div>
     </div>
 
-
   </div>
-  <!--
-    For validation tests
-
-    <button
-    @click="validateForm"
-    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-    :disabled="!isFormValid()"
-  >
-    Valider
-  </button> -->
-
-
 </template>
 
 <style>

@@ -1,12 +1,15 @@
 <script lang="ts" setup>
-
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { ISchoolDetails } from '@/models/schoolDetails.interface'
 import { EFieldOfStudy } from '@/models/schoolDetails.interface'
 import { useValidationStore } from '@/stores/profil/UseValidationStore'
+import { useEditStore } from '@/stores/profil/useEditStore'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
+
+const validationStore = useValidationStore();
+const editStore = useEditStore();
 
 const schoolDetails = ref<Partial<ISchoolDetails>>({
   schoolName: '',
@@ -15,7 +18,6 @@ const schoolDetails = ref<Partial<ISchoolDetails>>({
   projectedEndDate: undefined,
 })
 
-const validationStore = useValidationStore();
 const errors = ref<{ [key: string]: string }>({
   schoolName: '',
   fieldOfStudy: '',
@@ -52,12 +54,16 @@ const validateForm = () => {
   validateStartDate();
   validateProjectedEndDate();
 
-  return validationStore.isFormValid(errors.value);
+  return isFormValid();
 };
 
 const isFormValid = () => {
   return Object.values(errors.value).every(error => error === '');
 };
+
+onMounted(() => {
+  editStore.registerValidation(validateForm);
+});
 
 </script>
 

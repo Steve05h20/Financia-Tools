@@ -1,11 +1,15 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { useValidationStore } from '@/stores/profil/UseValidationStore'
 import type { IAddress } from '@/models/address.interface'
 import { EAddressType, EProvince, ECountry } from '@/models/address.interface'
+import { useValidationStore } from '@/stores/profil/UseValidationStore'
+import { useEditStore } from '@/stores/profil/useEditStore'
+
+const validationStore = useValidationStore();
+const editStore = useEditStore();
 
 const address = ref<Partial<IAddress>>({
   type: EAddressType.PERSONAL,
@@ -16,7 +20,6 @@ const address = ref<Partial<IAddress>>({
   country: ECountry.CANADA
 })
 
-const validationStore = useValidationStore();
 const errors = ref<{ [key: string]: string }>({
   streetNumber: '',
   streetName: '',
@@ -58,9 +61,6 @@ const validateCountry = () => {
   errors.value.country = validationStore.validateSelect(address.value.country);
 };
 
-/*
-For validation tests
-
 const validateForm = () => {
   validateStreetNumber();
   validateStreetName();
@@ -68,12 +68,16 @@ const validateForm = () => {
   validateProvince();
   validateCountry();
 
-  return validationStore.isFormValid(errors.value);
+  return isFormValid();
 };
 
 const isFormValid = () => {
   return Object.values(errors.value).every(error => error === '');
-}; */
+};
+
+onMounted(() => {
+  editStore.registerValidation(validateForm);
+});
 </script>
 
 <template>
@@ -170,21 +174,9 @@ const isFormValid = () => {
       <div v-if="errors.country" class="text-red-500 text-sm mt-1">
           {{ errors.country }}
       </div>
-
-
     </div>
 
 </div>
-<!--
-  For validation tests
-
-  <button
-    @click="validateForm"
-    class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-    :disabled="!isFormValid()"
-  >
-    Valider
-  </button> -->
 </template>
 
 <style>
