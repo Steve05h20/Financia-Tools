@@ -2,6 +2,7 @@
 import type { ECountry, EProvince } from '@/models/address.interface';
 import type { EFieldOfStudy } from '@/models/schoolDetails.interface';
 import { defineProps, defineEmits, withDefaults } from 'vue';
+import { useEditStore } from '@/stores/profil/useEditStore';
 
 
 interface Props {
@@ -16,6 +17,7 @@ withDefaults(defineProps<Props>(), {
   placeholder: 'Sélectionnez une option'
 });
 
+const editStore = useEditStore();
 const emit = defineEmits(['update:modelValue']);
 
 const updateValue = (event: Event) => {
@@ -29,7 +31,7 @@ const updateValue = (event: Event) => {
 <template>
 
   <select
-    class="select select-ghost bg-slate-50 my-1"
+    :class="{'select select-ghost bg-slate-50 my-1' : editStore.isEditing, 'select my-1 w-full border-none disabled:bg-transparent disabled:opacity-100' : !editStore.isEditing}"
     :value="modelValue"
     @change="updateValue"
   >
