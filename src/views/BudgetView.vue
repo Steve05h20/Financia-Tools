@@ -1,7 +1,27 @@
-<script setup lang="ts"></script>
-
 <template>
-  <main>
-    <h1>Budget</h1>
-  </main>
+  <div class="p-5">
+    <BudgetSummary />
+    <TransactionForm />
+    <TransactionList />
+  </div>
 </template>
+
+<script setup lang="ts">
+import { onMounted } from 'vue'
+
+import { useBudgetStore } from '../stores/useBudgetStore'
+import BudgetSummary from '../components/Budget/BudgetSummary.vue'
+import TransactionForm from '../components/Budget/TransactionForm.vue'
+import TransactionList from '../components/Budget/TransactionList.vue'
+
+const budgetStore = useBudgetStore()
+
+onMounted(async () => {
+  try {
+    await budgetStore.loadTransactions()
+  } catch (error) {
+    console.error('Erreur lors du chargement des transactions:', error)
+    alert('Une erreur est survenue lors du chargement des transactions.')
+  }
+})
+</script>
