@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white p-4 sm:p-5 md:p-6 lg:p-8 xl:p-10 rounded-lg shadow-md mb-4 sm:mb-5 md:mb-6">
     <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold mb-4 sm:mb-5 md:mb-6">
-      Ajouter une facture
+      {{ form.category === 'Revenue' ? 'Ajouter un revenu' : 'Ajouter une facture' }}
     </h2>
     <form
       @submit.prevent="handleSubmit"
@@ -15,7 +15,9 @@
         <input
           v-model="form.description"
           type="text"
-          placeholder="Description de la facture"
+          :placeholder="
+            form.category === 'Revenue' ? 'Description du revenu' : 'Description de la facture'
+          "
           class="w-full p-2 sm:p-3 border rounded-md text-sm sm:text-base md:text-lg"
           :class="{ 'border-red-500': errors.description }"
         />
@@ -126,16 +128,18 @@
           type="checkbox"
           class="mr-2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
         />
-        <label class="text-sm sm:text-base md:text-lg text-gray-600">Payée</label>
+        <label class="text-sm sm:text-base md:text-lg text-gray-600">
+          {{ form.category === 'Revenue' ? 'Reçu' : 'Payée' }}
+        </label>
       </div>
 
       <!-- Bouton de soumission -->
       <div class="md:col-span-2 flex justify-center">
         <button
           type="submit"
-          class="btn btn-primary text-sm sm:text-base md:text-lg px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-md"
+          class="btn btn-primary text-sm sm:text-base md:text-lg px-4 py-2 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white transition-colors"
         >
-          Ajouter la facture
+          {{ form.category === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la facture' }}
         </button>
       </div>
     </form>
