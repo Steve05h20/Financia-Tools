@@ -146,13 +146,11 @@
 import { ref } from 'vue'
 import { EFrequency, ITransaction } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
-import { useUserStore } from '../../stores/useUserSotre'
 
 const budgetStore = useBudgetStore()
-const userStore = useUserStore()
+
 const transactions = budgetStore.transactions
 
-// État pour gérer l'édition d'une transaction
 const editingTransaction = ref<ITransaction | null>(null)
 
 const formatDate = (date: Date): string => {
@@ -166,7 +164,6 @@ const getFrequencyLabel = (frequency: EFrequency): string => {
   return frequencyLabel ?? '-'
 }
 
-// Basculer le statut (Payée/En attente) - Update
 const toggleStatus = async (transaction: ITransaction) => {
   if (transaction.id === undefined) return
   try {
@@ -180,7 +177,6 @@ const toggleStatus = async (transaction: ITransaction) => {
   }
 }
 
-// Supprimer une transaction - Delete
 const handleDelete = async (id: number) => {
   try {
     await budgetStore.deleteTransaction(id)
@@ -190,17 +186,15 @@ const handleDelete = async (id: number) => {
   }
 }
 
-// Commencer l'édition d'une transaction
 const startEditing = (transaction: ITransaction) => {
   editingTransaction.value = { ...transaction }
 }
 
-// Sauvegarder les modifications - Update
 const saveEditing = async () => {
   if (!editingTransaction.value || editingTransaction.value.id === undefined) return
   try {
     await budgetStore.updateTransaction(editingTransaction.value.id, editingTransaction.value)
-    editingTransaction.value = null // Terminer l'édition
+    editingTransaction.value = null
   } catch (error) {
     console.error('Erreur lors de la sauvegarde de la transaction:', error)
     alert('Une erreur est survenue lors de la sauvegarde de la transaction.')
