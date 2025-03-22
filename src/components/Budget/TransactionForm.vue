@@ -153,7 +153,7 @@ const budgetStore = useBudgetStore()
 const form = ref<Partial<ITransaction>>({
   description: '',
   amount: 0,
-  startDate: new Date().toISOString().split('T')[0],
+  startDate: undefined,
   endDate: undefined,
   frequency: EFrequency.Monthly,
   category: 'Factures',
@@ -281,7 +281,7 @@ const handleSubmit = async () => {
     form.value = {
       description: '',
       amount: 0,
-      startDate: new Date().toISOString().split('T')[0],
+      startDate: undefined,
       endDate: undefined,
       frequency: EFrequency.Monthly,
       category: 'Factures',
