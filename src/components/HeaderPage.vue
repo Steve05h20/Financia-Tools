@@ -1,4 +1,6 @@
 <script setup lang="ts">
+
+import AuthView from '@/views/AuthView.vue'
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router'
 import HeaderAvatar from './HeaderAvatar.vue';
@@ -7,8 +9,23 @@ import { useUserStore } from '@/stores/useUserSotre';
 const userStore = useUserStore()
 const isMenuOpen = ref(false);
 
+// Références pour les modals
+const inscriptionModalRef = ref<HTMLDialogElement | null>(null)
+const connexionModalRef = ref<HTMLDialogElement | null>(null)
+
+// Fonction pour alterner entre les modals
+const toggleModal = () => {
+  if (inscriptionModalRef.value?.open) {
+    inscriptionModalRef.value.close()
+    connexionModalRef.value?.showModal()
+  } else {
+    connexionModalRef.value?.close()
+    inscriptionModalRef.value?.showModal()
+  }
+}
 </script>
 <template>
+
   <header class="navbar bg-base-100 text-base-content flex justify-around border-b-6 shadow-lg border-primary max-lg:flex-col max-lg:items-center transition-all">
     <div class="flex justify-between items-center">
       <h1 class="text-3xl text-primary m-4 font-bold">Financia/<span class="text-black font-normal text-xs">Tools</span></h1>
@@ -48,12 +65,34 @@ const isMenuOpen = ref(false);
         </RouterLink>
 
       <div v-if="!userStore.isConnected" class="flex justify-between items-center gap-8">
-        <button class="btn max-sm:btn-xl btn-outline btn-primary border-2 border-primary " @click="isMenuOpen = false">S'inscrire</button>
-        <button class="btn max-sm:btn-xl btn-primary " @click="isMenuOpen = false">Se connecter</button>
+        <button class="btn" @click="connexionModalRef?.showModal()">Se connecter</button>
+        <button class="btn" @click="inscriptionModalRef?.showModal()">S'inscrire</button>
       </div>
+      
       <HeaderAvatar :userName="userStore.user.firstName" v-else/>
+
     </nav>
   </header>
+  
+  <!-- Modal pour l'inscription -->
+  <dialog ref="inscriptionModalRef" class="modal w-96 h-auto m-auto">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <AuthView action="inscription" @toggle-action="toggleModal" />
+    </div>
+  </dialog>
+
+  <!-- Modal pour la connexion -->
+  <dialog ref="connexionModalRef" class="modal w-96 h-auto m-auto">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
+      <AuthView action="connexion" @toggle-action="toggleModal" />
+    </div>
+  </dialog>
 </template>
 
 <style scoped>
@@ -102,4 +141,5 @@ const isMenuOpen = ref(false);
   }
 }
 </style>
+
 
