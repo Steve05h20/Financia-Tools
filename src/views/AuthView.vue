@@ -98,22 +98,20 @@ const handleSubmit = async (e: Event) => {
         </p>
       </div>
       <!-- Champ confirmation Mot de passe -->
-      <div>
-        <label for="password" class="label">Confirmez Mot de passe</label>
+      <div v-if="isSignUp">
+        <label for="confirmPassword" class="label">Confirmez le mot de passe</label>
         <input
           type="password"
-          v-model="auth.stateAcount.pwd"
-          @input="auth.validatePasswordRealTime(auth.stateAcount.pwd)"
-          id="password"
-          placeholder="Entrez votre mot de passe"
+          v-model="auth.stateAcount.confirmPwd"
+          @input="auth.validateConfirmPasswordRealTime(auth.stateAcount.confirmPwd)"
+          id="confirmPassword"
+          placeholder="Confirmez votre mot de passe"
           class="input w-full"
         />
-        <p v-if="auth.stateAcount.validationErrors.pwd" class="mt-1 text-sm text-red-600">
-          {{ auth.stateAcount.validationErrors.pwd }}
+        <p v-if="auth.stateAcount.validationErrors.confirmPwd" class="mt-1 text-sm text-red-600">
+          {{ auth.stateAcount.validationErrors.confirmPwd }}
         </p>
       </div>
-
-
 
       <!-- Bouton de soumission -->
       <div>

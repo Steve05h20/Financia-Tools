@@ -13,7 +13,7 @@ enum ErrorMessage {
   INVALID_CREDENTIALS = 'Identifiants invalides',
   CREATE_ACCOUNT_ERROR = 'Erreur lors de la création du compte',
   DECONNECTION_ERROR = 'Erreur lors de la déconnexion',
-  
+  PASSWORDS_DO_NOT_MATCH = 'Les mots de passe ne correspondent pas',
 }
 
 // Création du store d'authentification
@@ -26,12 +26,14 @@ export const useAuth = defineStore('auth', () => {
     connecte: false,
     email: '',
     pwd: '',
+    confirmPwd: '',
     userName: '',
     loading: false,
     errorMessage: '',
     validationErrors: {
       email: '',
       pwd: '',
+      confirmPwd: '',
       userName: '',
     },
     lastActivity: null as Date | null,
@@ -60,6 +62,12 @@ export const useAuth = defineStore('auth', () => {
     return ''
   }
 
+  const validateConfirmPassword = (confirmPwd: string): string => {
+    if (!confirmPwd) return 'La confirmation du mot de passe est requise'
+    if (confirmPwd !== stateAcount.pwd) return ErrorMessage.PASSWORDS_DO_NOT_MATCH
+    return ''
+  }
+
   const validateUserName = (userName: string): string => {
     if (!userName) return "Le nom d'utilisateur est requis"
     if (userName.length < 3) return "Le nom d'utilisateur doit contenir au moins 3 caractères"
@@ -72,6 +80,7 @@ export const useAuth = defineStore('auth', () => {
       email: validateEmail(stateAcount.email),
       pwd: validatePassword(stateAcount.pwd),
       userName: validateUserName(stateAcount.userName),
+      confirmPwd: validateConfirmPassword(stateAcount.confirmPwd),
     }
   }
 
@@ -93,6 +102,9 @@ export const useAuth = defineStore('auth', () => {
     stateAcount.validationErrors.pwd = validatePassword(password)
   }
 
+  const validateConfirmPasswordRealTime = (confirmPwd: string) => {
+    stateAcount.validationErrors.confirmPwd = validateConfirmPassword(confirmPwd)
+  }
   const validateUserNameRealTime = (userName: string) => {
     stateAcount.validationErrors.userName = validateUserName(userName)
   }
@@ -101,6 +113,7 @@ export const useAuth = defineStore('auth', () => {
   const isEmailValid = computed(() => !stateAcount.validationErrors.email)
   const isPasswordValid = computed(() => !stateAcount.validationErrors.pwd)
   const isUserNameValid = computed(() => !stateAcount.validationErrors.userName)
+  const isConfirmPasswordValid = computed(() => !stateAcount.validationErrors.confirmPwd)
 
   // Action de finalisation commune
   const finallyAction = () => {
@@ -151,7 +164,14 @@ export const useAuth = defineStore('auth', () => {
   const creerUtilisateur = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     updateValidation()
-    if (!isValid.value || !stateAcount.userName) {
+
+    if (stateAcount.pwd !== stateAcount.confirmPwd) {
+      stateAcount.errorMessage = ErrorMessage.PASSWORDS_DO_NOT_MATCH // Utilisation de l'enum
+      message(stateAcount.errorMessage, 'error')
+      return
+    }
+
+    if (!isValid.value || !stateAcount.userName || stateAcount.pwd !== stateAcount.confirmPwd) {
       message('Veuillez corriger les erreurs de validation', 'error') // Utilisez message
       return
     }
@@ -211,8 +231,10 @@ export const useAuth = defineStore('auth', () => {
     validateEmailRealTime,
     validatePasswordRealTime,
     validateUserNameRealTime,
+    validateConfirmPasswordRealTime,
     isEmailValid,
     isPasswordValid,
     isUserNameValid,
+    isConfirmPasswordValid,
   }
 })
