@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import { useAuth } from '@/services/useAuth'
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
-const route = useRoute()
+// Props pour déterminer l'action (connexion ou inscription)
+const props = defineProps({
+  action: {
+    type: String,
+    required: true,
+    validator: (value: string) => ['connexion', 'inscription'].includes(value),
+  },
+})
+
 const router = useRouter()
 const auth = useAuth()
 
 // Détermine si l'utilisateur est sur la page d'inscription
-const isSignUp = computed(() => route.path === '/inscription')
+const isSignUp = computed(() => props.action === 'inscription')
 
 // Gestion du formulaire
 const handleSubmit = async (e: Event) => {
@@ -27,8 +35,8 @@ const handleSubmit = async (e: Event) => {
 </script>
 
 <template>
-  <div class="h-screen flex items-center justify-center bg-white">
-    <form @submit.prevent="handleSubmit" class="space-y-4 w-96 p-8 bg-gray-50 rounded-lg shadow-md">
+  <div class="flex items-center justify-center bg-white">
+    <form @submit.prevent="handleSubmit" class="space-y-4 p-8">
       <h1 class="text-2xl font-medium text-center">
         {{ isSignUp ? 'Inscrivez-vous' : 'Connectez-vous' }}
       </h1>
@@ -44,16 +52,14 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Champ Nom d'utilisateur (uniquement pour l'inscription) -->
       <div v-if="isSignUp">
-        <label for="username" class="block text-sm font-medium text-primary"
-          >Nom d'utilisateur</label
-        >
+        <label for="username" class="label">Nom d'utilisateur</label>
         <input
           type="text"
           v-model="auth.stateAcount.userName"
           @input="auth.validateUserNameRealTime(auth.stateAcount.userName)"
           id="username"
           placeholder="Entrez un nom d'utilisateur"
-          class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="input w-full"
         />
         <p v-if="auth.stateAcount.validationErrors.userName" class="mt-1 text-sm text-red-600">
           {{ auth.stateAcount.validationErrors.userName }}
@@ -62,14 +68,14 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Champ Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+        <label for="email" class="label">Email</label>
         <input
           type="email"
           v-model="auth.stateAcount.email"
           @input="auth.validateEmailRealTime(auth.stateAcount.email)"
           id="email"
           placeholder="Entrez votre email"
-          class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="input w-full"
         />
         <p v-if="auth.stateAcount.validationErrors.email" class="mt-1 text-sm text-red-600">
           {{ auth.stateAcount.validationErrors.email }}
@@ -78,19 +84,36 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Champ Mot de passe -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+        <label for="password" class="label">Mot de passe</label>
         <input
           type="password"
           v-model="auth.stateAcount.pwd"
           @input="auth.validatePasswordRealTime(auth.stateAcount.pwd)"
           id="password"
           placeholder="Entrez votre mot de passe"
-          class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="input w-full"
         />
         <p v-if="auth.stateAcount.validationErrors.pwd" class="mt-1 text-sm text-red-600">
           {{ auth.stateAcount.validationErrors.pwd }}
         </p>
       </div>
+      <!-- Champ confirmation Mot de passe -->
+      <div>
+        <label for="password" class="label">Confirmez Mot de passe</label>
+        <input
+          type="password"
+          v-model="auth.stateAcount.pwd"
+          @input="auth.validatePasswordRealTime(auth.stateAcount.pwd)"
+          id="password"
+          placeholder="Entrez votre mot de passe"
+          class="input w-full"
+        />
+        <p v-if="auth.stateAcount.validationErrors.pwd" class="mt-1 text-sm text-red-600">
+          {{ auth.stateAcount.validationErrors.pwd }}
+        </p>
+      </div>
+
+
 
       <!-- Bouton de soumission -->
       <div>
@@ -106,8 +129,9 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Lien pour basculer entre connexion et inscription -->
       <div class="text-center">
-        <RouterLink
-          :to="isSignUp ? '/connexion' : '/inscription'"
+        <button
+          type="button"
+          @click="$emit('toggleAction')"
           class="text-indigo-600 hover:underline"
         >
           {{
@@ -115,7 +139,7 @@ const handleSubmit = async (e: Event) => {
               ? 'Vous avez déjà un compte ? Connectez-vous'
               : 'Pas de compte ? Inscrivez-vous'
           }}
-        </RouterLink>
+        </button>
       </div>
     </form>
   </div>

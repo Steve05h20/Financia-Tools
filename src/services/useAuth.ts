@@ -13,6 +13,7 @@ enum ErrorMessage {
   INVALID_CREDENTIALS = 'Identifiants invalides',
   CREATE_ACCOUNT_ERROR = 'Erreur lors de la création du compte',
   DECONNECTION_ERROR = 'Erreur lors de la déconnexion',
+  
 }
 
 // Création du store d'authentification

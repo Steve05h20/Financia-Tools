@@ -28,12 +28,6 @@ const router = createRouter({
       name: 'authentification',
       component: AuthView,
     },
-
-    { path: '/connexion', component: () => import('@/views/AuthView.vue') },
-    {
-      path: '/inscription',
-      component: () => import('@/views/AuthView.vue'),
-    },
   ],
 })
 
