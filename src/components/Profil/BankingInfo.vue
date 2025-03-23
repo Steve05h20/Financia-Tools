@@ -1,53 +1,30 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue';
-import { ref, onMounted } from 'vue';
-import type { IBankingDetails } from '@/models/bankingDetails.interface'
-import { useValidationStore } from '@/stores/profil/UseValidationStore'
-import { useEditStore } from '@/stores/profil/useEditStore'
+import { watch, onMounted } from 'vue';
 import { useUserStore } from '@/stores/useUserSotre'
+import useValidationProfil from '@/services/useValidationProfil'
 
-const validationStore = useValidationStore();
-const editStore = useEditStore();
 const userStore = useUserStore();
-
-const bankingDetails= ref<Partial<IBankingDetails>>({
-  institutionName: '',
-  accountinfo: ''
-})
-
-const errors = ref<{ [key: string]: string }>({
-  institutionName: '',
-  accountinfo: ''
-});
-
-const validateinstitutionName = () => {
-  if(!bankingDetails.value.institutionName) {
-    errors.value.institutionName = "Le nom de l'institution est requis";
-    return;
-  }
-
-  errors.value.institutionName = validationStore.validateTextLength(
-    bankingDetails.value.institutionName, 2, 50
-  );
-};
-
-const validateAccountInfo = () => {
-  errors.value.accountinfo = validationStore.validateAccountInfo(bankingDetails.value.accountinfo);
-}
-
-const validateForm = () => {
-  validateinstitutionName();
-  validateAccountInfo();
-
-  return isFormValid();
-};
-
-const isFormValid = () => {
-  return Object.values(errors.value).every(error => error === '');
-};
+const validation = useValidationProfil();
 
 onMounted(() => {
-  editStore.registerValidation(validateForm);
+  validation.resetErrors();
+})
+
+watch(() => userStore.user.bankingDetails?.[0]?.institutionName, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.validateInstitutionName(newValue, 'institutionName');
+  } else {
+    validation.validateTextLength(newValue, 2, 50, 'institutionName');
+  }
+});
+
+watch(() => userStore.user.bankingDetails?.[0]?.accountinfo, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.accountinfo = validation.ErrorMessage.EMPTY_ACCOUNT_INFO;
+  } else {
+    validation.validateAccountinfo(newValue, 'accountinfo');
+  }
 });
 
 </script>
@@ -63,11 +40,9 @@ onMounted(() => {
         required
         v-model="userStore.user.bankingDetails[0].institutionName"
         placeholder="placeholder"
-        @input="validateinstitutionName"
-        @blur="validateinstitutionName"
       />
-      <div v-if="errors.institutionName" class="text-red-500 text-sm mt-1">
-        {{ errors.institutionName }}
+      <div v-if="validation.errors.value.institutionName" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.institutionName }}
       </div>
     </div>
 
@@ -78,11 +53,9 @@ onMounted(() => {
         required
         v-model="userStore.user.bankingDetails[0].accountinfo"
         placeholder="placeholder"
-        @input="validateAccountInfo"
-        @blur="validateAccountInfo"
       />
-      <div v-if="errors.accountinfo" class="text-red-500 text-sm mt-1">
-        {{ errors.accountinfo }}
+      <div v-if="validation.errors.value.accountinfo" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.accountinfo }}
       </div>
     </div>
 

@@ -1,85 +1,55 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { ref, onMounted } from 'vue'
-import type { IUser} from '@/models/user.interface'
-import { useValidationStore } from '@/stores/profil/UseValidationStore'
-import { useEditStore } from '@/stores/profil/useEditStore'
+import { watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/useUserSotre'
+import useValidationProfil from '@/services/useValidationProfil'
 
 const userStore = useUserStore();
-const validationStore = useValidationStore();
-const editStore = useEditStore();
-
-
-const user = ref<Partial<IUser>>({
-  lastName: '',
-  firstName: '',
-  birthDate: undefined,
-  phone: '',
-  email: ''
-})
-
-const errors = ref<{ [key: string]: string }>({
-  lastName: '',
-  firstName: '',
-  birthDate: '',
-  phone: '',
-  email: ''
-});
-
-const validateLastName = () => {
-  if(!user.value.lastName) {
-    errors.value.lastName = "Le nom est requis";
-    return;
-  }
-
-  errors.value.lastName = validationStore.validateTextLength(
-    user.value.lastName, 2, 50
-  );
-};
-
-const validateFirstName = () => {
- if(!user.value.firstName) {
-    errors.value.firstName = "Le prénom est requis";
-    return;
-  }
-
-  errors.value.firstName = validationStore.validateTextLength(
-    user.value.firstName, 2, 50
-  );
-};
-
-const validateBirthDate = () => {
-  errors.value.birthDate = validationStore.validatePrevDate(user.value.birthDate);
-};
-
-const validatePhone = () => {
-  errors.value.phone = validationStore.validatePhone(user.value.phone);
-};
-
-const validateEmail = () => {
-  errors.value.email = validationStore.validateEmail(user.value.email);
-};
-
-
-const validateForm = () => {
-  validateLastName();
-  validateFirstName();
-  validateBirthDate();
-  validatePhone();
-  validateEmail();
-
-  return isFormValid();
-};
-
-const isFormValid = () => {
-  return Object.values(errors.value).every(error => error === '');
-};
+const validation = useValidationProfil();
 
 onMounted(() => {
-  editStore.registerValidation(validateForm);
+  validation.resetErrors();
+})
+
+watch(() => userStore.user.lastName, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.validateLastName(newValue, 'lastName');
+  } else {
+    validation.validateTextLength(newValue, 2, 50, 'lastName');
+  }
 });
 
+watch(() => userStore.user.firstName, (newValue: string) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.validateFirstname(newValue, 'firstName');
+  } else {
+    validation.validateTextLength(newValue, 2, 50, 'firstName');
+  }
+});
+
+watch(() => userStore.user.birthDate, (newValue: string | Date | undefined) => {
+  if (!newValue) {
+    validation.errors.value.birthDate = validation.ErrorMessage.EMPTY_DATE;
+  } else {
+    validation.validatePrevDate(newValue, 'birthDate');
+  }
+});
+
+watch(() => userStore.user.phone, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.phone = validation.ErrorMessage.EMPTY_PHONE;
+  } else {
+    validation.validatePhone(newValue, 'phone');
+  }
+});
+
+watch(() => userStore.user.email, (newValue: string) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.email = validation.ErrorMessage.EMPTY_EMAIL;
+  } else {
+    validation.validateEmail(newValue, 'email');
+  }
+});
 </script>
 
 
@@ -92,11 +62,9 @@ onMounted(() => {
         required
         v-model="userStore.user.lastName"
         placeholder="placeholder"
-        @input="validateLastName"
-        @blur="validateLastName"
       />
-      <div v-if="errors.lastName" class="text-red-500 text-sm mt-1">
-        {{ errors.lastName }}
+      <div v-if="validation.errors.value.lastName" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.lastName }}
       </div>
     </div>
 
@@ -107,11 +75,9 @@ onMounted(() => {
         required
         v-model="userStore.user.firstName"
         placeholder="placeholder"
-        @input="validateFirstName"
-        @blur="validateFirstName"
       />
-      <div v-if="errors.firstName" class="text-red-500 text-sm mt-1">
-        {{ errors.firstName }}
+      <div v-if="validation.errors.value.firstName" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.firstName }}
       </div>
     </div>
 
@@ -123,11 +89,9 @@ onMounted(() => {
         v-model="userStore.user.birthDate"
         placeholder="placeholder"
         type="date"
-        @input="validateBirthDate"
-        @blur="validateBirthDate"
       />
-      <div v-if="errors.birthDate" class="text-red-500 text-sm mt-1">
-        {{ errors.birthDate }}
+      <div v-if="validation.errors.value.birthDate" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.birthDate }}
       </div>
     </div>
 
@@ -139,11 +103,9 @@ onMounted(() => {
         v-model="userStore.user.phone"
         placeholder="123-456-7890"
         type="tel"
-        @input="validatePhone"
-        @blur="validatePhone"
       />
-      <div v-if="errors.phone" class="text-red-500 text-sm mt-1">
-        {{ errors.phone }}
+      <div v-if="validation.errors.value.phone" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.phone }}
       </div>
     </div>
 
@@ -155,11 +117,9 @@ onMounted(() => {
         v-model="userStore.user.email"
         placeholder="exemple@domaine.com"
         type="email"
-        @input="validateEmail"
-        @blur="validateEmail"
       />
-      <div v-if="errors.email" class="text-red-500 text-sm mt-1">
-        {{ errors.email }}
+      <div v-if="validation.errors.value.email" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.email }}
       </div>
     </div>
   </div>

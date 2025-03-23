@@ -1,70 +1,49 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { ref, onMounted, watch } from 'vue'
-import type { ISchoolDetails } from '@/models/schoolDetails.interface'
+import { onMounted, watch } from 'vue'
 import { EFieldOfStudy } from '@/models/schoolDetails.interface'
-import { useValidationStore } from '@/stores/profil/UseValidationStore'
-import { useEditStore } from '@/stores/profil/useEditStore'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import { useUserStore } from '@/stores/useUserSotre'
+import useValidationProfil from '@/services/useValidationProfil'
 
 const userStore = useUserStore();
-const validationStore = useValidationStore();
-const editStore = useEditStore();
-
-const schoolDetails = ref<Partial<ISchoolDetails>>({
-  schoolName: '',
-  fieldOfStudy: '',
-  startDate: undefined,
-  projectedEndDate: undefined,
-})
-
-const errors = ref<{ [key: string]: string }>({
-  schoolName: '',
-  fieldOfStudy: '',
-  startDate: '',
-  projectedEndDate: '',
-});
-
-const validateSchoolName = () => {
-  if(!schoolDetails.value.schoolName) {
-    errors.value.schoolName = "Le nom de l'établissement scolaire est requis";
-    return;
-  }
-
-  errors.value.schoolName = validationStore.validateTextLength(
-    schoolDetails.value.schoolName, 2, 50
-  );
-};
-
-const validateFieldOfStudy = () => {
-  errors.value.fieldOfStudy = validationStore.validateSelect(schoolDetails.value.fieldOfStudy);
-};
-
-const validateStartDate = () => {
-  errors.value.startDate = schoolDetails.value.startDate ? '' : "La date de début est requise";
-};
-
-const validateProjectedEndDate = () => {
-  errors.value.projectedEndDate = validationStore.validateFutureDate(schoolDetails.value.projectedEndDate);
-};
-
-const validateForm = () => {
-  validateSchoolName();
-  validateFieldOfStudy();
-  validateStartDate();
-  validateProjectedEndDate();
-
-  return isFormValid();
-};
-
-const isFormValid = () => {
-  return Object.values(errors.value).every(error => error === '');
-};
+const validation = useValidationProfil();
 
 onMounted(() => {
-  editStore.registerValidation(validateForm);
+  validation.resetErrors();
+})
+
+watch(() => userStore.user.schoolDetails?.[0]?.schoolName, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.validateInstitutionName(newValue, 'schoolName');
+  } else {
+    validation.validateTextLength(newValue, 2, 50, 'schoolName');
+  }
+});
+
+watch(()=> userStore.user.schoolDetails?.[0]?.fieldOfStudy, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.fieldOfStudy = validation.ErrorMessage.EMPTY_SELECT;
+  } else {
+    validation.validateSelect(newValue, 'fieldOfStudy');
+  }
+});
+
+watch(() => userStore.user.schoolDetails?.[0]?.startDate, (newValue: string | Date | undefined) => {
+  if (!newValue) {
+    validation.errors.value.startDate = validation.ErrorMessage.EMPTY_DATE;
+  } else {
+    validation.validatePrevDate(newValue, 'startDate');
+  }
+});
+
+watch(() => userStore.user.schoolDetails?.[0]?.projectedEndDate, (newValue: string | Date | undefined) => {
+  if (!newValue) {
+    validation.errors.value.projectedEndDate = validation.ErrorMessage.EMPTY_DATE;
+  } else {
+    validation.validateFutureDate(newValue, 'projectedEndDate');
+  }
 });
 </script>
 
@@ -79,11 +58,9 @@ onMounted(() => {
         required
         v-model="userStore.user.schoolDetails[0].schoolName"
         placeholder="placeholder"
-        @input="validateSchoolName"
-        @blur="validateSchoolName"
       />
-      <div v-if="errors.schoolName" class="text-red-500 text-sm mt-1">
-        {{ errors.schoolName }}
+      <div v-if="validation.errors.value.schoolName" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.schoolName }}
     </div>
     </div>
 
@@ -93,8 +70,6 @@ onMounted(() => {
       <AppSelect
         v-model="userStore.user.schoolDetails[0].fieldOfStudy"
         id="fieldOfStudy"
-        @input="validateFieldOfStudy"
-        @blur="validateFieldOfStudy"
        :options="[
           EFieldOfStudy.INFORMATIQUE,
           EFieldOfStudy.INGENIERIE,
@@ -105,8 +80,8 @@ onMounted(() => {
           EFieldOfStudy.ARTS,
           EFieldOfStudy.EDUCATION,
       ]" />
-      <div v-if="errors.fieldOfStudy" class="text-red-500 text-sm mt-1">
-        {{ errors.fieldOfStudy }}
+      <div v-if="validation.errors.value.fieldOfStudy" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.fieldOfStudy }}
       </div>
     </div>
 
@@ -118,11 +93,9 @@ onMounted(() => {
         v-model="userStore.user.schoolDetails[0].startDate"
         placeholder="placeholder"
         type="date"
-        @input="validateStartDate"
-        @blur="validateStartDate"
       />
-      <div v-if="errors.startDate" class="text-red-500 text-sm mt-1">
-        {{ errors.startDate }}
+      <div v-if="validation.errors.value.startDate" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.startDate }}
       </div>
     </div>
 
@@ -134,11 +107,9 @@ onMounted(() => {
         v-model="userStore.user.schoolDetails[0].projectedEndDate"
         placeholder="placeholder"
         type="date"
-        @input="validateProjectedEndDate"
-        @blur="validateProjectedEndDate"
       />
-      <div v-if="errors.projectedEndDate" class="text-red-500 text-sm mt-1">
-        {{ errors.projectedEndDate }}
+      <div v-if="validation.errors.value.projectedEndDate" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.projectedEndDate }}
       </div>
     </div>
   </div>
