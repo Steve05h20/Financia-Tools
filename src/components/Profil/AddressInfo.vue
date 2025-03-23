@@ -1,183 +1,185 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { watch, onMounted, computed } from 'vue'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
-import type { IAddress } from '@/models/address.interface'
-import { EAddressType, EProvince, ECountry } from '@/models/address.interface'
-import { useValidationStore } from '@/stores/profil/UseValidationStore'
-import { useEditStore } from '@/stores/profil/useEditStore'
+import { EProvince, ECountry, EAddressType } from '@/models/address.interface'
+import { useUserStore } from '@/stores/useUserSotre'
+import useValidationProfil from '@/services/useValidationProfil'
+import { useFetchAddress } from '@/services/useFetchAddress';
 
-const validationStore = useValidationStore();
-const editStore = useEditStore();
-
-const address = ref<Partial<IAddress>>({
-  type: EAddressType.PERSONAL,
-  streetName:'',
-  streetNumber: '',
-  city: '',
-  province: EProvince.QUEBEC,
-  country: ECountry.CANADA
-})
-
-const errors = ref<{ [key: string]: string }>({
-  streetNumber: '',
-  streetName: '',
-  city: '',
-  province: '',
-  country: ''
+const props = defineProps({
+  addressIndex: {
+    type: Number,
+    default: 0
+  }
 });
 
-const validateStreetNumber = () => {
-  errors.value.streetNumber = address.value.streetNumber ? '' : "Le numéro de rue est requis";
-};
+const userStore = useUserStore();
+const validation = useValidationProfil();
+const { getAddressesByUserId } = useFetchAddress();
 
-const validateStreetName = () => {
-  if(!address.value.streetName) {
-    errors.value.streetName = "Le nom de rue est requis";
-    return;
+// Créer une référence calculée à l'adresse actuelle
+const currentAddress = computed(() => {
+  if (userStore.user?.addresses && userStore.user.addresses[props.addressIndex]) {
+    return userStore.user.addresses[props.addressIndex];
+  } else {
+    // Si l'adresse n'existe pas à cet index, créer une adresse par défaut
+    if (userStore.user && (!userStore.user.addresses || userStore.user.addresses.length <= props.addressIndex)) {
+      const newAddress = {
+        type: EAddressType.PERSONAL,
+        streetNumber: '',
+        streetName: '',
+        city: '',
+        province: EProvince.QUEBEC,
+        country: ECountry.CANADA,
+        user: userStore.user
+      };
+
+      // Initialiser le tableau s'il n'existe pas
+      if (!userStore.user.addresses) {
+        userStore.user.addresses = [];
+      }
+
+      // Ajouter l'adresse au tableau à l'index spécifié
+      // (Si l'index est supérieur à la longueur, cela comblera les espaces vides)
+      while (userStore.user.addresses.length <= props.addressIndex) {
+        userStore.user.addresses.push(Object.assign({}, newAddress));
+      }
+
+      return userStore.user.addresses[props.addressIndex];
+    }
+    return null;
   }
+});
 
-  errors.value.streetName = validationStore.validateTextLength(
-    address.value.streetName, 2, 50
-  );
-};
+onMounted(async () => {
+  validation.resetErrors();
+});
 
-const validateCity = () => {
-  if(!address.value.city) {
-    errors.value.city = "La ville est requise";
-    return;
+watch(() => userStore.user.addresses?.[props.addressIndex]?.streetNumber, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.streetNumber = validation.ErrorMessage.EMPTY_ADDRESS;
+  } else {
+    validation.validateAddress(newValue, 'streetNumber');
   }
-  errors.value.city = validationStore.validateTextLength(
-    address.value.city, 2, 50
-  );
-};
+});
 
-const validateProvince = () => {
-  errors.value.province = validationStore.validateSelect(address.value.province);
-};
+watch(() => userStore.user.addresses?.[props.addressIndex]?.streetName, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.streetName = validation.ErrorMessage.EMPTY_STREET;
+  } else {
+    validation.validateAddress(newValue, 'streetName');
+  }
+});
 
-const validateCountry = () => {
-  errors.value.country = validationStore.validateSelect(address.value.country);
-};
+watch(() => userStore.user.addresses?.[props.addressIndex]?.city, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.city = validation.ErrorMessage.EMPTY_CITY;
+  } else {
+    validation.validateCity(newValue, 'city');
+  }
+});
 
-const validateForm = () => {
-  validateStreetNumber();
-  validateStreetName();
-  validateCity();
-  validateProvince();
-  validateCountry();
+watch(() => userStore.user.addresses?.[props.addressIndex]?.province, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.province = validation.ErrorMessage.EMPTY_SELECT;
+  } else {
+    validation.validateSelect(newValue, 'province');
+  }
+});
 
-  return isFormValid();
-};
-
-const isFormValid = () => {
-  return Object.values(errors.value).every(error => error === '');
-};
-
-onMounted(() => {
-  editStore.registerValidation(validateForm);
+watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.country = validation.ErrorMessage.EMPTY_SELECT;
+  } else {
+    validation.validateSelect(newValue, 'country');
+  }
 });
 </script>
 
 <template>
- <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-5 transition-all">
+  <div class="grid grid-cols-3 max-sm:grid-cols-1 gap-5 transition-all" v-if="currentAddress">
 
-  <div>
+   <div>
+      <InputLabelDiv
+       labelText="Adresse"
+       htmlFor="streetNumber"
+       required
+       v-model="currentAddress.streetNumber"
+       placeholder="123"
+     />
+     <div v-if="validation.errors.value.streetNumber" class="text-red-500 text-sm mt-1">
+         {{ validation.errors.value.streetNumber }}
+     </div>
+   </div>
+
+   <div>
      <InputLabelDiv
-      labelText="Addresse"
-      htmlFor="addresse"
-      required
-      v-model="address.streetNumber"
-      placeholder="placeholder"
-      @input="validateStreetNumber"
-      @blur="validateStreetNumber"
-    />
-    <div v-if="errors.streetNumber" class="text-red-500 text-sm mt-1">
-        {{ errors.streetNumber }}
-    </div>
+       labelText="Rue"
+       htmlFor="streetName"
+       required
+       v-model="currentAddress.streetName"
+       placeholder="Rue de l'Exemple"
+     />
+     <div v-if="validation.errors.value.streetName" class="text-red-500 text-sm mt-1">
+         {{ validation.errors.value.streetName }}
+     </div>
+   </div>
+
+   <div>
+     <InputLabelDiv
+       labelText="Ville"
+       htmlFor="city"
+       required
+       v-model="currentAddress.city"
+       placeholder="Montréal"
+     />
+     <div v-if="validation.errors.value.city" class="text-red-500 text-sm mt-1">
+         {{ validation.errors.value.city }}
+     </div>
+   </div>
+
+   <div>
+     <AppLabel text="Province" htmlFor="province" required />
+     <AppSelect
+       v-model="currentAddress.province"
+       placeholder="Choisissez une province"
+       id="province"
+       :options="[
+         EProvince.QUEBEC,
+         EProvince.ONTARIO,
+         EProvince.BRITISH_COLUMBIA,
+         EProvince.ALBERTA,
+         EProvince.MANITOBA,
+         EProvince.SASKATCHEWAN,
+         EProvince.NEW_BRUNSWICK,
+         EProvince.NEWFOUNDLAND_LABRADOR,
+         EProvince.NOVA_SCOTIA,
+         EProvince.PRINCE_EDWARD_ISLAND,
+         EProvince.NORTHWEST_TERRITORIES,
+         EProvince.NUNAVUT,
+         EProvince.YUKON
+       ]"
+     />
+     <div v-if="validation.errors.value.province" class="text-red-500 text-sm mt-1">
+       {{ validation.errors.value.province }}
+     </div>
+   </div>
+
+   <div>
+     <AppLabel text="Pays" htmlFor="country" required />
+     <AppSelect
+       v-model="currentAddress.country"
+       placeholder="Choisissez un pays"
+       id="country"
+       :options="[
+         ECountry.CANADA
+       ]"
+     />
+     <div v-if="validation.errors.value.country" class="text-red-500 text-sm mt-1">
+       {{ validation.errors.value.country }}
+     </div>
+   </div>
   </div>
-
-
-  <div>
-    <InputLabelDiv
-      labelText="Rue"
-      htmlFor="streetName"
-      required
-      v-model="address.streetName"
-      placeholder="placeholder"
-      @input="validateStreetName"
-      @blur="validateStreetName"
-    />
-    <div v-if="errors.streetName" class="text-red-500 text-sm mt-1">
-        {{ errors.streetName }}
-    </div>
-  </div>
-
-
-  <div>
-    <InputLabelDiv
-      labelText="Ville"
-      htmlFor="city"
-      required
-      v-model="address.city"
-      placeholder="placeholder"
-      @input="validateCity"
-      @blur="validateCity"
-    />
-    <div v-if="errors.city" class="text-red-500 text-sm mt-1">
-        {{ errors.city }}
-    </div>
-  </div>
-
-
-    <div>
-      <AppLabel text="Province" htmlFor="province" required />
-      <AppSelect
-        v-model="address.province"
-        placeholder="Choisissez une province"
-        id="province"
-        @change="validateProvince"
-        @blur="validateProvince"
-        :options="[
-          EProvince.QUEBEC,
-          EProvince.ONTARIO,
-          EProvince.BRITISH_COLUMBIA,
-          EProvince.ALBERTA,
-          EProvince.MANITOBA,
-          EProvince.SASKATCHEWAN,
-          EProvince.NEW_BRUNSWICK,
-          EProvince.NEWFOUNDLAND_LABRADOR,
-          EProvince.NOVA_SCOTIA,
-          EProvince.PRINCE_EDWARD_ISLAND,
-          EProvince.NORTHWEST_TERRITORIES,
-          EProvince.NUNAVUT,
-          EProvince.YUKON
-        ]"
-      />
-    </div>
-    <div v-if="errors.province" class="text-red-500 text-sm mt-1">
-        {{ errors.province }}
-    </div>
-    <div>
-      <AppLabel text="pays" htmlFor="pays" required />
-      <AppSelect
-        v-model="address.country"
-        placeholder="Choisissez un pays"
-        id="pays"
-        @change="validateCountry"
-        @blur="validateCountry"
-        :options="[
-          ECountry.CANADA
-          ]"
-      />
-      <div v-if="errors.country" class="text-red-500 text-sm mt-1">
-          {{ errors.country }}
-      </div>
-    </div>
-
-</div>
-</template>
-
-<style>
-</style>
+ </template>
