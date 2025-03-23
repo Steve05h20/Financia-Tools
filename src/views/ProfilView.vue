@@ -6,10 +6,8 @@ import AddressInfo from '@/components/Profil/AddressInfo.vue';
 import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
 import HeaderProfil from '@/components/Profil/HeaderProfil.vue';
 import BtnUpdate from '@/components/Profil/BtnUpdate.vue';
-
 import { useUserStore } from '@/stores/useUserSotre';
 import { onMounted } from 'vue';
-
 
 const userStore = useUserStore();
 
@@ -41,13 +39,13 @@ onMounted(() => {
           <UserInfo />
       </section>
 
-      <section class="mb-8 lg:col-span-4 w-full">
-        <div class="divider text-lg font-semibold">Adresse</div>
+      <section v-for="(address, index) in userStore.user.addresses" :key="index" class="mb-8 lg:col-span-4 w-full">
+        <div class="divider text-lg font-semibold">Adresse {{ index + 1 }} </div>
+        <span v-if="address.type" class="text-sm font-normal ml-2">({{ address.type }})</span>
         <div class="w-full p-4">
-          <AddressInfo />
+          <AddressInfo :address-index="index" />
         </div>
       </section>
-
 
       <section class="mb-8 lg:col-span-2 w-full">
         <div class="divider text-lg font-semibold">Détails scolaires</div>
