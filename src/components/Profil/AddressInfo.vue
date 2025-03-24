@@ -202,9 +202,10 @@ watch(()=> userStore.user.addresses?.[props.addressIndex]?.type, (newValue: stri
         EAddressType.WORK,
       ]"
     />
-   </div>
-   <div v-if="validation.errors.value.type" class="text-red-500 text-sm mt-1">
+    <div v-if="validation.errors.value.type" class="text-red-500 text-sm mt-1">
        {{ validation.errors.value.type }}
      </div>
+   </div>
+
   </div>
  </template>
