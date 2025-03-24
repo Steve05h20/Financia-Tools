@@ -69,7 +69,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.streetName, (newValu
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.streetName = validation.ErrorMessage.EMPTY_STREET;
   } else {
-    validation.validateAddress(newValue, 'streetName');
+    validation.validateStreet(newValue, 'streetName');
   }
 });
 
@@ -107,7 +107,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: 
        htmlFor="streetNumber"
        required
        v-model="currentAddress.streetNumber"
-       placeholder="123"
+       placeholder="placeholder"
      />
      <div v-if="validation.errors.value.streetNumber" class="text-red-500 text-sm mt-1">
          {{ validation.errors.value.streetNumber }}
@@ -120,7 +120,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: 
        htmlFor="streetName"
        required
        v-model="currentAddress.streetName"
-       placeholder="Rue de l'Exemple"
+       placeholder="placeholder"
      />
      <div v-if="validation.errors.value.streetName" class="text-red-500 text-sm mt-1">
          {{ validation.errors.value.streetName }}
@@ -133,7 +133,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: 
        htmlFor="city"
        required
        v-model="currentAddress.city"
-       placeholder="Montréal"
+       placeholder="placeholder"
      />
      <div v-if="validation.errors.value.city" class="text-red-500 text-sm mt-1">
          {{ validation.errors.value.city }}
