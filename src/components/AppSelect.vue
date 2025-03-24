@@ -31,9 +31,14 @@ const updateValue = (event: Event) => {
 <template>
 
   <select
-    :class="{'select select-ghost bg-slate-50 my-1' : editStore.isEditing, 'select my-1 w-full border-none disabled:bg-transparent disabled:opacity-100' : !editStore.isEditing}"
     :value="modelValue"
     @change="updateValue"
+    :disabled="!editStore.isEditing"
+    :readonly="!editStore.isEditing"
+    :class="{
+      'input my-1 w-full border-none disabled:bg-transparent disabled:opacity-100 disabled:text-black': !editStore.isEditing,
+      'input input-ghost bg-slate-50 my-1 w-full': editStore.isEditing
+      }"
   >
     <option value="" disabled>{{ placeholder }}</option>
     <option v-for="option in options" :key="option" :value="option">
