@@ -128,6 +128,64 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
+  //Méthode pour modifier les données de l'utilisateur
+  const updateUserData = async () => {
+    error.value = null;
+
+    try {
+      if (!user.value || !user.value.id) {
+        throw new Error("Aucun utilisateur actif");
+      }
+
+      const userId = user.value.id;
+
+    await userService.PUT_USER_BY_ID(userId, {
+      id: userId,
+      firstName: user.value.firstName,
+      lastName: user.value.lastName,
+      birthDate: user.value.birthDate,
+      isActive: user.value.isActive,
+      phone: user.value.phone,
+      email: user.value.email,
+      password: user.value.password
+    });
+
+    if (user.value.addresses && user.value.addresses.length > 0) {
+      // Mettre à jour chaque adresse
+      for (const address of user.value.addresses) {
+        if (address.type === addressService.EAddressType.PERSONAL ||
+            address.type === addressService.EAddressType.WORK) {
+          // Créer un nouvel objet sans l'ID
+          const addressForApi = {
+            type: address.type,
+            streetNumber: address.streetNumber,
+            streetName: address.streetName,
+            city: address.city,
+            province: address.province,
+            country: address.country
+          };
+          await addressService.putAddressesByUserId(userId, addressForApi as any);
+        }
+      }
+    }
+
+    if (user.value.schoolDetails && user.value.schoolDetails.length > 0) {
+      await schoolDetailsService.PUT_SCHOOL_DETAILS_BY_USER_ID(userId, user.value.schoolDetails[0]);
+    }
+
+    if (user.value.bankingDetails && user.value.bankingDetails.length > 0) {
+      await bankingDetailsService.putBankingDetailsByUserId(userId, user.value.bankingDetails[0]);
+    }
+
+    notificationService.message("Toutes les données ont été mises à jour avec succès", "success");
+
+    return true;
+  } catch (err) {
+    handleError(err);
+    return false;
+  }
+};
+
   return {
     // État
     user,
@@ -144,7 +202,8 @@ export const useUserStore = defineStore('user', () => {
 
     // Méthodes utilitaires
     resetUser,
-    loadUserData
+    loadUserData,
+    updateUserData
   };
 });
 
