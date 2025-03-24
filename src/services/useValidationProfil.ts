@@ -19,7 +19,7 @@ enum ErrorMessage {
   INVALID_BANKING_INFO = 'Numéro de compte à 12 chiffres requis',
   DATE_PREVIOUS = 'Veuillez entrer une date antérieure à la date actuelle',
   DATE_FUTURE = 'Veuillez entrer une date postérieure à la date actuelle',
-  DIGIT_IN_STREET_NUMBER = 'L\'addresse doit commencer et contenir des chiffres',
+  DIGIT_IN_STREET_NUMBER = 'L\'addresse doit commencer et contenir des chiffres ex:102-A',
 }
 
 interface ValidationErrors {
@@ -145,6 +145,11 @@ const useValidationProfil = () => {
       return false;
     }
 
+    const isLengthValid = validateTextLength(city, 2, 50, fieldName);
+    if (!isLengthValid) {
+      return false;
+    }
+
     const isValid = validateText(city, fieldName);
 
     return isValid;
@@ -156,7 +161,12 @@ const useValidationProfil = () => {
       return false;
     }
 
-    const isValid = validateTextLength(address, 1, 50, fieldName);
+    const isLengthValid = validateTextLength(address, 2, 50, fieldName);
+    if (!isLengthValid) {
+      return false;
+    }
+
+    const isValid = validateDegitsStreet(address, fieldName);
 
     return isValid;
   };
@@ -167,12 +177,7 @@ const useValidationProfil = () => {
       return false;
     }
 
-    const isLengthValid = validateTextLength(street, 2, 50, fieldName);
-    if (!isLengthValid) {
-      return false;
-    }
-
-    const isValid = validateDegitsStreet(street, fieldName);
+    const isValid = validateTextLength(street, 2, 50, fieldName);
 
     return isValid;
   };
