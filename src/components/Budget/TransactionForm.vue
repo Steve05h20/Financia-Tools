@@ -153,7 +153,6 @@ import { useBudgetStore } from '../../stores/useBudgetStore'
 
 const budgetStore = useBudgetStore()
 
-// État du formulaire
 const form = ref<Partial<ITransaction>>({
   description: '',
   amount: 0,
@@ -166,26 +165,6 @@ const form = ref<Partial<ITransaction>>({
 
 const errors = ref<Partial<Record<keyof ITransaction, string>>>({})
 
-const getMinimumEndDate = (startDate: Date, frequency: EFrequency): Date => {
-  const minEndDate = new Date(startDate)
-  switch (frequency) {
-    case EFrequency.Daily:
-      minEndDate.setDate(startDate.getDate() + 1)
-      break
-    case EFrequency.Weekly:
-      minEndDate.setDate(startDate.getDate() + 7)
-      break
-    case EFrequency.Monthly:
-      minEndDate.setMonth(startDate.getMonth() + 1)
-      break
-
-    default:
-      minEndDate.setDate(startDate.getDate() + 1)
-  }
-  return minEndDate
-}
-
-// Fonction de validation
 const validateForm = () => {
   errors.value = {}
 
@@ -205,53 +184,21 @@ const validateForm = () => {
     errors.value.amount = 'Le montant doit être supérieur à 0.'
   }
 
-  // Validation de la date de début
+  // Validation de la date de début - uniquement vérifier si le champ est rempli
   if (!form.value.startDate) {
     errors.value.startDate = 'La date de début est obligatoire.'
-  } else {
-    const startDate = new Date(form.value.startDate)
-    if (isNaN(startDate.getTime())) {
-      errors.value.startDate = 'La date de début doit être une date valide.'
-    } else {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      if (startDate > today) {
-        errors.value.startDate = 'La date de début ne peut pas être dans le futur.'
-      }
-    }
   }
 
-  if (form.value.endDate) {
-    const endDate = new Date(form.value.endDate)
-    if (isNaN(endDate.getTime())) {
-      errors.value.endDate = 'La date de fin doit être une date valide.'
-    } else {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      if (endDate > today) {
-        errors.value.endDate = 'La date de fin ne peut pas être dans le futur.'
-      }
+  // Aucune validation complexe pour la date de fin
 
-      if (form.value.startDate) {
-        const startDate = new Date(form.value.startDate)
-        if (endDate < startDate) {
-          errors.value.endDate = 'La date de fin doit être postérieure ou égale à la date de début.'
-        } else if (form.value.frequency) {
-          const minEndDate = getMinimumEndDate(startDate, form.value.frequency)
-          if (endDate < minEndDate) {
-            errors.value.endDate = `La date de fin doit être au moins après le ${minEndDate.toISOString().split('T')[0]} en fonction de la fréquence sélectionnée.`
-          }
-        }
-      }
-    }
-  }
-
+  // Validation de la fréquence
   if (!form.value.frequency) {
     errors.value.frequency = 'La fréquence est obligatoire.'
   } else if (!Object.values(EFrequency).includes(form.value.frequency)) {
     errors.value.frequency = 'La fréquence sélectionnée est invalide.'
   }
 
+  // Validation de la catégorie
   if (!form.value.category) {
     errors.value.category = 'La catégorie est obligatoire.'
   } else if (!['Factures', 'Revenue'].includes(form.value.category)) {
