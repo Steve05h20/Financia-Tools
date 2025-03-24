@@ -96,6 +96,15 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: 
     validation.validateSelect(newValue, 'country');
   }
 });
+
+watch(()=> userStore.user.addresses?.[props.addressIndex]?.type, (newValue: string | undefined) => {
+  if (!newValue || newValue.trim() === '') {
+    validation.errors.value.type = validation.ErrorMessage.EMPTY_SELECT;
+  } else {
+    validation.validateSelect(newValue, 'type');
+  }
+});
+
 </script>
 
 <template>
@@ -181,5 +190,21 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: 
        {{ validation.errors.value.country }}
      </div>
    </div>
+
+   <div>
+    <AppLabel text="Type d'adresse" htmlFor="type" required />
+    <AppSelect
+      v-model="currentAddress.type"
+      placeholder="Choisissez un type d'adresse"
+      id="type"
+      :options="[
+        EAddressType.PERSONAL,
+        EAddressType.WORK,
+      ]"
+    />
+   </div>
+   <div v-if="validation.errors.value.type" class="text-red-500 text-sm mt-1">
+       {{ validation.errors.value.type }}
+     </div>
   </div>
  </template>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ECountry, EProvince } from '@/models/address.interface';
+import type { ECountry, EProvince, EAddressType } from '@/models/address.interface';
 import type { EFieldOfStudy } from '@/models/schoolDetails.interface';
 import { defineProps, defineEmits, withDefaults } from 'vue';
 import { useEditStore } from '@/stores/profil/useEditStore';
@@ -8,7 +8,7 @@ import { useEditStore } from '@/stores/profil/useEditStore';
 interface Props {
   modelValue: string | undefined;
   placeholder?: string;
-  options?: EFieldOfStudy[] | EProvince[] | ECountry[];
+  options?: EFieldOfStudy[] | EProvince[] | ECountry[] | EAddressType[];
 }
 
 withDefaults(defineProps<Props>(), {
