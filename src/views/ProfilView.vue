@@ -2,7 +2,7 @@
 <script lang="ts" setup>
 import UserInfo from '@/components/Profil/UserInfo.vue';
 import BankingInfo from '@/components/Profil/BankingInfo.vue';
-import AddressInfo from '@/components/Profil/AddressInfo.vue';
+import AddressManager from '@/components/Profil/AddressManager.vue';
 import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
 import HeaderProfil from '@/components/Profil/HeaderProfil.vue';
 import BtnUpdate from '@/components/Profil/BtnUpdate.vue';
@@ -20,7 +20,7 @@ onMounted(() => {
 
 </script>
 <template>
-  <div class="container mx-auto px-4 py-10">
+  <div class="container mx-auto px-4 pt-10 pb-28">
     <div v-if="userStore.loading" class="flex justify-center items-center h-64">
       <span class="loading loading-spinner text-info"></span>
     </div>
@@ -39,12 +39,8 @@ onMounted(() => {
           <UserInfo />
       </section>
 
-      <section v-for="(address, index) in userStore.user.addresses" :key="index" class="mb-8 lg:col-span-4 w-full">
-        <div class="divider text-lg font-semibold">Adresse {{ index + 1 }} </div>
-        <span v-if="address.type" class="text-sm font-normal ml-2">({{ address.type }})</span>
-        <div class="w-full p-4">
-          <AddressInfo :address-index="index" />
-        </div>
+      <section class="mb-8 lg:col-span-4 w-full">
+        <AddressManager />
       </section>
 
       <section class="mb-8 lg:col-span-2 w-full">
