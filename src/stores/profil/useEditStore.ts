@@ -1,12 +1,15 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import useValidationProfil from "@/services/useValidationProfil";
+
+
 
 export const useEditStore = defineStore('edit', () => {
   const validation = useValidationProfil();
   const isEditing = ref<boolean>(false);
   const userStore = useUserStore();
+
 
   const toggleEditing = (): void => {
     isEditing.value = !isEditing.value;
@@ -19,6 +22,12 @@ export const useEditStore = defineStore('edit', () => {
     }
 
     try {
+
+
+      /* Steve Debug
+      Méthodes PUT retourner Erreur serveur */
+
+
       const userId = userStore.user.id;
       if (userId === undefined || userId === null) {
         throw new Error("ID utilisateur non défini");
