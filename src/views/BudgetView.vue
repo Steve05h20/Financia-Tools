@@ -13,8 +13,16 @@ import { useBudgetStore } from '../stores/useBudgetStore'
 import BudgetSummary from '../components/Budget/BudgetSummary.vue'
 import TransactionForm from '../components/Budget/TransactionForm.vue'
 import TransactionList from '../components/Budget/TransactionList.vue'
+import { useUserStore } from '../stores/useUserSotre'
 
 const budgetStore = useBudgetStore()
+
+const userStore = useUserStore()
+
+//connextion simulée test@test.com
+onMounted(() => {
+  userStore.loadUserData('test@test.com')
+})
 
 onMounted(async () => {
   try {

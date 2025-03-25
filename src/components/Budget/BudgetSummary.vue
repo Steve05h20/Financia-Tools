@@ -1,33 +1,34 @@
 <template>
   <div class="flex justify-between mb-5">
     <div class="text-center">
-      <h3 class="text-sm text-gray-600">REVENUS</h3>
+      <h3 class="text-xl font-bold">REVENUS</h3>
       <p :class="revenues >= 0 ? 'text-green-500' : 'text-red-500'" class="text-2xl font-bold">
-        {{ revenues }}$
+        {{ revenues.toFixed(2) }}$
       </p>
     </div>
     <div class="text-center">
-      <h3 class="text-sm text-gray-600">DÉPENSES</h3>
+      <h3 class="text-xl font-bold">DÉPENSES</h3>
       <p :class="expenses > 0 ? 'text-red-500' : 'text-green-500'" class="text-2xl font-bold">
-        {{ expenses }}$
+        {{ expenses.toFixed(2) }}$
       </p>
     </div>
     <div class="text-center">
-      <h3 class="text-sm text-gray-600">BALANCE</h3>
+      <h3 class="text-xl font-bold">BALANCE</h3>
       <p :class="balance >= 0 ? 'text-green-500' : 'text-red-500'" class="text-2xl font-bold">
-        {{ balance }}$
+        {{ balance.toFixed(2) }}$
       </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 import { EType } from '../../models/transaction.interface'
 
 const budgetStore = useBudgetStore()
 
-const revenues = budgetStore.getTotalByType(EType.REVENUE)
-const expenses = budgetStore.getTotalByType(EType.EXPENSE)
-const balance = revenues - expenses
+const revenues = computed(() => budgetStore.getTotalByType(EType.REVENUE))
+const expenses = computed(() => budgetStore.getTotalByType(EType.EXPENSE))
+const balance = computed(() => revenues.value - expenses.value)
 </script>

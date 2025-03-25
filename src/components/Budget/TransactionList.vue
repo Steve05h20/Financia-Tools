@@ -56,7 +56,6 @@
           </div>
         </div>
 
-        <!-- Actions de la vue mobile -->
         <div class="flex justify-end space-x-2 mt-2 border-t pt-2">
           <button
             v-if="!editingTransaction || editingTransaction.id !== transaction.id"
@@ -91,7 +90,6 @@
           </button>
         </div>
 
-        <!-- Formulaire d'édition en mode mobile -->
         <div
           v-if="editingTransaction && editingTransaction.id === transaction.id"
           class="mt-3 border-t pt-3"
@@ -140,7 +138,7 @@
             <div>
               <label class="block text-sm text-gray-600 mb-1">Catégorie</label>
               <select v-model="editingTransaction.category" class="w-full p-2 border rounded">
-                <option value="Factures">Factures</option>
+                <option value="Dépenses">Dépenses</option>
                 <option value="Revenue">Revenue</option>
               </select>
             </div>
@@ -257,7 +255,7 @@
                 v-model="editingTransaction.category"
                 class="w-full p-1 border rounded"
               >
-                <option value="Factures">Factures</option>
+                <option value="Dépenses">Dépenses</option>
                 <option value="Revenue">Revenue</option>
               </select>
             </td>
@@ -324,12 +322,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { EFrequency, ITransaction } from '../../models/transaction.interface'
+import { ref, onMounted } from 'vue'
+import { EFrequency, EType, ITransaction } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 
 const budgetStore = useBudgetStore()
-
 const transactions = budgetStore.transactions
 
 const editingTransaction = ref<ITransaction | null>(null)
@@ -385,4 +382,11 @@ const saveEditing = async () => {
 const cancelEditing = () => {
   editingTransaction.value = null
 }
+
+onMounted(async () => {
+  if (transactions.value.length === 0) {
+    await budgetStore.loadTransactions()
+    console.log('Transactions chargées au montage :', transactions.value)
+  }
+})
 </script>
