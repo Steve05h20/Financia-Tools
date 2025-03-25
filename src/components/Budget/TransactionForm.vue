@@ -5,11 +5,11 @@
     </h2>
     <form
       @submit.prevent="handleSubmit"
-      class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4"
+      class="grid grid-cols-1 md:grid-cols-2 gap-3"
     >
       <!-- Description -->
       <div>
-        <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">
+        <label class="label text-primary ">
           Description
         </label>
         <input
@@ -18,7 +18,7 @@
           :placeholder="
             form.category === 'Revenue' ? 'Description du revenu' : 'Description de la dépense'
           "
-          class="w-full p-1 sm:p-2 border rounded-md text-xs sm:text-sm md:text-base"
+          class="input input-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.description }"
         />
         <p v-if="errors.description" class="text-red-500 text-xs mt-1">
@@ -28,12 +28,12 @@
 
       <!-- Montant -->
       <div>
-        <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1"> Montant </label>
+        <label class="label text-primary "> Montant </label>
         <input
           v-model.number="form.amount"
           type="number"
           placeholder="0"
-          class="w-full p-1 sm:p-2 border rounded-md text-xs sm:text-sm md:text-base"
+          class="input input-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.amount }"
         />
         <p v-if="errors.amount" class="text-red-500 text-xs mt-1">
@@ -43,13 +43,13 @@
 
       <!-- Date de début -->
       <div>
-        <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">
+          <label class="label text-primary ">
           Date de début
         </label>
         <input
           v-model="form.startDate"
           type="date"
-          class="w-full p-1 sm:p-2 border rounded-md text-xs sm:text-sm md:text-base"
+          class="input input-bordered w-full input-sm "
           :class="{ 'border-red-500': errors.startDate }"
         />
         <p v-if="errors.startDate" class="text-red-500 text-xs mt-1">
@@ -59,13 +59,13 @@
 
       <!-- Date de fin -->
       <div>
-        <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">
+        <label class="label text-primary ">
           Date de fin
         </label>
         <input
           v-model="form.endDate"
           type="date"
-          class="w-full p-1 sm:p-2 border rounded-md text-xs sm:text-sm md:text-base"
+          class="input w-full input-sm"
           :class="{ 'border-red-500': errors.endDate }"
         />
         <p v-if="errors.endDate" class="text-red-500 text-xs mt-1">
@@ -75,10 +75,10 @@
 
       <!-- Fréquence -->
       <div>
-        <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1"> Fréquence </label>
+        <label class="label text-primary "> Fréquence </label>
         <select
           v-model="form.frequency"
-          class="w-full p-1 sm:p-2 border rounded-md text-xs sm:text-sm md:text-base"
+          class="input input-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.frequency }"
         >
           <option v-for="(value, key) in EFrequency" :key="key" :value="value">
@@ -92,10 +92,10 @@
 
       <!-- Catégorie -->
       <div>
-        <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1"> Catégorie </label>
+        <label class="label text-primary "> Catégorie </label>
         <select
           v-model="form.category"
-          class="w-full p-1 sm:p-2 border rounded-md text-xs sm:text-sm md:text-base"
+          class="input input-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.category }"
         >
           <option value="Dépenses">Dépenses</option>
@@ -108,17 +108,18 @@
 
       <!-- Statut (Payée) -->
       <div class="flex items-center">
-        <input v-model="form.isDone" type="checkbox" class="mr-2 w-3 h-3 sm:w-4 sm:h-4" />
-        <label class="text-xs sm:text-sm md:text-base text-gray-600">
+        <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2"/>
+        <label class="label text-primary ">
           {{ form.category === 'Revenue' ? 'Reçu' : 'Payée' }}
         </label>
       </div>
+
 
       <!-- Bouton de soumission -->
       <div class="md:col-span-2 flex justify-center">
         <button
           type="submit"
-          class="btn btn-primary text-xs sm:text-sm md:text-base px-2 py-1 sm:px-4 sm:py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+          class="btn btn-primary "
         >
           {{ form.category === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la dépense' }}
         </button>
@@ -129,10 +130,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { EFrequency, EType, ITransaction } from '../../models/transaction.interface'
+import { EFrequency, EType, type ITransaction } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
+import { useUserStore } from '../../stores/useUserSotre'
 
 const budgetStore = useBudgetStore()
+const userStore = useUserStore()
 
 const formatTodayDate = () => {
   const today = new Date()
@@ -142,7 +145,7 @@ const formatTodayDate = () => {
 const form = ref<Partial<ITransaction>>({
   description: '',
   amount: 0,
-  startDate: formatTodayDate(),
+  startDate: new Date(formatTodayDate()),
   endDate: undefined,
   frequency: EFrequency.Monthly,
   category: 'Dépenses',
@@ -206,6 +209,7 @@ const handleSubmit = async () => {
         frequency: form.value.frequency!,
         category: form.value.category!,
         isDone: form.value.isDone ?? false,
+        user: userStore.user
       },
       type,
     )
@@ -213,7 +217,7 @@ const handleSubmit = async () => {
     form.value = {
       description: '',
       amount: 0,
-      startDate: todayDate.value,
+      startDate: new Date(todayDate.value),
       endDate: undefined,
       frequency: EFrequency.Monthly,
       category: 'Dépenses',
@@ -229,6 +233,6 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   todayDate.value = formatTodayDate()
-  form.value.startDate = todayDate.value
+  form.value.startDate = new Date(todayDate.value)
 })
 </script>
