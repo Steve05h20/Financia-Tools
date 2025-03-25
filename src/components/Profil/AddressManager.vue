@@ -57,7 +57,7 @@ const removeAddress = (index: number) => {
         </div>
 
       <div class="w-full p-4">
-        <AddressInfo :address-index="index" />
+        <AddressInfo :currentAddress="address"/>
       </div>
     </div>
 

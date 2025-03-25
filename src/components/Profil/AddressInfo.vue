@@ -6,58 +6,23 @@ import InputLabelDiv from '../InputLabelDiv.vue'
 import { EProvince, ECountry, EAddressType } from '@/models/address.interface'
 import { useUserStore } from '@/stores/useUserSotre'
 import useValidationProfil from '@/services/useValidationProfil'
-import { useFetchAddress } from '@/services/useFetchAddress';
 
 const props = defineProps({
-  addressIndex: {
-    type: Number,
-    default: 0
+  currentAddress: {
+    type: Object,
+    required: true
   }
 });
 
 const userStore = useUserStore();
 const validation = useValidationProfil();
-const { getAddressesByUserId } = useFetchAddress();
 
-// Créer une référence calculée à l'adresse actuelle
-const currentAddress = computed(() => {
-  if (userStore.user?.addresses && userStore.user.addresses[props.addressIndex]) {
-    return userStore.user.addresses[props.addressIndex];
-  } else {
-    // Si l'adresse n'existe pas à cet index, créer une adresse par défaut
-    if (userStore.user && (!userStore.user.addresses || userStore.user.addresses.length <= props.addressIndex)) {
-      const newAddress = {
-        type: EAddressType.PERSONAL,
-        streetNumber: '',
-        streetName: '',
-        city: '',
-        province: EProvince.QUEBEC,
-        country: ECountry.CANADA,
-        user: userStore.user
-      };
-
-      // Initialiser le tableau s'il n'existe pas
-      if (!userStore.user.addresses) {
-        userStore.user.addresses = [];
-      }
-
-      // Ajouter l'adresse au tableau à l'index spécifié
-      // (Si l'index est supérieur à la longueur, cela comblera les espaces vides)
-      while (userStore.user.addresses.length <= props.addressIndex) {
-        userStore.user.addresses.push(Object.assign({}, newAddress));
-      }
-
-      return userStore.user.addresses[props.addressIndex];
-    }
-    return null;
-  }
-});
 
 onMounted(async () => {
   validation.resetErrors();
 });
 
-watch(() => userStore.user.addresses?.[props.addressIndex]?.streetNumber, (newValue: string | undefined) => {
+watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetNumber, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.streetNumber = validation.ErrorMessage.EMPTY_ADDRESS;
   } else {
@@ -65,7 +30,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.streetNumber, (newVa
   }
 });
 
-watch(() => userStore.user.addresses?.[props.addressIndex]?.streetName, (newValue: string | undefined) => {
+watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetName, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.streetName = validation.ErrorMessage.EMPTY_STREET;
   } else {
@@ -73,7 +38,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.streetName, (newValu
   }
 });
 
-watch(() => userStore.user.addresses?.[props.addressIndex]?.city, (newValue: string | undefined) => {
+watch(() => userStore.user.addresses?.[props.currentAddress.id]?.city, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.city = validation.ErrorMessage.EMPTY_CITY;
   } else {
@@ -81,7 +46,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.city, (newValue: str
   }
 });
 
-watch(() => userStore.user.addresses?.[props.addressIndex]?.province, (newValue: string | undefined) => {
+watch(() => userStore.user.addresses?.[props.currentAddress.id]?.province, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.province = validation.ErrorMessage.EMPTY_SELECT;
   } else {
@@ -89,7 +54,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.province, (newValue:
   }
 });
 
-watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: string | undefined) => {
+watch(() => userStore.user.addresses?.[props.currentAddress.id]?.country, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.country = validation.ErrorMessage.EMPTY_SELECT;
   } else {
@@ -97,7 +62,7 @@ watch(() => userStore.user.addresses?.[props.addressIndex]?.country, (newValue: 
   }
 });
 
-watch(()=> userStore.user.addresses?.[props.addressIndex]?.type, (newValue: string | undefined) => {
+watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.type = validation.ErrorMessage.EMPTY_SELECT;
   } else {
