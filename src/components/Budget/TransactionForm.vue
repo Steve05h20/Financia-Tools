@@ -3,18 +3,9 @@
     <h2 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 md:mb-4">
       {{ form.category === 'Revenue' ? 'Ajouter un revenu' : 'Ajouter une dépense' }}
     </h2>
-    <form
-      @submit.prevent="handleSubmit"
-      class="grid grid-cols-1 md:grid-cols-2 gap-3"
-    >
+    <form @submit.prevent="handleSubmit" class="grid grid-cols-1 md:grid-cols-2 gap-3">
       <div>
-<<<<<<< HEAD
         <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">Description</label>
-=======
-        <label class="label text-primary ">
-          Description
-        </label>
->>>>>>> refs/remotes/origin/PageBudget/cristian
         <input
           v-model="form.description"
           type="text"
@@ -27,11 +18,7 @@
         <p v-if="errors.description" class="text-red-500 text-xs mt-1">{{ errors.description }}</p>
       </div>
       <div>
-<<<<<<< HEAD
         <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">Montant</label>
-=======
-        <label class="label text-primary "> Montant </label>
->>>>>>> refs/remotes/origin/PageBudget/cristian
         <input
           v-model.number="form.amount"
           type="number"
@@ -42,31 +29,19 @@
         <p v-if="errors.amount" class="text-red-500 text-xs mt-1">{{ errors.amount }}</p>
       </div>
       <div>
-<<<<<<< HEAD
         <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1"
           >Date de début</label
         >
-=======
-          <label class="label text-primary ">
-          Date de début
-        </label>
->>>>>>> refs/remotes/origin/PageBudget/cristian
         <input
           v-model="form.startDate"
           type="date"
-          class="input input-bordered w-full input-sm "
+          class="input input-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.startDate }"
         />
         <p v-if="errors.startDate" class="text-red-500 text-xs mt-1">{{ errors.startDate }}</p>
       </div>
       <div>
-<<<<<<< HEAD
         <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">Date de fin</label>
-=======
-        <label class="label text-primary ">
-          Date de fin
-        </label>
->>>>>>> refs/remotes/origin/PageBudget/cristian
         <input
           v-model="form.endDate"
           type="date"
@@ -76,11 +51,7 @@
         <p v-if="errors.endDate" class="text-red-500 text-xs mt-1">{{ errors.endDate }}</p>
       </div>
       <div>
-<<<<<<< HEAD
         <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">Fréquence</label>
-=======
-        <label class="label text-primary "> Fréquence </label>
->>>>>>> refs/remotes/origin/PageBudget/cristian
         <select
           v-model="form.frequency"
           class="input input-bordered w-full input-sm"
@@ -91,11 +62,7 @@
         <p v-if="errors.frequency" class="text-red-500 text-xs mt-1">{{ errors.frequency }}</p>
       </div>
       <div>
-<<<<<<< HEAD
         <label class="block text-xs sm:text-sm md:text-base text-gray-600 mb-1">Catégorie</label>
-=======
-        <label class="label text-primary "> Catégorie </label>
->>>>>>> refs/remotes/origin/PageBudget/cristian
         <select
           v-model="form.category"
           class="input input-bordered w-full input-sm"
@@ -107,22 +74,13 @@
         <p v-if="errors.category" class="text-red-500 text-xs mt-1">{{ errors.category }}</p>
       </div>
       <div class="flex items-center">
-        <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2"/>
-        <label class="label text-primary ">
+        <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2" />
+        <label class="label text-primary">
           {{ form.category === 'Revenue' ? 'Reçu' : 'Payée' }}
         </label>
       </div>
-<<<<<<< HEAD
-=======
-
-
-      <!-- Bouton de soumission -->
->>>>>>> refs/remotes/origin/PageBudget/cristian
       <div class="md:col-span-2 flex justify-center">
-        <button
-          type="submit"
-          class="btn btn-primary "
-        >
+        <button type="submit" class="btn btn-primary">
           {{ form.category === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la dépense' }}
         </button>
       </div>
@@ -182,18 +140,14 @@ const handleSubmit = async () => {
         frequency: form.value.frequency!,
         category: form.value.category!,
         isDone: form.value.isDone ?? false,
-        user: userStore.user
+        user: userStore.user,
       },
       type,
     )
     form.value = {
       description: '',
       amount: 0,
-<<<<<<< HEAD
       startDate: formatTodayDate(),
-=======
-      startDate: new Date(todayDate.value),
->>>>>>> refs/remotes/origin/PageBudget/cristian
       endDate: undefined,
       frequency: EFrequency.Monthly,
       category: 'Dépenses',
@@ -207,11 +161,6 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
-<<<<<<< HEAD
   form.value.startDate = formatTodayDate()
-=======
-  todayDate.value = formatTodayDate()
-  form.value.startDate = new Date(todayDate.value)
->>>>>>> refs/remotes/origin/PageBudget/cristian
 })
 </script>

@@ -18,13 +18,10 @@ import { useUserStore } from '../stores/useUserSotre'
 const budgetStore = useBudgetStore()
 const userStore = useUserStore()
 
-// Connexion simulée et chargement des données en une seule fois
 onMounted(async () => {
   try {
-    // Charger d'abord les données utilisateur
     await userStore.loadUserData('test@test.com')
 
-    // Puis charger les transactions
     await budgetStore.loadTransactions()
 
     console.log('Données chargées avec succès dans BudgetView')
