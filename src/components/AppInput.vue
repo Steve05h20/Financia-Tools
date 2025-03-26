@@ -39,8 +39,8 @@ const updateValue = (event: Event) => {
       :disabled="!editStore.isEditing"
       :readonly="!editStore.isEditing"
       :class="{
-      'input my-1 w-full border-none disabled:bg-transparent disabled:opacity-100 disabled:text-black': !editStore.isEditing,
-      'input input-ghost bg-slate-50 my-1 w-full': editStore.isEditing
+      'input my-1 w-full border-none disabled:bg-transparent disabled:opacity-100 disabled:text-black ': !editStore.isEditing,
+      'input input-ghost bg-slate-50 my-1 w-full ': editStore.isEditing
       }"
     />
   </div>

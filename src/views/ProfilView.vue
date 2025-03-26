@@ -1,4 +1,3 @@
-
 <script lang="ts" setup>
 import UserInfo from '@/components/Profil/UserInfo.vue';
 import BankingInfo from '@/components/Profil/BankingInfo.vue';
@@ -15,10 +14,8 @@ const userStore = useUserStore();
 onMounted(() => {
   userStore.loadUserData("test@test.com");
 });
-
-
-
 </script>
+
 <template>
   <div class="container mx-auto px-4 pt-10 pb-28">
     <div v-if="userStore.loading" class="flex justify-center items-center h-64">
@@ -33,26 +30,38 @@ onMounted(() => {
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
-
-      <section class="mb-8 lg:col-span-4  w-full ">
-        <div class="divider text-lg font-semibold">Informations personnelles</div>
+      <!-- Informations personnelles -->
+      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
+        <input type="radio" name="profile-accordion" checked />
+        <div class="collapse-title font-semibold">Informations personnelles</div>
+        <div class="collapse-content">
           <UserInfo />
+        </div>
       </section>
 
-      <section class="mb-8 lg:col-span-4 w-full">
-        <AddressManager />
+      <!-- Adresses -->
+      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
+        <input type="radio" name="profile-accordion" />
+        <div class="collapse-title font-semibold">Adresses</div>
+        <div class="collapse-content">
+          <AddressManager />
+        </div>
       </section>
 
-      <section class="mb-8 lg:col-span-2 w-full">
-        <div class="divider text-lg font-semibold">Détails scolaires</div>
-        <div class="w-full p-4">
+      <!-- Détails scolaires -->
+      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
+        <input type="radio" name="profile-accordion" />
+        <div class="collapse-title font-semibold">Détails scolaires</div>
+        <div class="collapse-content">
           <SchoolInfo />
         </div>
       </section>
 
-      <section class="mb-8 lg:col-span-2 w-full">
-        <div class="divider text-lg font-semibold">Informations bancaires</div>
-        <div class="w-full p-4">
+      <!-- Informations bancaires -->
+      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
+        <input type="radio" name="profile-accordion" />
+        <div class="collapse-title font-semibold">Informations bancaires</div>
+        <div class="collapse-content">
           <BankingInfo />
         </div>
       </section>
@@ -61,12 +70,8 @@ onMounted(() => {
         <BtnUpdate />
       </div>
     </div>
-
   </div>
-
-
 </template>
 
-<style>
-</style>
+
 

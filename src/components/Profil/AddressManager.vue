@@ -41,7 +41,7 @@ const removeAddress = (index: number) => {
 <template>
   <div>
     <div v-for="(address, index) in userStore.user?.addresses || []" :key="index" class="mb-8 w-full">
-      <div class="divider text-lg font-semibold">
+      <div class="divider collapse-title font-semibold">
         Adresse {{ index + 1 }}
       </div>
       <div class="flex justify-between">
@@ -57,7 +57,7 @@ const removeAddress = (index: number) => {
         </div>
 
       <div class="w-full p-4">
-        <AddressInfo :currentAddress="address"/>
+        <AddressInfo :currentAddress="address" type="radio" name="my-accordion-2"/>
       </div>
     </div>
 
