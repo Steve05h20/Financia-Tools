@@ -28,7 +28,11 @@ const handleSubmit = async (e: Event) => {
   }
 
   // Redirection vers la page "budget" après connexion ou inscription réussie
-  if (auth.stateAcount.connecte) {
+  if (auth.stateAcount.isConnected) {
+    console.log('Utilisateur connecté, redirection vers /budget') // Debug
+  } else {
+    console.log('Utilisateur non connecté, redirection annulée') // Debug
+
     router.push('/budget') // Rediriger vers la page budget
   }
 }

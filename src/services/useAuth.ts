@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
-import useFetchUser from '@/services/useFetchUser'
+import { useUserStore } from '@/stores/useUserSotre'
 import type { IUser } from '@/models/user.interface'
-import useNotification from '@/services/useNotification' // Importez useNotification
+import useNotification from '@/services/useNotification'
 
 // Déclaration de l'enum des messages d'erreur
 enum ErrorMessage {
@@ -23,7 +23,7 @@ export const useAuth = defineStore('auth', () => {
   // État global de l'authentification
   const stateAcount = reactive({
     utilisateur: null as IUser | null,
-    connecte: false,
+    isConnected: false,
     email: '',
     pwd: '',
     confirmPwd: '',
@@ -39,11 +39,12 @@ export const useAuth = defineStore('auth', () => {
     lastActivity: null as Date | null,
   })
 
-  // Appel API du service User
-  const userService = useFetchUser()
+  // Utilisation du store userStore pour accéder à userService
+  const userStore = useUserStore()
+  const userService = userStore.userService
 
   // Utilisateur actuel avec ref
-  const user = ref<IUser | null>(null) // Utilisateur actuel avec ref= ref<IUser | null>(null)
+  const user = ref<IUser | null>(null)
 
   /*=======================================================================
     Validation des champs
@@ -140,14 +141,25 @@ export const useAuth = defineStore('auth', () => {
     try {
       // Appel API pour récupérer l'utilisateur par email
       await userService.GET_USER_BY_EMAIL(stateAcount.email)
-      // Vérification simple du mot de passe
-      if (!userService.user.value || userService.user.value.password !== stateAcount.pwd) {
+
+      // Vérifiez si userService.user est défini avant d'accéder à ses propriétés
+      if (!userService.user || !userService.user) {
         throw new Error('Identifiants invalides')
       }
-      stateAcount.utilisateur = userService.user.value
-      stateAcount.connecte = true
+
+      // Vérification simple du mot de passe
+      if (!userService.user || userService.user.password !== stateAcount.pwd) {
+        throw new Error('Identifiants invalides')
+      }
+
+      // Mettre à jour l'état de l'utilisateur
+
+      stateAcount.utilisateur = userService.user
+      userStore.isConnected = true
+      userStore.loadUserData(stateAcount.utilisateur.email)
       stateAcount.lastActivity = new Date()
-      message('Connexion réussie !', 'success') // Utilisez message
+
+      message('Connexion reussie !', 'error') // Utilisez message
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error && error.message ? error.message : ErrorMessage.SERVER_ERROR
@@ -185,8 +197,8 @@ export const useAuth = defineStore('auth', () => {
         isActive: true,
       }
       await userService.POST_USER(newUser)
-      stateAcount.utilisateur = userService.user.value ?? null
-      stateAcount.connecte = true
+      stateAcount.utilisateur = userService.user ?? null
+      stateAcount.isConnected = true
       stateAcount.lastActivity = new Date()
       message('Compte créé avec succès !', 'success') // Utilisez message
     } catch (error: unknown) {
@@ -208,7 +220,7 @@ export const useAuth = defineStore('auth', () => {
     try {
       // Réinitialiser l'état utilisateur.
       stateAcount.utilisateur = null
-      stateAcount.connecte = false
+      stateAcount.isConnected = false
       message('Déconnexion réussie', 'success') // Utilisez message
     } catch (error: unknown) {
       const errorMsg =
