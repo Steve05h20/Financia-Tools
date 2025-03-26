@@ -1,7 +1,6 @@
 <template>
-  <div class="card bg-base-100 shadow-xl">
-    <div class="card-body">
-      <h2 class="card-title text-primary">Liste des transactions</h2>
+  <div class="bg-white p-3 sm:p-5 rounded-lg shadow-md">
+    <h2 class="text-lg font-semibold mb-2 sm:mb-4">Liste des transactions</h2>
 
     <!-- Vue mobile : cartes -->
     <div class="block lg:hidden space-y-4">
@@ -153,6 +152,7 @@
           </button>
         </div>
       </div>
+    </div>
 
     <!-- Vue desktop : tableau -->
     <div class="hidden lg:block overflow-x-auto">
@@ -280,56 +280,42 @@
               <div class="flex justify-center space-x-1">
                 <button
                   v-if="!editingTransaction || editingTransaction.id !== transaction.id"
-                  @click="toggleStatus(transaction)"
-                  :class="transaction.isDone ? 'badge badge-success' : 'badge badge-warning'"
+                  @click="startEditing(transaction)"
+                  class="bg-blue-500 text-white px-2 py-1 rounded text-xs"
                 >
-                  {{ transaction.isDone ? 'Payée' : 'En attente' }}
+                  Éditer
                 </button>
-                <div v-else class="flex items-center">
-                  <input v-model="editingTransaction.isDone" type="checkbox" class="toggle toggle-sm toggle-success mr-2" />
-                  <span class="text-sm">Payée</span>
-                </div>
-              </td>
-              <td>
-                <div class="flex justify-center gap-1">
-                  <button
-                    v-if="!editingTransaction || editingTransaction.id !== transaction.id"
-                    @click="startEditing(transaction)"
-                    class="btn btn-xs btn-info"
-                  >
-                    Éditer
-                  </button>
-                  <button
-                    v-if="editingTransaction && editingTransaction.id === transaction.id"
-                    @click="saveEditing"
-                    class="btn btn-xs btn-success"
-                  >
-                    Sauver
-                  </button>
-                  <button
-                    v-if="editingTransaction && editingTransaction.id === transaction.id"
-                    @click="cancelEditing"
-                    class="btn btn-xs btn-ghost"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    v-if="
-                      transaction.id !== undefined &&
-                      (!editingTransaction || editingTransaction.id !== transaction.id)
-                    "
-                    @click="handleDelete(transaction.id)"
-                    class="btn btn-xs btn-error"
-                  >
-                    <span class="hidden sm:inline">Supprimer</span>
-                    <span class="sm:hidden">X</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <button
+                  v-if="editingTransaction && editingTransaction.id === transaction.id"
+                  @click="saveEditing"
+                  class="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                >
+                  Sauver
+                </button>
+                <button
+                  v-if="editingTransaction && editingTransaction.id === transaction.id"
+                  @click="cancelEditing"
+                  class="bg-gray-500 text-white px-2 py-1 rounded text-xs"
+                >
+                  Annuler
+                </button>
+                <button
+                  v-if="
+                    transaction.id !== undefined &&
+                    (!editingTransaction || editingTransaction.id !== transaction.id)
+                  "
+                  @click="handleDelete(transaction.id)"
+                  class="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                >
+                  <span class="hidden sm:inline">Supprimer</span>
+                  <span class="sm:hidden">X</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <div v-if="transactions.length === 0" class="text-center py-8 text-gray-500">
       Aucune transaction à afficher
@@ -338,15 +324,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { EFrequency, EType } from '../../models/transaction.interface'
-import type { ITransaction } from '../../models/transaction.interface'
+import { ref, onMounted } from 'vue'
+import { EFrequency, EType, ITransaction } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 
 const budgetStore = useBudgetStore()
 const transactions = budgetStore.transactions
 const editingTransaction = ref<ITransaction | null>(null)
-const isEditModalOpen = ref(false)
 
 const formatDate = (date: Date | string): string => {
   return new Date(date).toISOString().split('T')[0]
@@ -403,7 +387,6 @@ const saveEditing = async () => {
     }
     await budgetStore.updateTransaction(editingTransaction.value.id, updatedTransaction)
     editingTransaction.value = null
-    isEditModalOpen.value = false
   } catch (error) {
     console.error('Erreur lors de la sauvegarde :', error)
     alert('Erreur lors de la sauvegarde.')
@@ -412,28 +395,10 @@ const saveEditing = async () => {
 
 const cancelEditing = () => {
   editingTransaction.value = null
-  isEditModalOpen.value = false
-}
-
-const rechargerTransactions = async () => {
-  try {
-    isLoading.value = true
-    await budgetStore.loadTransactions()
-    console.log('Transactions rechargées:', transactions.value)
-  } catch (error) {
-    console.error('Erreur lors du rechargement des transactions:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const capitalizeText = (text: string): string => {
-  return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 onMounted(async () => {
-  try {
-    isLoading.value = true
+  if (transactions.value.length === 0) {
     await budgetStore.loadTransactions()
   }
 })
