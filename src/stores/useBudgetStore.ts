@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
-import { useUserStore } from './useUserSotre'
+import { useUserStore } from './useUserSotre' // Note : corrigez "useUserSotre" en "useUserStore" dans votre code
 import { computed, ref } from 'vue'
 import type { EType, ITransaction } from '@/models/transaction.interface'
 
 export const useBudgetStore = defineStore('budget', () => {
   const userStore = useUserStore()
-  const transactions = computed(() => userStore.user.transactions || [])
+  const transactions = computed(() => userStore.user.transactions || []) // Ajout d'un fallback si transactions est undefined
   const transactionService = userStore.transactionService
 
   const error = ref<string | null>(null)
@@ -16,7 +16,7 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
       await userStore.loadUserData(userStore.user.email)
-      console.log('Transactions chargées :', transactions.value)
+      console.log('Transactions chargées :', transactions.value) // Débogage
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur de chargement des transactions'
       console.error(error.value)
@@ -48,13 +48,13 @@ export const useBudgetStore = defineStore('budget', () => {
         type,
       })
 
-
+      // Ajout temporaire pour mise à jour immédiate (optionnel si l'API retourne la transaction)
       if (userStore.user.transactions && newTransaction) {
         userStore.user.transactions.push(newTransaction)
       }
 
-      await loadTransactions()
-      console.log('Transactions après ajout :', transactions.value)
+      await loadTransactions() // Recharge les données pour synchronisation
+      console.log('Transactions après ajout :', transactions.value) // Débogage
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur lors de la création de la transaction'
       console.error(error.value)

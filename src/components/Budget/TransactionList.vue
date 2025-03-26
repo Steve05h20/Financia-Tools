@@ -2,7 +2,7 @@
   <div class="bg-white p-3 sm:p-5 rounded-lg shadow-md">
     <h2 class="text-lg font-semibold mb-2 sm:mb-4">Liste des transactions</h2>
 
-    <!-- Vue mobile : cartes pour chaque transaction -->
+    <!-- Vue mobile : cartes -->
     <div class="block lg:hidden space-y-4">
       <div
         v-for="transaction in transactions"
@@ -10,7 +10,18 @@
         class="p-3 border rounded-lg shadow-sm"
       >
         <div class="flex justify-between items-center mb-2">
-          <span class="font-medium">{{ transaction.description ?? '-' }}</span>
+          <span
+            v-if="!editingTransaction || editingTransaction.id !== transaction.id"
+            class="font-medium"
+          >
+            {{ transaction.description ?? '-' }}
+          </span>
+          <input
+            v-else
+            v-model="editingTransaction.description"
+            type="text"
+            class="w-full p-1 border rounded text-sm"
+          />
           <span
             :class="
               transaction.type === EType.EXPENSE
@@ -22,40 +33,91 @@
             {{ transaction.type }}
           </span>
         </div>
-
         <div class="grid grid-cols-2 gap-2 text-sm mb-3">
           <div>
             <p class="text-gray-500">Montant</p>
-            <p class="font-medium">{{ transaction.amount }}€</p>
+            <p
+              v-if="!editingTransaction || editingTransaction.id !== transaction.id"
+              class="font-medium"
+            >
+              {{ transaction.amount }} $
+            </p>
+            <input
+              v-else
+              v-model.number="editingTransaction.amount"
+              type="number"
+              class="w-full p-1 border rounded text-sm"
+            />
           </div>
           <div>
             <p class="text-gray-500">Catégorie</p>
-            <p>{{ transaction.category ?? '-' }}</p>
+            <p v-if="!editingTransaction || editingTransaction.id !== transaction.id">
+              {{ transaction.category ?? '-' }}
+            </p>
+            <select
+              v-else
+              v-model="editingTransaction.category"
+              class="w-full p-1 border rounded text-sm"
+            >
+              <option value="Dépenses">Dépenses</option>
+              <option value="Revenue">Revenue</option>
+            </select>
           </div>
           <div>
             <p class="text-gray-500">Date de début</p>
-            <p>{{ formatDate(transaction.startDate) }}</p>
+            <p v-if="!editingTransaction || editingTransaction.id !== transaction.id">
+              {{ formatDate(transaction.startDate) }}
+            </p>
+            <input
+              v-else
+              v-model="editingTransaction.startDate"
+              type="date"
+              class="w-full p-1 border rounded text-sm"
+            />
           </div>
           <div>
             <p class="text-gray-500">Date de fin</p>
-            <p>{{ transaction.endDate ? formatDate(transaction.endDate) : '-' }}</p>
+            <p v-if="!editingTransaction || editingTransaction.id !== transaction.id">
+              {{ transaction.endDate ? formatDate(transaction.endDate) : '-' }}
+            </p>
+            <input
+              v-else
+              v-model="editingTransaction.endDate"
+              type="date"
+              class="w-full p-1 border rounded text-sm"
+            />
           </div>
           <div>
             <p class="text-gray-500">Fréquence</p>
-            <p>{{ getFrequencyLabel(transaction.frequency) }}</p>
+            <p v-if="!editingTransaction || editingTransaction.id !== transaction.id">
+              {{ getFrequencyLabel(transaction.frequency) }}
+            </p>
+            <select
+              v-else
+              v-model="editingTransaction.frequency"
+              class="w-full p-1 border rounded text-sm"
+            >
+              <option v-for="(value, key) in EFrequency" :key="key" :value="value">
+                {{ key }}
+              </option>
+            </select>
           </div>
           <div>
             <p class="text-gray-500">Statut</p>
             <button
+              v-if="!editingTransaction || editingTransaction.id !== transaction.id"
               @click="toggleStatus(transaction)"
               :class="transaction.isDone ? 'bg-green-500' : 'bg-yellow-500'"
               class="mt-1 px-2 py-0.5 rounded text-white text-xs"
             >
               {{ transaction.isDone ? 'Payée' : 'En attente' }}
             </button>
+            <div v-else class="flex items-center mt-1">
+              <input v-model="editingTransaction.isDone" type="checkbox" class="mr-2" />
+              <span class="text-sm">Payée</span>
+            </div>
           </div>
         </div>
-
         <div class="flex justify-end space-x-2 mt-2 border-t pt-2">
           <button
             v-if="!editingTransaction || editingTransaction.id !== transaction.id"
@@ -89,69 +151,10 @@
             Supprimer
           </button>
         </div>
-
-        <div
-          v-if="editingTransaction && editingTransaction.id === transaction.id"
-          class="mt-3 border-t pt-3"
-        >
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Description</label>
-              <input
-                v-model="editingTransaction.description"
-                type="text"
-                class="w-full p-2 border rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Montant</label>
-              <input
-                v-model.number="editingTransaction.amount"
-                type="number"
-                class="w-full p-2 border rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Date de début</label>
-              <input
-                v-model="editingTransaction.startDate"
-                type="date"
-                class="w-full p-2 border rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Date de fin</label>
-              <input
-                v-model="editingTransaction.endDate"
-                type="date"
-                class="w-full p-2 border rounded"
-              />
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Fréquence</label>
-              <select v-model="editingTransaction.frequency" class="w-full p-2 border rounded">
-                <option v-for="(value, key) in EFrequency" :key="key" :value="value">
-                  {{ key }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm text-gray-600 mb-1">Catégorie</label>
-              <select v-model="editingTransaction.category" class="w-full p-2 border rounded">
-                <option value="Dépenses">Dépenses</option>
-                <option value="Revenue">Revenue</option>
-              </select>
-            </div>
-            <div class="flex items-center">
-              <input v-model="editingTransaction.isDone" type="checkbox" class="mr-2" />
-              <label class="text-sm text-gray-600">Transaction payée</label>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <!-- Vue tablette/desktop : tableau traditionnel -->
+    <!-- Vue desktop : tableau -->
     <div class="hidden lg:block overflow-x-auto">
       <table class="min-w-full text-left text-sm">
         <thead>
@@ -189,7 +192,7 @@
                 v-if="!editingTransaction || editingTransaction.id !== transaction.id"
                 class="font-medium"
               >
-                {{ transaction.amount }}€
+                {{ transaction.amount }} $
               </span>
               <input
                 v-else
@@ -314,7 +317,6 @@
       </table>
     </div>
 
-    <!-- Message si aucune transaction -->
     <div v-if="transactions.length === 0" class="text-center py-8 text-gray-500">
       Aucune transaction à afficher
     </div>
@@ -328,10 +330,9 @@ import { useBudgetStore } from '../../stores/useBudgetStore'
 
 const budgetStore = useBudgetStore()
 const transactions = budgetStore.transactions
-
 const editingTransaction = ref<ITransaction | null>(null)
 
-const formatDate = (date: Date): string => {
+const formatDate = (date: Date | string): string => {
   return new Date(date).toISOString().split('T')[0]
 }
 
@@ -350,32 +351,45 @@ const toggleStatus = async (transaction: ITransaction) => {
       isDone: !transaction.isDone,
     })
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de la transaction:', error)
-    alert('Une erreur est survenue lors de la mise à jour de la transaction.')
+    console.error('Erreur lors de la mise à jour du statut :', error)
+    alert('Erreur lors de la mise à jour.')
   }
 }
 
 const handleDelete = async (id: number) => {
-  try {
-    await budgetStore.deleteTransaction(id)
-  } catch (error) {
-    console.error('Erreur lors de la suppression de la transaction:', error)
-    alert('Une erreur est survenue lors de la suppression de la transaction.')
+  if (confirm('Voulez-vous vraiment supprimer cette transaction ?')) {
+    try {
+      await budgetStore.deleteTransaction(id)
+    } catch (error) {
+      console.error('Erreur lors de la suppression :', error)
+      alert('Erreur lors de la suppression.')
+    }
   }
 }
 
 const startEditing = (transaction: ITransaction) => {
-  editingTransaction.value = { ...transaction }
+  editingTransaction.value = {
+    ...transaction,
+    startDate: formatDate(transaction.startDate),
+    endDate: transaction.endDate ? formatDate(transaction.endDate) : undefined,
+  }
 }
 
 const saveEditing = async () => {
   if (!editingTransaction.value || editingTransaction.value.id === undefined) return
   try {
-    await budgetStore.updateTransaction(editingTransaction.value.id, editingTransaction.value)
+    const updatedTransaction = {
+      ...editingTransaction.value,
+      startDate: new Date(editingTransaction.value.startDate),
+      endDate: editingTransaction.value.endDate
+        ? new Date(editingTransaction.value.endDate)
+        : undefined,
+    }
+    await budgetStore.updateTransaction(editingTransaction.value.id, updatedTransaction)
     editingTransaction.value = null
   } catch (error) {
-    console.error('Erreur lors de la sauvegarde de la transaction:', error)
-    alert('Une erreur est survenue lors de la sauvegarde de la transaction.')
+    console.error('Erreur lors de la sauvegarde :', error)
+    alert('Erreur lors de la sauvegarde.')
   }
 }
 
@@ -386,7 +400,6 @@ const cancelEditing = () => {
 onMounted(async () => {
   if (transactions.value.length === 0) {
     await budgetStore.loadTransactions()
-    console.log('Transactions chargées au montage :', transactions.value)
   }
 })
 </script>
