@@ -1,13 +1,11 @@
 import { defineStore } from 'pinia'
 import { useUserStore } from './useUserSotre'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import type { EType, ITransaction } from '@/models/transaction.interface'
 
 export const useBudgetStore = defineStore('budget', () => {
   const userStore = useUserStore()
-  const transactions = computed(() => userStore.user.transactions || [])
-  const transactionService = userStore.transactionService
-
+  const transactions = ref<ITransaction[]>([])
   const error = ref<string | null>(null)
   const loading = ref(false)
 
@@ -15,7 +13,17 @@ export const useBudgetStore = defineStore('budget', () => {
     try {
       loading.value = true
       error.value = null
-      await userStore.loadUserData(userStore.user.email)
+
+      // Ne pas recharger les données utilisateur si nous les avons déjà
+      if (!userStore.user || !userStore.user.email) {
+        console.log('Pas d\'utilisateur connecté, chargement des données utilisateur...')
+        await userStore.loadUserData(userStore.user?.email || 'test@test.com')
+      } else {
+        console.log('Utilisateur déjà chargé, utilisation des transactions existantes')
+      }
+
+      // Toujours copier les transactions pour garantir la réactivité
+      transactions.value = [...(userStore.user.transactions || [])]
       console.log('Transactions chargées :', transactions.value)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur de chargement des transactions'
@@ -43,17 +51,14 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
 
-      const newTransaction = await transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {
+      await userStore.transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {
         ...transaction,
         type,
       })
 
-
-      if (userStore.user.transactions && newTransaction) {
-        userStore.user.transactions.push(newTransaction)
-      }
-
+      // Recharger les transactions pour être sûr d'avoir les données à jour
       await loadTransactions()
+
       console.log('Transactions après ajout :', transactions.value)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur lors de la création de la transaction'
@@ -73,7 +78,12 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
 
-      await transactionService.DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(userStore.user.id, idTransaction)
+      await userStore.transactionService.DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
+        userStore.user.id,
+        idTransaction
+      )
+
+      // Recharger les transactions
       await loadTransactions()
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur lors de la suppression de la transaction'
@@ -93,11 +103,13 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
 
-      await transactionService.UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
+      await userStore.transactionService.UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
         userStore.user.id,
         idTransaction,
         transaction
       )
+
+      // Recharger les transactions
       await loadTransactions()
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur lors de la mise à jour de la transaction'
@@ -110,7 +122,6 @@ export const useBudgetStore = defineStore('budget', () => {
 
   return {
     transactions,
-    transactionService,
     loadTransactions,
     getTotalByType,
     addTransactionByType,
