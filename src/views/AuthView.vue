@@ -2,6 +2,7 @@
 import { useAuth } from '@/services/useAuth'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { defineEmits } from 'vue'
 
 // Props pour déterminer l'action (connexion ou inscription)
 const props = defineProps({
@@ -35,6 +36,13 @@ const handleSubmit = async (e: Event) => {
 
     router.push('/budget') // Rediriger vers la page budget
   }
+}
+const emits = defineEmits(['connexion-reussie'])
+
+const connexionReussie = () => {
+  // Simuler une connexion réussie (à remplacer par ta logique réelle)
+  console.log('Connexion réussie')
+  emits('connexion-reussie')
 }
 </script>
 
@@ -120,6 +128,7 @@ const handleSubmit = async (e: Event) => {
       <!-- Bouton de soumission -->
       <div>
         <button
+          @click="connexionReussie"
           type="submit"
           :disabled="!auth.isValid || auth.stateAcount.loading"
           class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -131,11 +140,7 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Lien pour basculer entre connexion et inscription -->
       <div class="text-center">
-        <button
-          type="button"
-          @click="$emit('toggleAction')"
-          class="text-indigo-600 hover:underline"
-        >
+        <button type="button" class="text-indigo-600 hover:underline">
           {{
             isSignUp
               ? 'Vous avez déjà un compte ? Connectez-vous'
