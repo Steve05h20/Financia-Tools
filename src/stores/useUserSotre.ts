@@ -17,14 +17,12 @@ export const useUserStore = defineStore('user', () => {
   const bankingDetailsService = useFetchBankingDetails()
   const notificationService = useNotification()
 
-  const isConnected = ref(false)
+  // Initialiser isConnected depuis sessionStorage
+  const isConnected = ref(sessionStorage.getItem('isConnected') === 'true')
 
-  watch(isConnected, () => {
-    alert('ok')
-  })
-
-  // État
-  const user = ref<IUser>({
+  // Initialiser user depuis sessionStorage
+  const storedUser = sessionStorage.getItem('userData')
+  const user = ref<IUser>(storedUser ? JSON.parse(storedUser) : {
     id: 0,
     firstName: '',
     lastName: '',
@@ -42,6 +40,20 @@ export const useUserStore = defineStore('user', () => {
   // État global pour les erreurs et le chargement
   const error = ref<string | null>(null)
   const loading = ref<boolean>(false)
+
+  // Surveiller les changements et les sauvegarder dans sessionStorage
+  watch(isConnected, (newValue) => {
+    sessionStorage.setItem('isConnected', newValue.toString())
+    if (!newValue) {
+      resetUser()
+    }
+  })
+
+  watch(user, (newValue) => {
+    if (isConnected.value) {
+      sessionStorage.setItem('userData', JSON.stringify(newValue))
+    }
+  }, { deep: true })
 
   // Surveiller les changements d'erreur dans les services
   watch(
@@ -81,19 +93,23 @@ export const useUserStore = defineStore('user', () => {
 
   // Méthode pour réinitialiser l'utilisateur
   function resetUser() {
-    user.value = {
-      id: 0,
-      firstName: '',
-      lastName: '',
-      birthDate: '',
-      isActive: false,
-      phone: '',
-      email: '',
-      password: '',
-      addresses: [],
-      transactions: [],
-      schoolDetails: [],
-      bankingDetails: [],
+    if (!isConnected.value) {
+      user.value = {
+        id: 0,
+        firstName: '',
+        lastName: '',
+        birthDate: '',
+        isActive: false,
+        phone: '',
+        email: '',
+        password: '',
+        addresses: [],
+        transactions: [],
+        schoolDetails: [],
+        bankingDetails: [],
+      }
+      sessionStorage.removeItem('userData')
+      sessionStorage.removeItem('isConnected')
     }
   }
 

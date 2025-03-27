@@ -95,7 +95,7 @@ const fermerModal = () => {
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <AuthView action="inscription" @toggle-action="toggleModal" />
+      <AuthView action="inscription" @change-action="toggleModal" />
     </div>
   </dialog>
 
@@ -107,7 +107,7 @@ const fermerModal = () => {
           ✕
         </button>
       </form>
-      <AuthView action="connexion" @connexion-reussie="fermerModal" />
+      <AuthView action="connexion" @connexion-reussie="fermerModal" @change-action="toggleModal" />
     </div>
   </dialog>
 </template>

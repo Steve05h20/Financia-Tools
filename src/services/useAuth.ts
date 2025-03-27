@@ -159,7 +159,7 @@ export const useAuth = defineStore('auth', () => {
       userStore.loadUserData(stateAcount.utilisateur.email)
       stateAcount.lastActivity = new Date()
 
-      message('Connexion reussie !', 'error') // Utilisez message
+      message('Connexion reussie !', 'success') // Utilisez message
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error && error.message ? error.message : ErrorMessage.SERVER_ERROR

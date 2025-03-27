@@ -37,12 +37,16 @@ const handleSubmit = async (e: Event) => {
     router.push('/budget') // Rediriger vers la page budget
   }
 }
-const emits = defineEmits(['connexion-reussie'])
+const emits = defineEmits(['connexion-reussie', 'change-action'])
 
 const connexionReussie = () => {
   // Simuler une connexion réussie (à remplacer par ta logique réelle)
   console.log('Connexion réussie')
   emits('connexion-reussie')
+}
+
+const toggleAction = () => {
+  emits('change-action', isSignUp.value ? 'connexion' : 'inscription')
 }
 </script>
 
@@ -64,14 +68,14 @@ const connexionReussie = () => {
 
       <!-- Champ Nom d'utilisateur (uniquement pour l'inscription) -->
       <div v-if="isSignUp">
-        <label for="username" class="label">Nom d'utilisateur</label>
+        <label for="username" class="label text-primary font-semibold">Nom d'utilisateur</label>
         <input
           type="text"
           v-model="auth.stateAcount.userName"
           @input="auth.validateUserNameRealTime(auth.stateAcount.userName)"
           id="username"
           placeholder="Entrez un nom d'utilisateur"
-          class="input w-full"
+          class="input w-full "
         />
         <p v-if="auth.stateAcount.validationErrors.userName" class="mt-1 text-sm text-red-600">
           {{ auth.stateAcount.validationErrors.userName }}
@@ -80,7 +84,7 @@ const connexionReussie = () => {
 
       <!-- Champ Email -->
       <div>
-        <label for="email" class="label">Email</label>
+        <label for="email" class="label text-primary font-semibold">Email</label>
         <input
           type="email"
           v-model="auth.stateAcount.email"
@@ -96,7 +100,7 @@ const connexionReussie = () => {
 
       <!-- Champ Mot de passe -->
       <div>
-        <label for="password" class="label">Mot de passe</label>
+        <label for="password" class="label text-primary font-semibold">Mot de passe</label>
         <input
           type="password"
           v-model="auth.stateAcount.pwd"
@@ -111,7 +115,7 @@ const connexionReussie = () => {
       </div>
       <!-- Champ confirmation Mot de passe -->
       <div v-if="isSignUp">
-        <label for="confirmPassword" class="label">Confirmez le mot de passe</label>
+        <label for="confirmPassword" class="label text-primary font-semibold">Confirmez le mot de passe</label>
         <input
           type="password"
           v-model="auth.stateAcount.confirmPwd"
@@ -131,7 +135,7 @@ const connexionReussie = () => {
           @click="connexionReussie"
           type="submit"
           :disabled="!auth.isValid || auth.stateAcount.loading"
-          class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           <span v-if="auth.stateAcount.loading">Connexion en cours...</span>
           <span v-else>{{ isSignUp ? 'Créer un compte' : 'Se connecter' }}</span>
@@ -140,7 +144,11 @@ const connexionReussie = () => {
 
       <!-- Lien pour basculer entre connexion et inscription -->
       <div class="text-center">
-        <button type="button" class="text-indigo-600 hover:underline">
+        <button
+          @click="toggleAction"
+          type="button"
+          class="text-primary hover:text-primary-focus hover:underline"
+        >
           {{
             isSignUp
               ? 'Vous avez déjà un compte ? Connectez-vous'
