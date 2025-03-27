@@ -33,9 +33,19 @@ export const useEditStore = defineStore('edit', () => {
         throw new Error("ID utilisateur non défini");
       }
 
-      await userStore.userService.PUT_USER_BY_ID(Number(userId), {id:userId, firstName:userStore.user.firstName, lastName:userStore.user.lastName, isActive:userStore.user.isActive, email:userStore.user.email, password:userStore.user.password, phone:userStore.user.phone, birthDate:userStore.user.birthDate});
+      await userStore.userService.PUT_USER_BY_ID(Number(userId),
+          {
+            id:userId, firstName:userStore.user.firstName,
+            lastName:userStore.user.lastName,
+            isActive:userStore.user.isActive,
+            email:userStore.user.email,
+            password:userStore.user.password,
+            phone:userStore.user.phone,
+            birthDate:userStore.user.birthDate
+          });
 
-      if (userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0) {
+
+       if (userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0) {
         await userStore.schoolDetailsService.PUT_SCHOOL_DETAILS_BY_USER_ID(userId,userStore.user.schoolDetails[0]);
       }
 
