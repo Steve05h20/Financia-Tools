@@ -41,7 +41,7 @@ const initializeBankingDetails = () => {
   if (userStore.user.bankingDetails.length === 0) {
     userStore.user.bankingDetails.push({
       institutionName: '',
-      accountinfo: '',
+      accountInfo: '',
       user: { id: userStore.user.id } as any
     });
   }
@@ -59,11 +59,11 @@ watch(() => userStore.user.bankingDetails?.[0]?.institutionName, (newValue: stri
   }
 });
 
-watch(() => userStore.user.bankingDetails?.[0]?.accountinfo, (newValue: string | undefined) => {
+watch(() => userStore.user.bankingDetails?.[0]?.accountInfo, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
-    validation.errors.value.accountinfo = validation.ErrorMessage.EMPTY_ACCOUNT_INFO;
+    validation.errors.value.accountInfo = validation.ErrorMessage.EMPTY_ACCOUNT_INFO;
   } else {
-    validation.validateAccountinfo(newValue, 'accountinfo');
+    validation.validateAccountInfo(newValue, 'accountInfo');
   }
 });
 
@@ -97,13 +97,13 @@ watch(() => userStore.user.bankingDetails?.[0]?.accountinfo, (newValue: string |
     <div v-if="userStore.user && userStore.user.bankingDetails && userStore.user.bankingDetails.length > 0">
        <InputLabelDiv
         labelText="Numéro de compte"
-        htmlFor="accountinfo"
+        htmlFor="accountInfo"
         required
-        v-model="userStore.user.bankingDetails[0].accountinfo"
+        v-model="userStore.user.bankingDetails[0].accountInfo"
         placeholder="placeholder"
       />
-      <div v-if="validation.errors.value.accountinfo" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.accountinfo }}
+      <div v-if="validation.errors.value.accountInfo" class="text-red-500 text-sm mt-1">
+        {{ validation.errors.value.accountInfo }}
       </div>
     </div>
 

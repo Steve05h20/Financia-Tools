@@ -31,7 +31,7 @@ interface ValidationErrors {
   city: string;
   street: string;
   institutionName: string;
-  accountinfo: string;
+  accountInfo: string;
   birthDate: string;
   appointmentDate: string;
   select: string;
@@ -49,7 +49,7 @@ const useValidationProfil = () => {
     city: '',
     street: '',
     institutionName: '',
-    accountinfo: '',
+    accountInfo: '',
     birthDate: '',
     appointmentDate: '',
     select: ''
@@ -266,9 +266,9 @@ const useValidationProfil = () => {
   };
 
 
-  const validateAccountinfo = (
+  const validateAccountInfo = (
     value: string | undefined,
-    fieldName: keyof ValidationErrors = 'accountinfo'
+    fieldName: keyof ValidationErrors = 'accountInfo'
   ): boolean => {
     if (!value) {
       errors.value[fieldName] = ErrorMessage.EMPTY_ACCOUNT_INFO;
@@ -311,7 +311,7 @@ const useValidationProfil = () => {
     if (user.bankingDetails && user.bankingDetails.length > 0) {
       const banking = user.bankingDetails[0];
       if (!validateInstitutionName(banking.institutionName, 'institutionName')) isValid = false;
-      if (!validateAccountinfo(banking.accountinfo, 'accountinfo')) isValid = false;
+      if (!validateAccountInfo(banking.accountInfo, 'accountInfo')) isValid = false;
     }
 
     // Validation des informations scolaires
@@ -359,7 +359,7 @@ const useValidationProfil = () => {
     validatePrevDate,
     validateFutureDate,
     validateInstitutionName,
-    validateAccountinfo,
+    validateAccountInfo,
     validateSelect,
     validateAll,
     ErrorMessage,
