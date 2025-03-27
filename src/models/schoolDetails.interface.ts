@@ -1,15 +1,15 @@
 import type { IUser } from "./user.interface"
 
 export enum EFieldOfStudy {
-  INFORMATIQUE = 'informatique',
-  INGENIERIE = 'ingenerie',
-  SANTE = 'sante',
-  DROIT = 'droit',
-  SCIENCES = 'sciences',
-  SCIENCES_SOCIALES = 'sciencesSociales',
-  ARTS = 'arts',
-  EDUCATION = 'education',
-  COMMUNICATION = 'communication'
+  INFORMATIQUE = 'Informatique',
+  INGENIERIE = 'Ingénerie',
+  SANTE = 'Santé',
+  DROIT = 'Droit',
+  SCIENCES = 'Sciences',
+  SCIENCES_SOCIALES = 'Sciences sociales',
+  ARTS = 'Arts et design',
+  EDUCATION = 'Éducation',
+  COMMUNICATION = 'Communication'
 }
 
 export interface ISchoolDetails {
