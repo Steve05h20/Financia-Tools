@@ -12,6 +12,14 @@ const addressCount = computed(() => {
   return userStore.user?.addresses?.length || 0;
 });
 
+const emit = defineEmits(['validation-change']);
+const addressesHaveErrors = ref(false);
+
+const updateAddressValidation = (hasErrors: boolean) => {
+  addressesHaveErrors.value = hasErrors;
+  emit('validation-change', addressesHaveErrors.value);
+};
+
 const addNewAddress = () => {
   if (!userStore.user.addresses) {
     userStore.user.addresses = [];
@@ -57,7 +65,12 @@ const removeAddress = (index: number) => {
         </div>
 
       <div class="w-full p-4">
-        <AddressInfo :currentAddress="address" type="radio" name="my-accordion-2"/>
+        <AddressInfo
+          :currentAddress="address"
+          @validation-change="updateAddressValidation"
+          type="radio"
+          name="my-accordion-2"
+        />
       </div>
     </div>
 

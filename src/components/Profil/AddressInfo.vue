@@ -17,10 +17,21 @@ const props = defineProps({
 const userStore = useUserStore();
 const validation = useValidationProfil();
 
-
 onMounted(async () => {
   validation.resetErrors();
+  emitValidationState();
 });
+
+const emit = defineEmits(['validation-change']);
+
+const emitValidationState = () => {
+  const hasErrors = Object.values(validation.errors.value).some(error => error !== '');
+  emit('validation-change', hasErrors);
+};
+
+watch(() => validation.errors.value, () => {
+  emitValidationState();
+}, { deep: true });
 
 watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetNumber, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {

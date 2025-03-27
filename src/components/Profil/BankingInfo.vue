@@ -12,9 +12,21 @@ const editStore = useEditStore();
 const validation = useValidationProfil();
 const { showForm: showBankingForm } = useAddFormToggle();
 
-onMounted(() => {
+onMounted(async () => {
   validation.resetErrors();
-})
+  emitValidationState();
+});
+
+const emit = defineEmits(['validation-change']);
+
+const emitValidationState = () => {
+  const hasErrors = Object.values(validation.errors.value).some(error => error !== '');
+  emit('validation-change', hasErrors);
+};
+
+watch(() => validation.errors.value, () => {
+  emitValidationState();
+}, { deep: true });
 
 watch(
   () => [userStore.user, userStore.loading, userStore.bankingDetailsService?.bankingDetails],

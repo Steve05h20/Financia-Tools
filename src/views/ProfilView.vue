@@ -7,13 +7,35 @@ import HeaderProfil from '@/components/Profil/HeaderProfil.vue';
 import BtnUpdate from '@/components/Profil/BtnUpdate.vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import { onMounted } from 'vue';
+import useAccordionValidation from '@/services/useAccordionValidation';
+import { AccordionSection } from '@/services/useAccordionValidation';
+import useNotification from '@/services/useNotification';
 
 const userStore = useUserStore();
+const accordionValidation = useAccordionValidation();
+const notification = useNotification();
 
-//connextion simulée test@test.com
 onMounted(() => {
   userStore.loadUserData("test@test.com");
 });
+
+// Fonction pour basculer l'affichage des sections
+const toggleSection = (section: AccordionSection) => {
+
+  if (accordionValidation.activeSection.value === section) {
+    accordionValidation.activeSection.value = null;
+    return;
+  }
+
+  if (accordionValidation.activeSection.value !== null &&
+      accordionValidation.hasActiveErrors.value) {
+    notification.message("Veuillez corriger les erreurs avant de changer de section.", "error");
+    return;
+  }
+
+  accordionValidation.activeSection.value = section;
+};
+
 </script>
 
 <template>
@@ -31,38 +53,66 @@ onMounted(() => {
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
       <!-- Informations personnelles -->
-      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
-        <input type="radio" name="profile-accordion" checked />
-        <div class="collapse-title font-semibold">Informations personnelles</div>
+      <section
+        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
+        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.PERSONAL_INFO, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.PERSONAL_INFO}"
+      >
+        <div
+          class="collapse-title font-semibold"
+          @click="toggleSection(AccordionSection.PERSONAL_INFO)"
+        >
+          Informations personnelles
+        </div>
         <div class="collapse-content">
-          <UserInfo />
+          <UserInfo @validation-change="accordionValidation.updatePersonalInfoValidation" />
         </div>
       </section>
 
       <!-- Adresses -->
-      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
-        <input type="radio" name="profile-accordion" />
-        <div class="collapse-title font-semibold">Adresses</div>
+      <section
+        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
+        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.ADDRESSES, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.ADDRESSES}"
+      >
+        <div
+          class="collapse-title font-semibold"
+          @click="toggleSection(AccordionSection.ADDRESSES)"
+        >
+          Adresses
+        </div>
         <div class="collapse-content">
-          <AddressManager />
+          <AddressManager @validation-change="accordionValidation.updateAddressesValidation" />
         </div>
       </section>
 
       <!-- Détails scolaires -->
-      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
-        <input type="radio" name="profile-accordion" />
-        <div class="collapse-title font-semibold">Détails scolaires</div>
+      <section
+        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
+        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.SCHOOL_DETAILS, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.SCHOOL_DETAILS}"
+      >
+        <div
+          class="collapse-title font-semibold"
+          @click="toggleSection(AccordionSection.SCHOOL_DETAILS)"
+        >
+          Détails scolaires
+        </div>
         <div class="collapse-content">
-          <SchoolInfo />
+          <SchoolInfo @validation-change="accordionValidation.updateSchoolDetailsValidation" />
         </div>
       </section>
 
       <!-- Informations bancaires -->
-      <section class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full">
-        <input type="radio" name="profile-accordion" />
-        <div class="collapse-title font-semibold">Informations bancaires</div>
+      <section
+        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
+        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.BANKING_INFO, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.BANKING_INFO}"
+      >
+        <div
+          class="collapse-title font-semibold"
+          @click="toggleSection(AccordionSection.BANKING_INFO)"
+        >
+          Informations bancaires
+        </div>
         <div class="collapse-content">
-          <BankingInfo />
+          <BankingInfo @validation-change="accordionValidation.updateBankingInfoValidation" />
         </div>
       </section>
 

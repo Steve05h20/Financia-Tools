@@ -19,9 +19,21 @@ const validation = useValidationProfil();
 const { showForm: showSchoolForm } = useAddFormToggle();
 const { formatSchoolDates } = useDateFormatter();
 
-onMounted(() => {
+onMounted(async () => {
   validation.resetErrors();
-})
+  emitValidationState();
+});
+
+const emit = defineEmits(['validation-change']);
+
+const emitValidationState = () => {
+  const hasErrors = Object.values(validation.errors.value).some(error => error !== '');
+  emit('validation-change', hasErrors);
+};
+
+watch(() => validation.errors.value, () => {
+  emitValidationState();
+}, { deep: true });
 
 
 //Ajout d'un watcher pour les détails scolaires
@@ -59,7 +71,7 @@ const initializeSchoolDetails = () => {
       schoolName: '',
       fieldOfStudy: '' as EFieldOfStudy,
       startDate: new Date(),
-      projectedEndDate: new Date('2026-06-30'),
+      projectedEndDate: '2026-06-30',
       user: { id: userStore.user.id } as any
     });
   }

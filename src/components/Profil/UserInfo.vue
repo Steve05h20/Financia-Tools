@@ -7,9 +7,21 @@ import useValidationProfil from '@/services/useValidationProfil'
 const userStore = useUserStore();
 const validation = useValidationProfil();
 
-onMounted(() => {
+onMounted(async () => {
   validation.resetErrors();
-})
+  emitValidationState();
+});
+
+const emit = defineEmits(['validation-change']);
+
+const emitValidationState = () => {
+  const hasErrors = Object.values(validation.errors.value).some(error => error !== '');
+  emit('validation-change', hasErrors);
+};
+
+watch(() => validation.errors.value, () => {
+  emitValidationState();
+}, { deep: true });
 
 watch(() => userStore.user.lastName, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
