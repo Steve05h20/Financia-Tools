@@ -16,7 +16,7 @@ enum ErrorMessage {
   STRING_LENGTH = 'Veuillez entrer un texte entre 2 et 50 caractères',
   INVALID_EMAIL = 'Veuillez entrer un email valide',
   INVALID_PHONE = 'Le numéro de téléphone doit être sous le format 123-456-7890',
-  INVALID_BANKING_INFO = 'Numéro de compte à 12 chiffres requis',
+  INVALID_BANKING_INFO = 'Numéro de compte à 10 chiffres requis',
   DATE_PREVIOUS = 'Veuillez entrer une date antérieure à la date actuelle',
   DATE_FUTURE = 'Veuillez entrer une date postérieure à la date actuelle',
   DIGIT_IN_STREET_NUMBER = 'L\'addresse doit commencer et contenir des chiffres ex:102-A',
@@ -31,7 +31,7 @@ interface ValidationErrors {
   city: string;
   street: string;
   institutionName: string;
-  accountInfo: string;
+  accountinfo: string;
   birthDate: string;
   appointmentDate: string;
   select: string;
@@ -49,7 +49,7 @@ const useValidationProfil = () => {
     city: '',
     street: '',
     institutionName: '',
-    accountInfo: '',
+    accountinfo: '',
     birthDate: '',
     appointmentDate: '',
     select: ''
@@ -268,14 +268,14 @@ const useValidationProfil = () => {
 
   const validateAccountinfo = (
     value: string | undefined,
-    fieldName: keyof ValidationErrors = 'accountInfo'
+    fieldName: keyof ValidationErrors = 'accountinfo'
   ): boolean => {
     if (!value) {
       errors.value[fieldName] = ErrorMessage.EMPTY_ACCOUNT_INFO;
       return false;
     }
 
-    const regex = /^\d{12}$/;
+    const regex = /^\d{10}$/;
     const isValid = regex.test(value);
 
     errors.value[fieldName] = isValid ? '' : ErrorMessage.INVALID_BANKING_INFO;
