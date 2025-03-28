@@ -25,7 +25,7 @@ export const useEditStore = defineStore('edit', () => {
 
 
       /* Steve Debug
-      Méthodes PUT retourner Erreur serveur */
+      Méthodes PUT  */
 
 
       const userId = userStore.user.id;
@@ -54,7 +54,10 @@ export const useEditStore = defineStore('edit', () => {
       })}
 
       if (userStore.user.bankingDetails && userStore.user.bankingDetails.length > 0) {
-        await userStore.bankingDetailsService.putBankingDetailsByUserId(userId,userStore.user.bankingDetails[0]
+        await userStore.bankingDetailsService.putBankingDetailsByUserId(userId,{
+          institutionName:userStore.user.bankingDetails[0].institutionName,
+          accountInfo:userStore.user.bankingDetails[0].accountInfo,
+        }
         );
       }
 
