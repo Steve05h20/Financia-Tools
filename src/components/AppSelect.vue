@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { ECountry, EProvince, EAddressType } from '@/models/address.interface';
 import type { EFieldOfStudy } from '@/models/schoolDetails.interface';
+import { fieldOfStudyDisplayNames } from '@/models/schoolDetails.interface';
 import { defineProps, defineEmits, withDefaults } from 'vue';
 import { useEditStore } from '@/stores/profil/useEditStore';
 
@@ -9,12 +10,14 @@ interface Props {
   modelValue: string | undefined;
   placeholder?: string;
   options?: EFieldOfStudy[] | EProvince[] | ECountry[] | EAddressType[];
+  useDisplayNames?: boolean;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   options: () => [],
   modelValue: '',
-  placeholder: 'Sélectionnez une option'
+  placeholder: 'Sélectionnez une option',
+  useDisplayNames: false
 });
 
 const editStore = useEditStore();
@@ -23,6 +26,13 @@ const emit = defineEmits(['update:modelValue']);
 const updateValue = (event: Event) => {
   const target = event.target as HTMLSelectElement;
   emit('update:modelValue', target.value);
+};
+
+const getDisplayName = (option: string): string => {
+  if (props.useDisplayNames && option in fieldOfStudyDisplayNames) {
+    return fieldOfStudyDisplayNames[option as EFieldOfStudy];
+  }
+  return option;
 };
 
 </script>
@@ -42,7 +52,7 @@ const updateValue = (event: Event) => {
   >
     <option value="" disabled>{{ placeholder }}</option>
     <option v-for="option in options" :key="option" :value="option">
-      {{ option }}
+      {{ getDisplayName(option) }}
     </option>
   </select>
 

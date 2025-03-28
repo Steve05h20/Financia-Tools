@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { onMounted, watch, ref } from 'vue'
+import { onMounted, watch, ref, computed } from 'vue'
 import { EFieldOfStudy } from '@/models/schoolDetails.interface'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
@@ -23,6 +23,7 @@ onMounted(async () => {
   validation.resetErrors();
   emitValidationState();
 });
+
 
 const emit = defineEmits(['validation-change']);
 
@@ -153,6 +154,7 @@ watch(() => userStore.user.schoolDetails?.[0]?.projectedEndDate, (newValue: stri
           EFieldOfStudy.ARTS,
           EFieldOfStudy.EDUCATION,
         ]"
+         :useDisplayNames="true"
       />
       <div v-if="validation.errors.value.fieldOfStudy" class="text-red-500 text-sm mt-1">
         {{ validation.errors.value.fieldOfStudy }}
