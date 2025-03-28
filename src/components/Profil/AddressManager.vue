@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import AddressInfo from './AddressInfo.vue';
+import BtnDelete from './BtnDelete.vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import { useEditStore } from '@/stores/profil/useEditStore';
 import { EAddressType, EProvince, ECountry } from '@/models/address.interface';
+
 
 const userStore = useUserStore();
 const editStore = useEditStore();
@@ -77,14 +79,11 @@ const removeAddress = async (index: number) => {
       </div>
       <div class="flex justify-between">
           <span v-if="address.type" class="text-sm font-normal ml-2">{{ address.type }}</span>
-
-          <button
+          <BtnDelete
             v-if="editStore.isEditing"
-            @click="removeAddress(index)"
-            class="btn btn-error btn-sm ml-4"
-          >
-            Supprimer
-          </button>
+            @delete-confirmed="removeAddress(index)"
+            :modalText="'Voulez-vous vraiment supprimer cette adresse?'"
+          />
         </div>
 
       <div class="w-full p-4">
