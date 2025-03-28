@@ -60,7 +60,7 @@ const removeAddress = async (index: number) => {
         await userStore.addressService.deleteAddressByType(userId, addressToRemove.type);
         userStore.notificationService.message("Adresse supprimée avec succès", "success");
       } catch (error) {
-        // Si une erreur se produit, réinsérer l'adresse dans l'UI
+
         userStore.user.addresses.splice(index, 0, addressToRemove);
         const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression de l'adresse";
         userStore.notificationService.message(errorMessage, "error");

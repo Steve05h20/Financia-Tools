@@ -63,7 +63,6 @@ const removeBankingDetails = async (index: number) => {
     const detailsToRemove = userStore.user.bankingDetails[index];
     const userId = userStore.user.id;
 
-    // Supprimer d'abord de l'UI
     userStore.user.bankingDetails.splice(index, 1);
 
     if (userId) {
