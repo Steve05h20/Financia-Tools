@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import AddressInfo from './AddressInfo.vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import { useEditStore } from '@/stores/profil/useEditStore';
@@ -9,7 +9,8 @@ const userStore = useUserStore();
 const editStore = useEditStore();
 
 const addressCount = computed(() => {
-  return userStore.user?.addresses?.length || 0;
+  const addresses = userStore.user?.addresses || [];
+  return addresses.length;
 });
 
 const emit = defineEmits(['validation-change']);
@@ -19,6 +20,12 @@ const updateAddressValidation = (hasErrors: boolean) => {
   addressesHaveErrors.value = hasErrors;
   emit('validation-change', addressesHaveErrors.value);
 };
+
+const showAddButton = ref<boolean>(false);
+
+watch(addressCount, (newCount) => {
+  showAddButton.value = editStore.isEditing && newCount < 2;
+}, { immediate: true });
 
 const addNewAddress = () => {
   if (!userStore.user.addresses) {
@@ -38,12 +45,28 @@ const addNewAddress = () => {
   userStore.user.addresses.push(newAddress);
 };
 
-// Fonction pour supprimer une adresse
-const removeAddress = (index: number) => {
+const removeAddress = async (index: number) => {
   if (userStore.user?.addresses && index < (userStore.user.addresses?.length ?? 0)) {
+    const addressToRemove = userStore.user.addresses[index];
+    const userId = userStore.user.id;
+
     userStore.user.addresses.splice(index, 1);
+
+
+    if (userId && addressToRemove.type) {
+      try {
+        await userStore.addressService.deleteAddressByType(userId, addressToRemove.type);
+        userStore.notificationService.message("Adresse supprimée avec succès", "success");
+      } catch (error) {
+        // Si une erreur se produit, réinsérer l'adresse dans l'UI
+        userStore.user.addresses.splice(index, 0, addressToRemove);
+        const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression de l'adresse";
+        userStore.notificationService.message(errorMessage, "error");
+      }
+    }
   }
 };
+
 </script>
 
 <template>
@@ -76,7 +99,7 @@ const removeAddress = (index: number) => {
 
 
     <div
-      v-if="editStore.isEditing && (addressCount ?? 0) < 2"
+      v-if="showAddButton"
       class="flex justify-center mt-4 mb-8"
     >
       <button
