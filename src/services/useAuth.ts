@@ -219,8 +219,8 @@ export const useAuth = defineStore('auth', () => {
     stateAcount.errorMessage = ''
     try {
       // Réinitialiser l'état utilisateur.
-      stateAcount.utilisateur = null
-      stateAcount.isConnected = false
+      userStore.resetUser()
+      userStore.isConnected = false
       message('Déconnexion réussie', 'success') // Utilisez message
     } catch (error: unknown) {
       const errorMsg =

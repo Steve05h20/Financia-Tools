@@ -9,7 +9,6 @@ import { onMounted } from 'vue'
 
 const userStore = useUserStore()
 
-//connextion simulée test@test.com
 onMounted(() => {
   userStore.loadUserData(userStore.user.email)
 })
