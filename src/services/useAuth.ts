@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
-import useFetchUser from '@/services/useFetchUser'
+import { useUserStore } from '@/stores/useUserSotre'
 import type { IUser } from '@/models/user.interface'
-import useNotification from '@/services/useNotification' // Importez useNotification
+import useNotification from '@/services/useNotification'
 
 // Déclaration de l'enum des messages d'erreur
 enum ErrorMessage {
@@ -13,7 +13,7 @@ enum ErrorMessage {
   INVALID_CREDENTIALS = 'Identifiants invalides',
   CREATE_ACCOUNT_ERROR = 'Erreur lors de la création du compte',
   DECONNECTION_ERROR = 'Erreur lors de la déconnexion',
-  
+  PASSWORDS_DO_NOT_MATCH = 'Les mots de passe ne correspondent pas',
 }
 
 // Création du store d'authentification
@@ -23,25 +23,28 @@ export const useAuth = defineStore('auth', () => {
   // État global de l'authentification
   const stateAcount = reactive({
     utilisateur: null as IUser | null,
-    connecte: false,
+    isConnected: false,
     email: '',
     pwd: '',
+    confirmPwd: '',
     userName: '',
     loading: false,
     errorMessage: '',
     validationErrors: {
       email: '',
       pwd: '',
+      confirmPwd: '',
       userName: '',
     },
     lastActivity: null as Date | null,
   })
 
-  // Appel API du service User
-  const userService = useFetchUser()
+  // Utilisation du store userStore pour accéder à userService
+  const userStore = useUserStore()
+  const userService = userStore.userService
 
   // Utilisateur actuel avec ref
-  const user = ref<IUser | null>(null) // Utilisateur actuel avec ref= ref<IUser | null>(null)
+  const user = ref<IUser | null>(null)
 
   /*=======================================================================
     Validation des champs
@@ -60,6 +63,12 @@ export const useAuth = defineStore('auth', () => {
     return ''
   }
 
+  const validateConfirmPassword = (confirmPwd: string): string => {
+    if (!confirmPwd) return 'La confirmation du mot de passe est requise'
+    if (confirmPwd !== stateAcount.pwd) return ErrorMessage.PASSWORDS_DO_NOT_MATCH
+    return ''
+  }
+
   const validateUserName = (userName: string): string => {
     if (!userName) return "Le nom d'utilisateur est requis"
     if (userName.length < 3) return "Le nom d'utilisateur doit contenir au moins 3 caractères"
@@ -72,6 +81,7 @@ export const useAuth = defineStore('auth', () => {
       email: validateEmail(stateAcount.email),
       pwd: validatePassword(stateAcount.pwd),
       userName: validateUserName(stateAcount.userName),
+      confirmPwd: validateConfirmPassword(stateAcount.confirmPwd),
     }
   }
 
@@ -93,6 +103,9 @@ export const useAuth = defineStore('auth', () => {
     stateAcount.validationErrors.pwd = validatePassword(password)
   }
 
+  const validateConfirmPasswordRealTime = (confirmPwd: string) => {
+    stateAcount.validationErrors.confirmPwd = validateConfirmPassword(confirmPwd)
+  }
   const validateUserNameRealTime = (userName: string) => {
     stateAcount.validationErrors.userName = validateUserName(userName)
   }
@@ -101,6 +114,7 @@ export const useAuth = defineStore('auth', () => {
   const isEmailValid = computed(() => !stateAcount.validationErrors.email)
   const isPasswordValid = computed(() => !stateAcount.validationErrors.pwd)
   const isUserNameValid = computed(() => !stateAcount.validationErrors.userName)
+  const isConfirmPasswordValid = computed(() => !stateAcount.validationErrors.confirmPwd)
 
   // Action de finalisation commune
   const finallyAction = () => {
@@ -127,14 +141,25 @@ export const useAuth = defineStore('auth', () => {
     try {
       // Appel API pour récupérer l'utilisateur par email
       await userService.GET_USER_BY_EMAIL(stateAcount.email)
-      // Vérification simple du mot de passe
-      if (!userService.user.value || userService.user.value.password !== stateAcount.pwd) {
+
+      // Vérifiez si userService.user est défini avant d'accéder à ses propriétés
+      if (!userService.user || !userService.user) {
         throw new Error('Identifiants invalides')
       }
-      stateAcount.utilisateur = userService.user.value
-      stateAcount.connecte = true
+
+      // Vérification simple du mot de passe
+      if (!userService.user || userService.user.password !== stateAcount.pwd) {
+        throw new Error('Identifiants invalides')
+      }
+
+      // Mettre à jour l'état de l'utilisateur
+
+      stateAcount.utilisateur = userService.user
+      userStore.isConnected = true
+      userStore.loadUserData(stateAcount.utilisateur.email)
       stateAcount.lastActivity = new Date()
-      message('Connexion réussie !', 'success') // Utilisez message
+
+      message('Connexion reussie !', 'success') // Utilisez message
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error && error.message ? error.message : ErrorMessage.SERVER_ERROR
@@ -151,7 +176,14 @@ export const useAuth = defineStore('auth', () => {
   const creerUtilisateur = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     updateValidation()
-    if (!isValid.value || !stateAcount.userName) {
+
+    if (stateAcount.pwd !== stateAcount.confirmPwd) {
+      stateAcount.errorMessage = ErrorMessage.PASSWORDS_DO_NOT_MATCH // Utilisation de l'enum
+      message(stateAcount.errorMessage, 'error')
+      return
+    }
+
+    if (!isValid.value || !stateAcount.userName || stateAcount.pwd !== stateAcount.confirmPwd) {
       message('Veuillez corriger les erreurs de validation', 'error') // Utilisez message
       return
     }
@@ -165,8 +197,8 @@ export const useAuth = defineStore('auth', () => {
         isActive: true,
       }
       await userService.POST_USER(newUser)
-      stateAcount.utilisateur = userService.user.value ?? null
-      stateAcount.connecte = true
+      stateAcount.utilisateur = userService.user ?? null
+      stateAcount.isConnected = true
       stateAcount.lastActivity = new Date()
       message('Compte créé avec succès !', 'success') // Utilisez message
     } catch (error: unknown) {
@@ -187,8 +219,8 @@ export const useAuth = defineStore('auth', () => {
     stateAcount.errorMessage = ''
     try {
       // Réinitialiser l'état utilisateur.
-      stateAcount.utilisateur = null
-      stateAcount.connecte = false
+      userStore.resetUser()
+      userStore.isConnected = false
       message('Déconnexion réussie', 'success') // Utilisez message
     } catch (error: unknown) {
       const errorMsg =
@@ -211,8 +243,10 @@ export const useAuth = defineStore('auth', () => {
     validateEmailRealTime,
     validatePasswordRealTime,
     validateUserNameRealTime,
+    validateConfirmPasswordRealTime,
     isEmailValid,
     isPasswordValid,
     isUserNameValid,
+    isConfirmPasswordValid,
   }
 })

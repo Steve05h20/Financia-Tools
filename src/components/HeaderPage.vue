@@ -1,13 +1,13 @@
 <script setup lang="ts">
-
 import AuthView from '@/views/AuthView.vue'
-import { ref } from 'vue';
+import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import HeaderAvatar from './HeaderAvatar.vue';
-import { useUserStore } from '@/stores/useUserSotre';
+
+import HeaderAvatar from './HeaderAvatar.vue'
+import { useUserStore } from '@/stores/useUserSotre'
 
 const userStore = useUserStore()
-const isMenuOpen = ref(false);
+const isMenuOpen = ref(false)
 
 // Références pour les modals
 const inscriptionModalRef = ref<HTMLDialogElement | null>(null)
@@ -23,64 +23,79 @@ const toggleModal = () => {
     inscriptionModalRef.value?.showModal()
   }
 }
+
+// Fonction pour fermer le modal
+const fermerModal = () => {
+  if (connexionModalRef.value) {
+    connexionModalRef.value.close()
+  }
+}
 </script>
 <template>
-
-  <header class="navbar bg-base-100 text-base-content flex justify-around border-b-6 shadow-lg border-primary max-lg:flex-col max-lg:items-center transition-all">
+  <header
+    class="navbar bg-base-100 text-base-content flex justify-around border-b-6 shadow-lg border-primary max-lg:flex-col max-lg:items-center transition-all"
+  >
     <div class="flex justify-between items-center">
-      <h1 class="text-3xl text-primary m-4 font-bold">Financia/<span class="text-black font-normal text-xs">Tools</span></h1>
-      <button class="btn btn-xl hidden max-sm:block pt-1.5" :class="{ 'btn-neutral': isMenuOpen }" @click="isMenuOpen = !isMenuOpen">
-        <i  v-if="!isMenuOpen"  class="material-symbols-outlined">menu</i>
-        <i  v-else class="material-symbols-outlined">close</i>
+      <h1 class="text-3xl text-primary m-4 font-bold">
+        Financia/<span class="text-black font-normal text-xs">Tools</span>
+      </h1>
+      <button
+        class="btn btn-xl hidden max-sm:block pt-1.5"
+        :class="{ 'btn-neutral': isMenuOpen }"
+        @click="isMenuOpen = !isMenuOpen"
+      >
+        <i v-if="!isMenuOpen" class="material-symbols-outlined">menu</i>
+        <i v-else class="material-symbols-outlined">close</i>
       </button>
     </div>
-    <nav class="flex gap-8 max-sm:flex-col m-4 w-full items-center justify-end max-sm:justify-start max-lg:justify-center max-sm:h-screen" :class="{ 'max-sm:hidden ': !isMenuOpen }">
-
-        <RouterLink
-          class="btn max-sm:btn-xl"
-          :class="{ 'btn-neutral': $route.path === '/' }"
-          to="/"
-          @click="isMenuOpen = false"
-          v-if="userStore.isConnected"
-        >
-          Home
-        </RouterLink>
-        <RouterLink
-          class="btn max-sm:btn-xl"
-          :class="{ 'btn-neutral': $route.path === '/budget' }"
-          to="/budget"
-          @click="isMenuOpen = false"
-          v-if="userStore.isConnected"
-        >
-          Budget
-        </RouterLink>
-        <RouterLink
-          class="btn max-sm:btn-xl"
-          :class="{ 'btn-neutral': $route.path === '/profile' }"
-          to="/profile"
-          @click="isMenuOpen = false"
-          v-if="userStore.isConnected"
-        >
-          Profile
-        </RouterLink>
+    <nav
+      class="flex gap-8 max-sm:flex-col m-4 w-full items-center justify-end max-sm:justify-start max-lg:justify-center max-sm:h-screen"
+      :class="{ 'max-sm:hidden ': !isMenuOpen }"
+    >
+      <RouterLink
+        class="btn max-sm:btn-xl"
+        :class="{ 'btn-neutral': $route.path === '/' }"
+        to="/"
+        @click="isMenuOpen = false"
+        v-if="userStore.isConnected"
+      >
+        Home
+      </RouterLink>
+      <RouterLink
+        class="btn max-sm:btn-xl"
+        :class="{ 'btn-neutral': $route.path === '/budget' }"
+        to="/budget"
+        @click="isMenuOpen = false"
+        v-if="userStore.isConnected"
+      >
+        Budget
+      </RouterLink>
+      <RouterLink
+        class="btn max-sm:btn-xl"
+        :class="{ 'btn-neutral': $route.path === '/profile' }"
+        to="/profile"
+        @click="isMenuOpen = false"
+        v-if="userStore.isConnected"
+      >
+        Profile
+      </RouterLink>
 
       <div v-if="!userStore.isConnected" class="flex justify-between items-center gap-8">
         <button class="btn" @click="connexionModalRef?.showModal()">Se connecter</button>
         <button class="btn" @click="inscriptionModalRef?.showModal()">S'inscrire</button>
       </div>
-      
-      <HeaderAvatar :userName="userStore.user.firstName" v-else/>
 
+      <HeaderAvatar :userName="userStore.user.firstName" v-else />
     </nav>
   </header>
-  
+
   <!-- Modal pour l'inscription -->
   <dialog ref="inscriptionModalRef" class="modal w-96 h-auto m-auto">
     <div class="modal-box">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <AuthView action="inscription" @toggle-action="toggleModal" />
+      <AuthView action="inscription" @change-action="toggleModal" />
     </div>
   </dialog>
 
@@ -88,9 +103,11 @@ const toggleModal = () => {
   <dialog ref="connexionModalRef" class="modal w-96 h-auto m-auto">
     <div class="modal-box">
       <form method="dialog">
-        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        <button @click="fermerModal" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+          ✕
+        </button>
       </form>
-      <AuthView action="connexion" @toggle-action="toggleModal" />
+      <AuthView action="connexion" @connexion-reussie="fermerModal" @change-action="toggleModal" />
     </div>
   </dialog>
 </template>
@@ -110,11 +127,26 @@ const toggleModal = () => {
   }
 
   /* Animation séquentielle pour chaque élément du menu */
-  nav a:nth-child(1), nav button:nth-child(1) { animation-delay: 0.1s; }
-  nav a:nth-child(2), nav button:nth-child(2) { animation-delay: 0.15s; }
-  nav a:nth-child(3), nav button:nth-child(3) { animation-delay: 0.2s; }
-  nav a:nth-child(4), nav button:nth-child(4) { animation-delay: 0.25s; }
-  nav a:nth-child(5), nav button:nth-child(5) { animation-delay: 0.3s; }
+  nav a:nth-child(1),
+  nav button:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  nav a:nth-child(2),
+  nav button:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  nav a:nth-child(3),
+  nav button:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  nav a:nth-child(4),
+  nav button:nth-child(4) {
+    animation-delay: 0.25s;
+  }
+  nav a:nth-child(5),
+  nav button:nth-child(5) {
+    animation-delay: 0.3s;
+  }
 
   /* Keyframes pour l'animation du menu */
   @keyframes slideDown {
@@ -141,5 +173,3 @@ const toggleModal = () => {
   }
 }
 </style>
-
-

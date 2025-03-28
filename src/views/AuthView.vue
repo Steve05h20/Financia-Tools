@@ -2,6 +2,7 @@
 import { useAuth } from '@/services/useAuth'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { defineEmits } from 'vue'
 
 // Props pour déterminer l'action (connexion ou inscription)
 const props = defineProps({
@@ -28,9 +29,24 @@ const handleSubmit = async (e: Event) => {
   }
 
   // Redirection vers la page "budget" après connexion ou inscription réussie
-  if (auth.stateAcount.connecte) {
+  if (auth.stateAcount.isConnected) {
+    console.log('Utilisateur connecté, redirection vers /budget') // Debug
+  } else {
+    console.log('Utilisateur non connecté, redirection annulée') // Debug
+
     router.push('/budget') // Rediriger vers la page budget
   }
+}
+const emits = defineEmits(['connexion-reussie', 'change-action'])
+
+const connexionReussie = () => {
+  // Simuler une connexion réussie (à remplacer par ta logique réelle)
+  console.log('Connexion réussie')
+  emits('connexion-reussie')
+}
+
+const toggleAction = () => {
+  emits('change-action', isSignUp.value ? 'connexion' : 'inscription')
 }
 </script>
 
@@ -52,14 +68,14 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Champ Nom d'utilisateur (uniquement pour l'inscription) -->
       <div v-if="isSignUp">
-        <label for="username" class="label">Nom d'utilisateur</label>
+        <label for="username" class="label text-primary font-semibold">Nom d'utilisateur</label>
         <input
           type="text"
           v-model="auth.stateAcount.userName"
           @input="auth.validateUserNameRealTime(auth.stateAcount.userName)"
           id="username"
           placeholder="Entrez un nom d'utilisateur"
-          class="input w-full"
+          class="input w-full "
         />
         <p v-if="auth.stateAcount.validationErrors.userName" class="mt-1 text-sm text-red-600">
           {{ auth.stateAcount.validationErrors.userName }}
@@ -68,7 +84,7 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Champ Email -->
       <div>
-        <label for="email" class="label">Email</label>
+        <label for="email" class="label text-primary font-semibold">Email</label>
         <input
           type="email"
           v-model="auth.stateAcount.email"
@@ -84,7 +100,7 @@ const handleSubmit = async (e: Event) => {
 
       <!-- Champ Mot de passe -->
       <div>
-        <label for="password" class="label">Mot de passe</label>
+        <label for="password" class="label text-primary font-semibold">Mot de passe</label>
         <input
           type="password"
           v-model="auth.stateAcount.pwd"
@@ -98,29 +114,28 @@ const handleSubmit = async (e: Event) => {
         </p>
       </div>
       <!-- Champ confirmation Mot de passe -->
-      <div>
-        <label for="password" class="label">Confirmez Mot de passe</label>
+      <div v-if="isSignUp">
+        <label for="confirmPassword" class="label text-primary font-semibold">Confirmez le mot de passe</label>
         <input
           type="password"
-          v-model="auth.stateAcount.pwd"
-          @input="auth.validatePasswordRealTime(auth.stateAcount.pwd)"
-          id="password"
-          placeholder="Entrez votre mot de passe"
+          v-model="auth.stateAcount.confirmPwd"
+          @input="auth.validateConfirmPasswordRealTime(auth.stateAcount.confirmPwd)"
+          id="confirmPassword"
+          placeholder="Confirmez votre mot de passe"
           class="input w-full"
         />
-        <p v-if="auth.stateAcount.validationErrors.pwd" class="mt-1 text-sm text-red-600">
-          {{ auth.stateAcount.validationErrors.pwd }}
+        <p v-if="auth.stateAcount.validationErrors.confirmPwd" class="mt-1 text-sm text-red-600">
+          {{ auth.stateAcount.validationErrors.confirmPwd }}
         </p>
       </div>
-
-
 
       <!-- Bouton de soumission -->
       <div>
         <button
+          @click="connexionReussie"
           type="submit"
           :disabled="!auth.isValid || auth.stateAcount.loading"
-          class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           <span v-if="auth.stateAcount.loading">Connexion en cours...</span>
           <span v-else>{{ isSignUp ? 'Créer un compte' : 'Se connecter' }}</span>
@@ -130,9 +145,9 @@ const handleSubmit = async (e: Event) => {
       <!-- Lien pour basculer entre connexion et inscription -->
       <div class="text-center">
         <button
+          @click="toggleAction"
           type="button"
-          @click="$emit('toggleAction')"
-          class="text-indigo-600 hover:underline"
+          class="text-primary hover:text-primary-focus hover:underline"
         >
           {{
             isSignUp

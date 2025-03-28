@@ -1,32 +1,24 @@
-
 <script lang="ts" setup>
-import UserInfo from '@/components/Profil/UserInfo.vue';
-import BankingInfo from '@/components/Profil/BankingInfo.vue';
-import AddressInfo from '@/components/Profil/AddressInfo.vue';
-import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
+import UserInfo from '@/components/Profil/UserInfo.vue'
+import BankingInfo from '@/components/Profil/BankingInfo.vue'
+import AddressInfo from '@/components/Profil/AddressInfo.vue'
+import SchoolInfo from '@/components/Profil/SchoolInfo.vue'
 
-import { useUserStore } from '@/stores/useUserSotre';
-import { onMounted } from 'vue';
+import { useUserStore } from '@/stores/useUserSotre'
+import { onMounted } from 'vue'
 
+const userStore = useUserStore()
 
-const userStore = useUserStore();
-
-//connextion simulée test@test.com
 onMounted(() => {
-  userStore.loadUserData("test@test.com");
-});
-
-
-
+  userStore.loadUserData(userStore.user.email)
+})
 </script>
 <template>
   <div class="container mx-auto px-4 py-10">
-
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
-
-      <section class="mb-8 lg:col-span-4  w-full ">
+      <section class="mb-8 lg:col-span-4 w-full">
         <div class="divider text-lg font-semibold">Informations personnelles</div>
-          <UserInfo />
+        <UserInfo />
       </section>
 
       <section class="mb-8 lg:col-span-4 w-full">
@@ -35,7 +27,6 @@ onMounted(() => {
           <AddressInfo />
         </div>
       </section>
-
 
       <section class="mb-8 lg:col-span-2 w-full">
         <div class="divider text-lg font-semibold">Détails scolaires</div>
@@ -52,10 +43,6 @@ onMounted(() => {
       </section>
     </div>
   </div>
-
-
 </template>
 
-<style>
-</style>
-
+<style></style>
