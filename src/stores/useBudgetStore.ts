@@ -14,13 +14,7 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
 
-      // Ne pas recharger les données utilisateur si nous les avons déjà
-      if (!userStore.user || !userStore.user.email) {
-        console.log('Pas d\'utilisateur connecté, chargement des données utilisateur...')
-        await userStore.loadUserData(userStore.user?.email || 'test@test.com')
-      } else {
-        console.log('Utilisateur déjà chargé, utilisation des transactions existantes')
-      }
+
 
       // Toujours copier les transactions pour garantir la réactivité
       transactions.value = [...(userStore.user.transactions || [])]
