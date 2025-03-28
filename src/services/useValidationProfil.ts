@@ -161,7 +161,7 @@ const useValidationProfil = () => {
       return false;
     }
 
-    const isLengthValid = validateTextLength(address, 2, 50, fieldName);
+    const isLengthValid = validateTextLength(address, 1, 50, fieldName);
     if (!isLengthValid) {
       return false;
     }
@@ -326,13 +326,6 @@ const useValidationProfil = () => {
     // Validation des adresses
     if (user.addresses && user.addresses.length > 0) {
       for (const address of user.addresses) {
-        // Créer des clés de validation uniques pour chaque adresse
-        const index = user.addresses.indexOf(address);
-        const streetNumberKey = `streetNumber_${index}` as keyof ValidationErrors;
-        const streetNameKey = `streetName_${index}` as keyof ValidationErrors;
-        const cityKey = `city_${index}` as keyof ValidationErrors;
-        const provinceKey = `province_${index}` as keyof ValidationErrors;
-        const countryKey = `country_${index}` as keyof ValidationErrors;
 
         if (!validateAddress(address.streetNumber, 'streetNumber')) isValid = false;
         if (!validateStreet(address.streetName, 'streetName')) isValid = false;
