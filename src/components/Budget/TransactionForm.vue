@@ -78,11 +78,11 @@
         <label class="label text-primary "> Fréquence </label>
         <select
           v-model="form.frequency"
-          class="input input-bordered w-full input-sm"
+          class="select select-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.frequency }"
         >
           <option v-for="(value, key) in EFrequency" :key="key" :value="value">
-            {{ key }}
+            {{ FREQUENCY_LABELS[key] }}
           </option>
         </select>
         <p v-if="errors.frequency" class="text-red-500 text-xs mt-1">
@@ -92,28 +92,45 @@
 
       <!-- Catégorie -->
       <div>
-        <label class="label text-primary "> Catégorie </label>
-        <select
-          v-model="form.category"
-          class="input input-bordered w-full input-sm"
-          :class="{ 'border-red-500': errors.category }"
-        >
-          <option value="Dépenses">Dépenses</option>
-          <option value="Revenue">Revenue</option>
-        </select>
+        <label class="label text-primary">Catégorie</label>
+        <div class="dropdown w-full">
+          <input
+            v-model="form.category"
+            type="text"
+            class="input input-bordered w-full input-sm"
+            :class="{ 'border-red-500': errors.category }"
+            placeholder="Sélectionnez ou écrivez une catégorie"
+            tabindex="0"
+          />
+          <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-200 rounded-box w-full">
+            <li v-for="categorie in categoriesDisponibles" :key="categorie">
+              <a @click="selectCategory(categorie)">{{ categorie }}</a>
+            </li>
+          </ul>
+        </div>
         <p v-if="errors.category" class="text-red-500 text-xs mt-1">
-          {{ errors.category }}
+          {{ errors.category  }}
         </p>
+      </div>
+
+      <!-- type  -->
+      <div class="flex items-center gap-2">
+        <label class="label text-primary "> Type </label>
+        <select v-model="form.type" class="select select-bordered w-full input-sm" :class="{ 'border-red-500': errors.type }">
+          <option value="" disabled selected>Sélectionnez un type</option>
+          <option v-for="(value, key) in EType" :key="key" :value="value">
+            {{ key === 'REVENUE' ? 'Revenue' : 'Dépense' }}
+          </option>
+        </select>
       </div>
 
       <!-- Statut (Payée) -->
       <div class="flex items-center">
         <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2"/>
         <label class="label text-primary ">
-          {{ form.category === 'Revenue' ? 'Reçu' : 'Payée' }}
+          {{ form.type === 'Revenue' ? 'Reçu' : 'Payée' }}
         </label>
       </div>
-
 
       <!-- Bouton de soumission -->
       <div class="md:col-span-2 flex justify-center">
@@ -129,8 +146,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { EFrequency, EType, type ITransaction } from '../../models/transaction.interface'
+import { ref, onMounted, computed } from 'vue'
+import { EFrequency, EType, type ITransaction, FREQUENCY_LABELS } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 import { useUserStore } from '../../stores/useUserSotre'
 
@@ -148,13 +165,44 @@ const form = ref<Partial<ITransaction>>({
   startDate: new Date(formatTodayDate()),
   endDate: undefined,
   frequency: EFrequency.Monthly,
-  category: 'Dépenses',
+  category: '',
   isDone: false,
+  type: EType.EXPENSE,
 })
 
 const todayDate = ref(formatTodayDate())
 
 const errors = ref<Partial<Record<keyof ITransaction, string>>>({})
+
+
+
+// Définition des catégories prédéfinies
+const categoriesDepenses = [
+  'Alimentation',
+  'Transport',
+  'Logement',
+  'Loisirs',
+  'Santé',
+  'Éducation',
+  'Factures',
+  'Shopping',
+  'Vacances',
+  'Autres'
+]
+
+const categoriesRevenues = [
+  'Salaire',
+  'Freelance',
+  'Investissements',
+  'Remboursements',
+  'Cadeaux',
+  'Autres'
+]
+
+
+const categoriesDisponibles = computed(() => {
+  return form.value.type === EType.REVENUE ? categoriesRevenues : categoriesDepenses
+})
 
 const validateForm = () => {
   errors.value = {}
@@ -185,8 +233,8 @@ const validateForm = () => {
 
   if (!form.value.category) {
     errors.value.category = 'La catégorie est obligatoire.'
-  } else if (!['Dépenses', 'Revenue'].includes(form.value.category)) {
-    errors.value.category = 'La catégorie sélectionnée est invalide.'
+  } else if (form.value.category.length < 2) {
+    errors.value.category = 'La catégorie doit contenir au moins 2 caractères.'
   }
 
   return Object.keys(errors.value).length === 0
@@ -197,7 +245,7 @@ const handleSubmit = async () => {
     return
   }
 
-  const type = form.value.category === 'Revenue' ? EType.REVENUE : EType.EXPENSE
+  const type = form.value.type === EType.REVENUE ? EType.REVENUE : EType.EXPENSE
 
   try {
     await budgetStore.addTransactionByType(
@@ -209,7 +257,7 @@ const handleSubmit = async () => {
         frequency: form.value.frequency!,
         category: form.value.category!,
         isDone: form.value.isDone ?? false,
-        user: userStore.user
+        user: userStore.user,
       },
       type,
     )
@@ -220,8 +268,9 @@ const handleSubmit = async () => {
       startDate: new Date(todayDate.value),
       endDate: undefined,
       frequency: EFrequency.Monthly,
-      category: 'Dépenses',
+      category: '',
       isDone: false,
+      type: EType.EXPENSE,
     }
     errors.value = {}
     console.log('Ajout réussi, transactions actuelles :', budgetStore.transactions)
@@ -229,6 +278,12 @@ const handleSubmit = async () => {
     console.error('Erreur lors de l’ajout de la transaction :', error)
     alert('Une erreur est survenue lors de l’ajout de la transaction.')
   }
+}
+
+const selectCategory = (categorie: string) => {
+  form.value.category = categorie
+  const input = document.activeElement as HTMLElement
+  input?.blur()
 }
 
 onMounted(() => {

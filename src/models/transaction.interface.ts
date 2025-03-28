@@ -8,6 +8,14 @@ export enum EFrequency {
   Unlimited = -1
 }
 
+export const FREQUENCY_LABELS: Record<keyof typeof EFrequency, string> = {
+  Daily: 'Journalier',
+  Weekly: 'Hebdomadaire',
+  BiWeekly: 'Bi-Hebdomadaire',
+  Monthly: 'Mensuel',
+  Unlimited: 'Indéfini'
+}
+
 export enum EType {
   REVENUE = "Revenue",
   EXPENSE = "Expense"

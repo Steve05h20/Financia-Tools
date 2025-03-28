@@ -9,12 +9,7 @@
         <p class="mt-2 text-base-content/70">Chargement des transactions...</p>
       </div>
 
-      <!-- Bouton de rechargement -->
-      <div class="flex justify-end mb-4">
-        <button @click="rechargerTransactions" class="btn btn-sm btn-outline btn-primary gap-2">
-          <i class="material-symbols-outlined">refresh</i> Recharger
-        </button>
-      </div>
+
 
       <!-- Vue mobile : cartes pour chaque transaction -->
       <div class="block lg:hidden space-y-4">
@@ -56,7 +51,7 @@
               </div>
               <div>
                 <p class="text-base-content/70">Fréquence</p>
-                <p>{{ getFrequencyLabel(transaction.frequency) }}</p>
+                <p>{{ FREQUENCY_LABELS[getFrequencyKey(transaction.frequency)] }}</p>
               </div>
               <div>
                 <p class="text-base-content/70">Statut</p>
@@ -198,7 +193,7 @@
               </td>
               <td class="hidden xl:table-cell">
                 <span v-if="!editingTransaction || editingTransaction.id !== transaction.id">
-                  {{ getFrequencyLabel(transaction.frequency) }}
+                  {{ FREQUENCY_LABELS[getFrequencyKey(transaction.frequency)] }}
                 </span>
                 <select
                   v-else
@@ -368,8 +363,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { EFrequency, EType } from '../../models/transaction.interface'
-import type { ITransaction } from '../../models/transaction.interface'
+import { EFrequency, EType, type ITransaction, FREQUENCY_LABELS } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 
 const budgetStore = useBudgetStore()
@@ -382,13 +376,6 @@ const transactions = computed(() => budgetStore.transactions)
 
 const formatDate = (date: string | Date): string => {
   return new Date(date).toISOString().split('T')[0]
-}
-
-const getFrequencyLabel = (frequency: EFrequency): string => {
-  const frequencyLabel = Object.keys(EFrequency).find(
-    (key) => EFrequency[key as keyof typeof EFrequency] === frequency,
-  )
-  return frequencyLabel ?? '-'
 }
 
 const toggleStatus = async (transaction: ITransaction) => {
@@ -459,6 +446,10 @@ const rechargerTransactions = async () => {
 
 const capitalizeText = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+const getFrequencyKey = (frequency: EFrequency): keyof typeof EFrequency => {
+  return EFrequency[frequency] as keyof typeof EFrequency
 }
 
 onMounted(async () => {
