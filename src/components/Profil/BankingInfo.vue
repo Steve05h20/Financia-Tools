@@ -57,10 +57,9 @@ watch(() => props.currentBankingDetails?.accountInfo, (newValue: string | undefi
         v-model="currentBankingDetails.institutionName"
         placeholder="Entrez le nom de votre institution bancaire"
         :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.institutionName"
+        :errorMessage="validation.errors.value.institutionName"
       />
-      <div v-if="validation.errors.value.institutionName" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.institutionName }}
-      </div>
     </div>
 
     <div>
@@ -71,10 +70,9 @@ watch(() => props.currentBankingDetails?.accountInfo, (newValue: string | undefi
         v-model="currentBankingDetails.accountInfo"
         placeholder="Entrez votre numéro de compte"
         :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.accountInfo"
+        :errorMessage="validation.errors.value.accountInfo"
       />
-      <div v-if="validation.errors.value.accountInfo" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.accountInfo }}
-      </div>
     </div>
   </div>
 </template>

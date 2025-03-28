@@ -23,8 +23,8 @@ const updateAddressValidation = (hasErrors: boolean) => {
 
 const showAddButton = ref<boolean>(false);
 
-watch(addressCount, (newCount) => {
-  showAddButton.value = editStore.isEditing && newCount < 2;
+watch([addressCount, () => editStore.isEditing], ([newCount, isEditing]) => {
+  showAddButton.value = isEditing && newCount <= 1;
 }, { immediate: true });
 
 const addNewAddress = () => {
@@ -79,7 +79,7 @@ const removeAddress = async (index: number) => {
           <span v-if="address.type" class="text-sm font-normal ml-2">{{ address.type }}</span>
 
           <button
-            v-if="editStore.isEditing && (userStore.user?.addresses?.length ?? 0) > 1"
+            v-if="editStore.isEditing"
             @click="removeAddress(index)"
             class="btn btn-error btn-sm ml-4"
           >

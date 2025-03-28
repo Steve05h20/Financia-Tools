@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { watch, onMounted, computed } from 'vue'
+import { watch, onMounted } from 'vue'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
 import { EProvince, ECountry, EAddressType } from '@/models/address.interface'
 import { useUserStore } from '@/stores/useUserSotre'
 import useValidationProfil from '@/services/useValidationProfil'
+import { useEditStore } from '@/stores/profil/useEditStore'
 
 const props = defineProps({
   currentAddress: {
@@ -14,6 +15,7 @@ const props = defineProps({
   }
 });
 
+const editStore = useEditStore();
 const userStore = useUserStore();
 const validation = useValidationProfil();
 
@@ -33,7 +35,7 @@ watch(() => validation.errors.value, () => {
   emitValidationState();
 }, { deep: true });
 
-watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetNumber, (newValue: string | undefined) => {
+watch(() => props.currentAddress.streetNumber, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.streetNumber = validation.ErrorMessage.EMPTY_ADDRESS;
   } else {
@@ -41,7 +43,7 @@ watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetNumber, (
   }
 });
 
-watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetName, (newValue: string | undefined) => {
+watch(() => props.currentAddress.streetName, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.streetName = validation.ErrorMessage.EMPTY_STREET;
   } else {
@@ -49,7 +51,7 @@ watch(() => userStore.user.addresses?.[props.currentAddress.id]?.streetName, (ne
   }
 });
 
-watch(() => userStore.user.addresses?.[props.currentAddress.id]?.city, (newValue: string | undefined) => {
+watch(() => props.currentAddress.city, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.city = validation.ErrorMessage.EMPTY_CITY;
   } else {
@@ -57,7 +59,7 @@ watch(() => userStore.user.addresses?.[props.currentAddress.id]?.city, (newValue
   }
 });
 
-watch(() => userStore.user.addresses?.[props.currentAddress.id]?.province, (newValue: string | undefined) => {
+watch(() => props.currentAddress.province, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.province = validation.ErrorMessage.EMPTY_SELECT;
   } else {
@@ -65,7 +67,7 @@ watch(() => userStore.user.addresses?.[props.currentAddress.id]?.province, (newV
   }
 });
 
-watch(() => userStore.user.addresses?.[props.currentAddress.id]?.country, (newValue: string | undefined) => {
+watch(() => props.currentAddress.country, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.country = validation.ErrorMessage.EMPTY_SELECT;
   } else {
@@ -73,14 +75,13 @@ watch(() => userStore.user.addresses?.[props.currentAddress.id]?.country, (newVa
   }
 });
 
-watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue: string | undefined) => {
+watch(() => props.currentAddress.type, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
     validation.errors.value.type = validation.ErrorMessage.EMPTY_SELECT;
   } else {
     validation.validateSelect(newValue, 'type');
   }
 });
-
 </script>
 
 <template>
@@ -93,10 +94,10 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
        required
        v-model="currentAddress.streetNumber"
        placeholder="placeholder"
+       :disabled="!editStore.isEditing"
+       :hasError="!!validation.errors.value.streetNumber"
+       :errorMessage="validation.errors.value.streetNumber"
      />
-     <div v-if="validation.errors.value.streetNumber" class="text-red-500 text-sm mt-1">
-         {{ validation.errors.value.streetNumber }}
-     </div>
    </div>
 
    <div>
@@ -106,10 +107,10 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
        required
        v-model="currentAddress.streetName"
        placeholder="placeholder"
+       :disabled="!editStore.isEditing"
+       :hasError="!!validation.errors.value.streetName"
+       :errorMessage="validation.errors.value.streetName"
      />
-     <div v-if="validation.errors.value.streetName" class="text-red-500 text-sm mt-1">
-         {{ validation.errors.value.streetName }}
-     </div>
    </div>
 
    <div>
@@ -119,10 +120,10 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
        required
        v-model="currentAddress.city"
        placeholder="placeholder"
+       :disabled="!editStore.isEditing"
+       :hasError="!!validation.errors.value.city"
+       :errorMessage="validation.errors.value.city"
      />
-     <div v-if="validation.errors.value.city" class="text-red-500 text-sm mt-1">
-         {{ validation.errors.value.city }}
-     </div>
    </div>
 
    <div>
@@ -131,6 +132,8 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
        v-model="currentAddress.province"
        placeholder="Choisissez une province"
        id="province"
+       :disabled="!editStore.isEditing"
+       :hasError="!!validation.errors.value.province"
        :options="[
          EProvince.QUEBEC,
          EProvince.ONTARIO,
@@ -147,9 +150,6 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
          EProvince.YUKON
        ]"
      />
-     <div v-if="validation.errors.value.province" class="text-red-500 text-sm mt-1">
-       {{ validation.errors.value.province }}
-     </div>
    </div>
 
    <div>
@@ -158,11 +158,12 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
        v-model="currentAddress.country"
        placeholder="Choisissez un pays"
        id="country"
+       :disabled="!editStore.isEditing"
        :options="[
          ECountry.CANADA
        ]"
      />
-     <div v-if="validation.errors.value.country" class="text-red-500 text-sm mt-1">
+     <div v-if="!!validation.errors.value.country" class="text-red-500 text-sm mt-1">
        {{ validation.errors.value.country }}
      </div>
    </div>
@@ -173,15 +174,16 @@ watch(()=> userStore.user.addresses?.[props.currentAddress.id]?.type, (newValue:
       v-model="currentAddress.type"
       placeholder="Choisissez un type d'adresse"
       id="type"
+      :disabled="!editStore.isEditing"
       :options="[
         EAddressType.PERSONAL,
         EAddressType.WORK,
       ]"
     />
-    <div v-if="validation.errors.value.type" class="text-red-500 text-sm mt-1">
+    <div v-if="!!validation.errors.value.type" class="text-red-500 text-sm mt-1">
        {{ validation.errors.value.type }}
      </div>
    </div>
 
   </div>
- </template>
+</template>

@@ -3,9 +3,11 @@ import InputLabelDiv from '../InputLabelDiv.vue'
 import { watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/useUserSotre'
 import useValidationProfil from '@/services/useValidationProfil'
+import { useEditStore } from '@/stores/profil/useEditStore';
 
 const userStore = useUserStore();
 const validation = useValidationProfil();
+const editStore = useEditStore();
 
 onMounted(async () => {
   validation.resetErrors();
@@ -74,10 +76,10 @@ watch(() => userStore.user.email, (newValue: string) => {
         required
         v-model="userStore.user.lastName"
         placeholder="placeholder"
+        :hasError="!!validation.errors.value.lastName"
+        :errorMessage="validation.errors.value.lastName"
+        :disabled="!editStore.isEditing"
       />
-      <div v-if="validation.errors.value.lastName" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.lastName }}
-      </div>
     </div>
 
     <div>
@@ -87,10 +89,10 @@ watch(() => userStore.user.email, (newValue: string) => {
         required
         v-model="userStore.user.firstName"
         placeholder="placeholder"
+        :hasError="!!validation.errors.value.firstName"
+        :errorMessage="validation.errors.value.firstName"
+        :disabled="!editStore.isEditing"
       />
-      <div v-if="validation.errors.value.firstName" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.firstName }}
-      </div>
     </div>
 
     <div>
@@ -101,10 +103,10 @@ watch(() => userStore.user.email, (newValue: string) => {
         v-model="userStore.user.birthDate"
         placeholder="placeholder"
         type="date"
+        :hasError="!!validation.errors.value.birthDate"
+        :errorMessage="validation.errors.value.birthDate"
+        :disabled="!editStore.isEditing"
       />
-      <div v-if="validation.errors.value.birthDate" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.birthDate }}
-      </div>
     </div>
 
     <div>
@@ -115,10 +117,10 @@ watch(() => userStore.user.email, (newValue: string) => {
         v-model="userStore.user.phone"
         placeholder="123-456-7890"
         type="tel"
+        :hasError="!!validation.errors.value.phone"
+        :errorMessage="validation.errors.value.phone"
+        :disabled="!editStore.isEditing"
       />
-      <div v-if="validation.errors.value.phone" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.phone }}
-      </div>
     </div>
 
     <div>
@@ -129,14 +131,11 @@ watch(() => userStore.user.email, (newValue: string) => {
         v-model="userStore.user.email"
         placeholder="exemple@domaine.com"
         type="email"
+        :hasError="!!validation.errors.value.email"
+        :errorMessage="validation.errors.value.email"
+        :disabled="!editStore.isEditing"
       />
-      <div v-if="validation.errors.value.email" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.email }}
-      </div>
     </div>
   </div>
 </template>
 
-
-<style>
-</style>

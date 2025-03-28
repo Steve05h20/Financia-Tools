@@ -35,7 +35,7 @@ watch(() => validation.errors.value, () => {
 
 watch(() => props.currentSchoolDetails?.schoolName, (newValue: string | undefined) => {
   if (!newValue || newValue.trim() === '') {
-    validation.validateInstitutionName(newValue, 'schoolName');
+    validation.validateSchoolName(newValue, 'schoolName');
   } else {
     validation.validateTextLength(newValue, 2, 50, 'schoolName');
   }
@@ -76,10 +76,9 @@ watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Da
         v-model="currentSchoolDetails.schoolName"
         placeholder="Entrez le nom de votre établissement"
         :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.schoolName"
+        :errorMessage="validation.errors.value.schoolName"
       />
-      <div v-if="validation.errors.value.schoolName" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.schoolName }}
-      </div>
     </div>
 
     <div>
@@ -88,6 +87,7 @@ watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Da
         v-model="currentSchoolDetails.fieldOfStudy"
         id="fieldOfStudy"
         :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.fieldOfStudy"
         :options="[
           EFieldOfStudy.INFORMATIQUE,
           EFieldOfStudy.INGENIERIE,
@@ -100,9 +100,6 @@ watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Da
         ]"
         :useDisplayNames="true"
       />
-      <div v-if="validation.errors.value.fieldOfStudy" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.fieldOfStudy }}
-      </div>
     </div>
 
     <div>
@@ -114,10 +111,9 @@ watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Da
         placeholder="Sélectionnez une date"
         type="date"
         :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.startDate"
+        :errorMessage="validation.errors.value.startDate"
       />
-      <div v-if="validation.errors.value.startDate" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.startDate }}
-      </div>
     </div>
 
     <div>
@@ -128,10 +124,9 @@ watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Da
         placeholder="Sélectionnez une date"
         type="date"
         :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.projectedEndDate"
+        :errorMessage="validation.errors.value.projectedEndDate"
       />
-      <div v-if="validation.errors.value.projectedEndDate" class="text-red-500 text-sm mt-1">
-        {{ validation.errors.value.projectedEndDate }}
-      </div>
     </div>
   </div>
 </template>

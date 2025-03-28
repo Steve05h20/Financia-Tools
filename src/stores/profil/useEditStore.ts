@@ -8,11 +8,14 @@ export const useEditStore = defineStore('edit', () => {
   const isEditing = ref<boolean>(false);
   const userStore = useUserStore();
 
+  const attemptedSave = ref<boolean>(false);
+
   const toggleEditing = (): void => {
     isEditing.value = !isEditing.value;
   };
 
   const saveChanges = async (): Promise<void> => {
+
     if (!validation.validateAll(userStore.user)) {
       userStore.notificationService.message("Veuillez corriger les erreurs avant de sauvegarder", "error");
       return;
@@ -24,7 +27,6 @@ export const useEditStore = defineStore('edit', () => {
         throw new Error("ID utilisateur non défini");
       }
 
-      // Préparer l'objet utilisateur de base
       const userDataForUpdate = {
         id: userId,
         firstName: userStore.user.firstName,
@@ -38,7 +40,6 @@ export const useEditStore = defineStore('edit', () => {
 
       await userStore.userService.PUT_USER_BY_ID(Number(userId), userDataForUpdate);
 
-      // Mettre à jour chaque adresse individuellement si elles existent
       if (userStore.user.addresses && userStore.user.addresses.length > 0) {
         for (const address of userStore.user.addresses) {
           const addressData = {
@@ -52,12 +53,10 @@ export const useEditStore = defineStore('edit', () => {
             country: address.country
           };
 
-          // Utiliser l'URL spécifique pour l'adresse basée sur son type
           await userStore.addressService.putAddressesByUserId(userId, addressData as any);
         }
       }
 
-      // Mettre à jour les détails scolaires s'ils existent
       if (userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0) {
         await userStore.schoolDetailsService.PUT_SCHOOL_DETAILS_BY_USER_ID(userId, {
           ...(userStore.user.schoolDetails[0].id && { id: userStore.user.schoolDetails[0].id }),
@@ -68,7 +67,6 @@ export const useEditStore = defineStore('edit', () => {
         });
       }
 
-      // Mettre à jour les détails bancaires s'ils existent
       if (userStore.user.bankingDetails && userStore.user.bankingDetails.length > 0) {
         await userStore.bankingDetailsService.putBankingDetailsByUserId(userId, {
           ...(userStore.user.bankingDetails[0].id && { id: userStore.user.bankingDetails[0].id }),
@@ -78,6 +76,8 @@ export const useEditStore = defineStore('edit', () => {
       }
 
       isEditing.value = false;
+      attemptedSave.value = false;
+
       userStore.notificationService.message("Les modifications ont été enregistrées avec succès", "success");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Erreur lors de la sauvegarde des données";
@@ -88,6 +88,7 @@ export const useEditStore = defineStore('edit', () => {
   return {
     isEditing,
     toggleEditing,
-    saveChanges
+    saveChanges,
+    attemptedSave
   };
 });

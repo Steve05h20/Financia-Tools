@@ -7,12 +7,16 @@ interface Props {
   placeholder: string;
   modelValue: string | number | Date | undefined;
   id?: string;
+  hasError?: boolean;
+  errorMessage?: string;
 }
 
 withDefaults(defineProps<Props>(), {
   type: 'text',
   placeholder: '',
   id: '',
+  hasError: false,
+  errorMessage: ''
 });
 
 const editStore = useEditStore();
@@ -39,10 +43,14 @@ const updateValue = (event: Event) => {
       :disabled="!editStore.isEditing"
       :readonly="!editStore.isEditing"
       :class="{
-      'input my-1 w-full border-none disabled:bg-transparent disabled:opacity-100 disabled:text-black ': !editStore.isEditing,
-      'input input-ghost bg-slate-50 my-1 w-full ': editStore.isEditing
+        'input my-1 w-full border-none disabled:bg-transparent disabled:opacity-100 disabled:text-black': !editStore.isEditing,
+        'input input-ghost bg-slate-50 my-1 w-full': editStore.isEditing && !hasError,
+        'input input-error input-ghost bg-slate-50 my-1 w-full': editStore.isEditing && hasError
       }"
     />
+    <div v-if="hasError && errorMessage" class="text-error text-sm mt-1">
+      {{ errorMessage }}
+    </div>
   </div>
 
 </template>
