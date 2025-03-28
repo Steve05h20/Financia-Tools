@@ -228,8 +228,8 @@ const useValidationProfil = () => {
     fieldName: keyof ValidationErrors = 'appointmentDate'
   ): boolean => {
     if (!date) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_DATE;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
     let dateObj: Date;

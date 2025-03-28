@@ -180,7 +180,6 @@ watch(() => userStore.user.schoolDetails?.[0]?.projectedEndDate, (newValue: stri
       <InputLabelDiv
         labelText="Date de fin prévue"
         htmlFor="projectedEndDate"
-        required
         v-model="userStore.user.schoolDetails[0].projectedEndDate"
         placeholder="Sélectionnez une date"
         type="date"
