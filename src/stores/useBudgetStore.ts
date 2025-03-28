@@ -42,7 +42,22 @@ export const useBudgetStore = defineStore('budget', () => {
       .reduce((acc, transaction) => acc + (Number(transaction.amount) || 0), 0)
   }
 
-  const addTransactionByType = async (transaction: Omit<ITransaction, 'id' | 'type'>, type: EType) => {
+  const updateLocalTransaction = (idTransaction: number, updatedTransaction: Partial<ITransaction>) => {
+    const index = transactions.value.findIndex(t => t.id === idTransaction)
+    if (index !== -1) {
+      transactions.value[index] = { ...transactions.value[index], ...updatedTransaction }
+    }
+  }
+
+  const removeLocalTransaction = (idTransaction: number) => {
+    transactions.value = transactions.value.filter(t => t.id !== idTransaction)
+  }
+
+  const addLocalTransaction = (transaction: ITransaction) => {
+    transactions.value.push(transaction)
+  }
+
+  const updateTransaction = async (idTransaction: number, transaction: Partial<ITransaction>) => {
     try {
       if (typeof userStore.user.id !== 'number') {
         throw new Error('ID utilisateur non valide')
@@ -51,17 +66,16 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
 
-      await userStore.transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {
-        ...transaction,
-        type,
-      })
+      await userStore.transactionService.UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
+        userStore.user.id,
+        idTransaction,
+        transaction
+      )
 
-      // Recharger les transactions pour être sûr d'avoir les données à jour
-      await loadTransactions()
-
-      console.log('Transactions après ajout :', transactions.value)
+      // Mise à jour locale immédiate
+      updateLocalTransaction(idTransaction, transaction)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erreur lors de la création de la transaction'
+      error.value = err instanceof Error ? err.message : 'Erreur lors de la mise à jour de la transaction'
       console.error(error.value)
       throw err
     } finally {
@@ -83,8 +97,8 @@ export const useBudgetStore = defineStore('budget', () => {
         idTransaction
       )
 
-      // Recharger les transactions
-      await loadTransactions()
+      // Suppression locale immédiate
+      removeLocalTransaction(idTransaction)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur lors de la suppression de la transaction'
       console.error(error.value)
@@ -94,7 +108,7 @@ export const useBudgetStore = defineStore('budget', () => {
     }
   }
 
-  const updateTransaction = async (idTransaction: number, transaction: ITransaction) => {
+  const addTransactionByType = async (transaction: Omit<ITransaction, 'id' | 'type'>, type: EType) => {
     try {
       if (typeof userStore.user.id !== 'number') {
         throw new Error('ID utilisateur non valide')
@@ -103,16 +117,17 @@ export const useBudgetStore = defineStore('budget', () => {
       loading.value = true
       error.value = null
 
-      await userStore.transactionService.UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
-        userStore.user.id,
-        idTransaction,
-        transaction
-      )
+      const response = await userStore.transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {
+        ...transaction,
+        type,
+      })
 
-      // Recharger les transactions
-      await loadTransactions()
+      // Ajout local immédiat si la réponse est une transaction
+      if (response && typeof response === 'object' && 'id' in response) {
+        addLocalTransaction(response as ITransaction)
+      }
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erreur lors de la mise à jour de la transaction'
+      error.value = err instanceof Error ? err.message : 'Erreur lors de la création de la transaction'
       console.error(error.value)
       throw err
     } finally {

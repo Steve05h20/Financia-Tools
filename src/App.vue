@@ -12,7 +12,7 @@ import Notification from './components/ToastNotification.vue';
   <Header />
   <Notification />
   <RouterView />
-  <footer>
+  <footer class="bg-base-100">
     <h1>Footer</h1>
   </footer>
 </template>

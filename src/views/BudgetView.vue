@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5">
+  <div class="p-5 bg-base-100">
     <BudgetSummary />
     <TransactionForm />
     <TransactionList />

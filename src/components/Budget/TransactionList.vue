@@ -40,7 +40,7 @@
             <div class="grid grid-cols-2 gap-2 text-sm my-3">
               <div>
                 <p class="text-base-content/70">Montant</p>
-                <p class="font-medium">{{ transaction.amount }}€</p>
+                <p class="font-medium">{{ transaction.amount }}$</p>
               </div>
               <div>
                 <p class="text-base-content/70">Catégorie</p>
@@ -131,7 +131,7 @@
             >
               <td>
                 <span v-if="!editingTransaction || editingTransaction.id !== transaction.id">
-                  {{ transaction.description ?? '-' }}
+                  {{ capitalizeText(transaction.description ?? '-') }}
                 </span>
                 <input
                   v-else
@@ -145,7 +145,7 @@
                   v-if="!editingTransaction || editingTransaction.id !== transaction.id"
                   class="font-medium"
                 >
-                  {{ transaction.amount }}€
+                  {{ transaction.amount }}$
                 </span>
                 <input
                   v-else
@@ -156,14 +156,23 @@
               </td>
               <td>
                 <span
+                  v-if="!editingTransaction || editingTransaction.id !== transaction.id"
                   :class="
                     transaction.type === EType.EXPENSE
                       ? 'badge badge-error badge-sm'
                       : 'badge badge-success badge-sm'
                   "
                 >
-                  {{ transaction.type }}
+                  {{ transaction.type === EType.EXPENSE ? 'Dépenses' : 'Revenue' }}
                 </span>
+                <select
+                  v-else
+                  v-model="editingTransaction.type"
+                  class="select select-bordered select-sm w-full"
+                >
+                  <option :value="EType.EXPENSE">Dépenses</option>
+                  <option :value="EType.REVENUE">Revenue</option>
+                </select>
               </td>
               <td>
                 <span v-if="!editingTransaction || editingTransaction.id !== transaction.id">
@@ -173,7 +182,7 @@
                   v-else
                   v-model="editingTransaction.startDate"
                   type="date"
-                  class="input input-bordered input-sm w-full"
+                  class="input input-bordered input-sm w-full "
                 />
               </td>
               <td class="hidden xl:table-cell">
@@ -203,16 +212,13 @@
               </td>
               <td>
                 <span v-if="!editingTransaction || editingTransaction.id !== transaction.id">
-                  {{ transaction.category ?? '-' }}
+                  {{ capitalizeText(transaction.category ?? '-') }}
                 </span>
-                <select
+                <input
                   v-else
                   v-model="editingTransaction.category"
-                  class="select select-bordered select-sm w-full"
+                  class="input input-bordered input-sm w-full"
                 >
-                  <option value="Dépenses">Dépenses</option>
-                  <option value="Revenue">Revenue</option>
-                </select>
               </td>
               <td>
                 <button
@@ -277,8 +283,8 @@
   </div>
 
   <!-- Modal d'édition -->
-  <input type="checkbox" id="edit-modal" class="modal-toggle" v-model="isEditModalOpen" />
-  <div class="modal" :class="{ 'modal-open': isEditModalOpen }">
+  <input  type="checkbox" id="edit-modal" class="modal-toggle " v-model="isEditModalOpen" />
+  <div class="modal sm:hidden max-sm:block" :class="{ 'modal-open': isEditModalOpen }" >
     <div class="modal-box">
       <h3 class="font-bold text-lg">Éditer la transaction</h3>
       <div v-if="editingTransaction" class="py-4">
@@ -328,22 +334,30 @@
 
           <div class="form-control">
             <label class="label">
-              <span class="label-text text-primary">Catégorie</span>
+              <span class="label-text text-primary">Type</span>
             </label>
-            <select v-model="editingTransaction.category" class="select select-bordered w-full">
-              <option value="Dépenses">Dépenses</option>
-              <option value="Revenue">Revenue</option>
+            <select v-model="editingTransaction.type" class="select select-bordered w-full">
+              <option :value="EType.EXPENSE">Dépenses</option>
+              <option :value="EType.REVENUE">Revenue</option>
             </select>
           </div>
         </div>
 
-        <div class="form-control mt-2">
-          <label class="label cursor-pointer justify-start gap-4">
-            <span class="label-text text-primary">Transaction payée</span>
-            <input type="checkbox" v-model="editingTransaction.isDone" class="toggle toggle-success" />
-          </label>
+        <div class="grid grid-cols-2 gap-4 mt-2">
+          <div class="form-control mt-2">
+            <label class="label cursor-pointer justify-start gap-4">
+              <span class="label-text text-primary">Transaction payée</span>
+              <input type="checkbox" v-model="editingTransaction.isDone" class="toggle toggle-success" />
+            </label>
+          </div>
+          <div class="form-control mt-2">
+            <label class="label cursor-pointer justify-start gap-4">
+              <span class="label-text text-primary">Catégorie</span>
+              <input type="text" v-model="editingTransaction.category" class="input input-bordered" />
+            </label>
+          </div>
+                </div>
         </div>
-      </div>
       <div class="modal-action">
         <button @click="saveEditing" class="btn btn-success">Sauvegarder</button>
         <button @click="cancelEditing" class="btn">Annuler</button>
@@ -407,14 +421,24 @@ const startEditing = (transaction: ITransaction) => {
 const saveEditing = async () => {
   if (!editingTransaction.value || editingTransaction.value.id === undefined) return
   try {
-    await budgetStore.updateTransaction(editingTransaction.value.id, editingTransaction.value)
-    editingTransaction.value = null
+    await budgetStore.updateTransaction(editingTransaction.value.id, {
+      description: editingTransaction.value.description,
+      amount: Number(editingTransaction.value.amount),
+      startDate: editingTransaction.value.startDate,
+      endDate: editingTransaction.value.endDate,
+      frequency: editingTransaction.value.frequency,
+      category: editingTransaction.value.category,
+      isDone: editingTransaction.value.isDone,
+      type: editingTransaction.value.type
+    })
     isEditModalOpen.value = false
   } catch (error) {
     console.error('Erreur lors de la sauvegarde de la transaction:', error)
-    alert('Une erreur est survenue lors de la sauvegarde de la transaction.')
+    alert(error instanceof Error ? error.message : 'Une erreur est survenue lors de la sauvegarde de la transaction.')
   }
-}
+  finally {
+    editingTransaction.value = null
+}}
 
 const cancelEditing = () => {
   editingTransaction.value = null
@@ -449,3 +473,23 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style>
+/* Personnalisation du date picker */
+input[type="date"] {
+  color-scheme: light;
+  background-color: white;
+  color: #333;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: white;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: #f0f0f0;
+}
+</style>
