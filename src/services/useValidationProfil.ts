@@ -9,6 +9,7 @@ enum ErrorMessage {
   EMPTY_STREET = 'Le nom de rue est requis',
   EMPTY_PHONE = 'Numéro de téléphone requis',
   EMPTY_INSTITUTION_NAME = 'Nom de votre institution bancaire requis',
+  EMPTY_SCHOOL_NAME = 'Nom de votre établissement scolaire requis',
   EMPTY_ACCOUNT_INFO = 'Numéro de compte requis',
   EMPTY_SELECT = 'Veuillez sélectionner une option',
   EMPTY_DATE = 'Veuillez entrer une date',
@@ -265,6 +266,17 @@ const useValidationProfil = () => {
     return isValid;
   };
 
+  const validateSchoolName = (schoolName: string | undefined, fieldName: keyof ValidationErrors = 'schoolName'): boolean => {
+    if (!schoolName) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_SCHOOL_NAME;
+      return false;
+    }
+
+    const isValid = validateText(schoolName, fieldName);
+
+    return isValid;
+  };
+
 
   const validateAccountInfo = (
     value: string | undefined,
@@ -351,6 +363,7 @@ const useValidationProfil = () => {
     validatePhone,
     validatePrevDate,
     validateFutureDate,
+    validateSchoolName,
     validateInstitutionName,
     validateAccountInfo,
     validateSelect,
