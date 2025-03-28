@@ -99,7 +99,7 @@ export const useFetchSchoolDetails = () => {
     }
   };
 
-  const PUT_SCHOOL_DETAILS_BY_USER_ID = async (userId: number, details: ISchoolDetails) => {
+  const PUT_SCHOOL_DETAILS_BY_USER_ID = async (userId: number, details: Partial<ISchoolDetails>) => {
     validateUserId(userId)
     error.value = null
     loading.value = true

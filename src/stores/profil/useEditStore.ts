@@ -46,8 +46,12 @@ export const useEditStore = defineStore('edit', () => {
 
 
        if (userStore.user.schoolDetails && userStore.user.schoolDetails.length > 0) {
-        await userStore.schoolDetailsService.PUT_SCHOOL_DETAILS_BY_USER_ID(userId,userStore.user.schoolDetails[0]);
-      }
+        await userStore.schoolDetailsService.PUT_SCHOOL_DETAILS_BY_USER_ID(userId, {
+          schoolName: userStore.user.schoolDetails[0].schoolName,
+          fieldOfStudy: userStore.user.schoolDetails[0].fieldOfStudy,
+          startDate: userStore.user.schoolDetails[0].startDate,
+          projectedEndDate: userStore.user.schoolDetails[0].projectedEndDate,
+      })}
 
       if (userStore.user.bankingDetails && userStore.user.bankingDetails.length > 0) {
         await userStore.bankingDetailsService.putBankingDetailsByUserId(userId,userStore.user.bankingDetails[0]
