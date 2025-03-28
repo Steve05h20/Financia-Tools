@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, reactive, computed } from 'vue'
 import { useUserStore } from '@/stores/useUserSotre'
+import { useBudgetStore } from '@/stores/useBudgetStore'
 import type { IUser } from '@/models/user.interface'
 import useNotification from '@/services/useNotification'
 
@@ -41,6 +42,7 @@ export const useAuth = defineStore('auth', () => {
 
   // Utilisation du store userStore pour accéder à userService
   const userStore = useUserStore()
+  const budgetStore = useBudgetStore()
   const userService = userStore.userService
 
   // Utilisateur actuel avec ref
@@ -133,7 +135,7 @@ export const useAuth = defineStore('auth', () => {
     e.preventDefault()
     updateValidation()
     if (!isValid.value) {
-      message('Veuillez corriger les erreurs de validation', 'error') // Utilisez message
+      message('Veuillez corriger les erreurs de validation', 'error')
       return
     }
     stateAcount.loading = true
@@ -153,18 +155,24 @@ export const useAuth = defineStore('auth', () => {
       }
 
       // Mettre à jour l'état de l'utilisateur
-
       stateAcount.utilisateur = userService.user
       userStore.isConnected = true
-      userStore.loadUserData(stateAcount.utilisateur.email)
-      stateAcount.lastActivity = new Date()
 
-      message('Connexion reussie !', 'success') // Utilisez message
+      // Charger toutes les données de l'utilisateur
+      await userStore.loadUserData(stateAcount.utilisateur.email)
+
+      // Vérifier que l'utilisateur a bien un ID
+      if (!userStore.user.id) {
+        throw new Error('ID utilisateur non disponible')
+      }
+
+      stateAcount.lastActivity = new Date()
+      message('Connexion reussie !', 'success')
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error && error.message ? error.message : ErrorMessage.SERVER_ERROR
       stateAcount.errorMessage = errorMsg
-      message(errorMsg, 'error') // Utilisez message
+      message(errorMsg, 'error')
     } finally {
       finallyAction()
     }
@@ -197,8 +205,8 @@ export const useAuth = defineStore('auth', () => {
         isActive: true,
       }
       await userService.POST_USER(newUser)
-      stateAcount.utilisateur = userService.user ?? null
-      stateAcount.isConnected = true
+      userStore.loadUserData(stateAcount.email)
+      userStore.isConnected = true
       stateAcount.lastActivity = new Date()
       message('Compte créé avec succès !', 'success') // Utilisez message
     } catch (error: unknown) {
@@ -218,15 +226,17 @@ export const useAuth = defineStore('auth', () => {
     stateAcount.loading = true
     stateAcount.errorMessage = ''
     try {
-      // Réinitialiser l'état utilisateur.
+      // Réinitialiser l'état utilisateur
       userStore.resetUser()
       userStore.isConnected = false
-      message('Déconnexion réussie', 'success') // Utilisez message
+      // Vider les transactions
+      budgetStore.clearTransactions()
+      message('Déconnexion réussie', 'success')
     } catch (error: unknown) {
       const errorMsg =
         error instanceof Error && error.message ? error.message : ErrorMessage.DECONNECTION_ERROR
       stateAcount.errorMessage = errorMsg
-      message(errorMsg, 'error') // Utilisez message
+      message(errorMsg, 'error')
     } finally {
       finallyAction()
     }

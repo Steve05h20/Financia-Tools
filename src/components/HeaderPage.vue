@@ -26,8 +26,9 @@ const toggleModal = () => {
 
 // Fonction pour fermer le modal
 const fermerModal = () => {
-  if (connexionModalRef.value) {
+  if (connexionModalRef.value && inscriptionModalRef.value) {
     connexionModalRef.value.close()
+    inscriptionModalRef.value.close()
   }
 }
 </script>
@@ -95,7 +96,7 @@ const fermerModal = () => {
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <AuthView action="inscription" @change-action="toggleModal" />
+      <AuthView action="inscription" @change-action="toggleModal" @inscription-reussie="fermerModal" @connexion-reussie="fermerModal" />
     </div>
   </dialog>
 
@@ -107,7 +108,7 @@ const fermerModal = () => {
           ✕
         </button>
       </form>
-      <AuthView action="connexion" @connexion-reussie="fermerModal" @change-action="toggleModal" />
+      <AuthView action="connexion" @inscription-reussie="fermerModal" @connexion-reussie="fermerModal" @change-action="toggleModal" />
     </div>
   </dialog>
 </template>

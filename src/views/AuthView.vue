@@ -3,6 +3,7 @@ import { useAuth } from '@/services/useAuth'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineEmits } from 'vue'
+import { useUserStore } from '@/stores/useUserSotre'
 
 // Props pour déterminer l'action (connexion ou inscription)
 const props = defineProps({
@@ -15,6 +16,7 @@ const props = defineProps({
 
 const router = useRouter()
 const auth = useAuth()
+const userStore = useUserStore()
 
 // Détermine si l'utilisateur est sur la page d'inscription
 const isSignUp = computed(() => props.action === 'inscription')
@@ -22,19 +24,26 @@ const isSignUp = computed(() => props.action === 'inscription')
 // Gestion du formulaire
 const handleSubmit = async (e: Event) => {
   e.preventDefault()
-  if (isSignUp.value) {
-    await auth.creerUtilisateur(e) // Créer un compte
-  } else {
-    await auth.connecterUtilisateur(e) // Se connecter
-  }
+  try {
+    if (isSignUp.value) {
+      await auth.creerUtilisateur(e) // Créer un compte
+    } else {
+      await auth.connecterUtilisateur(e) // Se connecter
+    }
 
-  // Redirection vers la page "budget" après connexion ou inscription réussie
-  if (auth.stateAcount.isConnected) {
-    console.log('Utilisateur connecté, redirection vers /budget') // Debug
-  } else {
-    console.log('Utilisateur non connecté, redirection annulée') // Debug
-
-    router.push('/budget') // Rediriger vers la page budget
+    // Si la connexion/inscription est réussie
+    if (userStore.isConnected) {
+      console.log('Utilisateur connecté, redirection vers /budget') // Debug
+      connexionReussie() // Émettre l'événement pour fermer la modal
+      // Attendre un court instant pour que la modal se ferme
+      setTimeout(() => {
+        router.push('/budget') // Rediriger vers la page budget
+      }, 100)
+    } else {
+      console.log('Utilisateur non connecté, redirection annulée') // Debug
+    }
+  } catch (error) {
+    console.error('Erreur lors de la connexion/inscription:', error)
   }
 }
 const emits = defineEmits(['connexion-reussie', 'change-action'])

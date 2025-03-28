@@ -150,6 +150,7 @@ export const useUserStore = defineStore('user', () => {
         user.value.bankingDetails = [bankingDetailsService.bankingDetails.value]
       }
 
+
       //use it for debug notificationService.message('Toutes les données utilisateur ont été chargées', 'success')
     } catch (err) {
       handleError(err)

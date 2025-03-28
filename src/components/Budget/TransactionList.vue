@@ -200,8 +200,8 @@
                   v-model="editingTransaction.frequency"
                   class="select select-bordered select-sm w-full"
                 >
-                  <option v-for="(value, key) in EFrequency" :key="key" :value="value">
-                    {{ key }}
+                  <option v-for="(label, key) in FREQUENCY_LABELS" :key="key" :value="EFrequency[key as keyof typeof EFrequency]">
+                    {{ label }}
                   </option>
                 </select>
               </td>
@@ -321,8 +321,8 @@
               <span class="label-text text-primary">Fréquence</span>
             </label>
             <select v-model="editingTransaction.frequency" class="select select-bordered w-full">
-              <option v-for="(value, key) in EFrequency" :key="key" :value="value">
-                {{ key }}
+              <option v-for="(label, key) in FREQUENCY_LABELS" :key="key" :value="EFrequency[key as keyof typeof EFrequency]">
+                {{ label }}
               </option>
             </select>
           </div>
@@ -366,9 +366,15 @@ import { ref, onMounted, computed } from 'vue'
 import { EFrequency, EType, type ITransaction, FREQUENCY_LABELS } from '../../models/transaction.interface'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 
+// Interface pour l'édition avec les dates en string
+interface IEditingTransaction extends Omit<ITransaction, 'startDate' | 'endDate'> {
+  startDate: string;
+  endDate?: string;
+}
+
 const budgetStore = useBudgetStore()
 const isLoading = ref(true)
-const editingTransaction = ref<ITransaction | null>(null)
+const editingTransaction = ref<IEditingTransaction | null>(null)
 const isEditModalOpen = ref(false)
 
 // Utiliser computed pour réagir aux changements du store
@@ -401,7 +407,11 @@ const handleDelete = async (id: number) => {
 }
 
 const startEditing = (transaction: ITransaction) => {
-  editingTransaction.value = { ...transaction }
+  editingTransaction.value = {
+    ...transaction,
+    startDate: new Date(transaction.startDate).toISOString().split('T')[0],
+    endDate: transaction.endDate ? new Date(transaction.endDate).toISOString().split('T')[0] : undefined
+  }
   isEditModalOpen.value = true
 }
 
@@ -411,8 +421,8 @@ const saveEditing = async () => {
     await budgetStore.updateTransaction(editingTransaction.value.id, {
       description: editingTransaction.value.description,
       amount: Number(editingTransaction.value.amount),
-      startDate: editingTransaction.value.startDate,
-      endDate: editingTransaction.value.endDate,
+      startDate: new Date(editingTransaction.value.startDate),
+      endDate: editingTransaction.value.endDate ? new Date(editingTransaction.value.endDate) : undefined,
       frequency: editingTransaction.value.frequency,
       category: editingTransaction.value.category,
       isDone: editingTransaction.value.isDone,
@@ -425,24 +435,15 @@ const saveEditing = async () => {
   }
   finally {
     editingTransaction.value = null
-}}
+  }
+}
 
 const cancelEditing = () => {
   editingTransaction.value = null
   isEditModalOpen.value = false
 }
 
-const rechargerTransactions = async () => {
-  try {
-    isLoading.value = true
-    await budgetStore.loadTransactions()
-    console.log('Transactions rechargées:', transactions.value)
-  } catch (error) {
-    console.error('Erreur lors du rechargement des transactions:', error)
-  } finally {
-    isLoading.value = false
-  }
-}
+
 
 const capitalizeText = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1)

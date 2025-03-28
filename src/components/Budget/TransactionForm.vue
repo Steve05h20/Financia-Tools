@@ -81,8 +81,8 @@
           class="select select-bordered w-full input-sm"
           :class="{ 'border-red-500': errors.frequency }"
         >
-          <option v-for="(value, key) in EFrequency" :key="key" :value="value">
-            {{ FREQUENCY_LABELS[key] }}
+          <option v-for="(label, key) in FREQUENCY_LABELS" :key="key" :value="EFrequency[key as keyof typeof EFrequency]">
+            {{ label }}
           </option>
         </select>
         <p v-if="errors.frequency" class="text-red-500 text-xs mt-1">

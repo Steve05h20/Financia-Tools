@@ -63,10 +63,7 @@ export const useFetchTransaction = () => {
       switch (response.status) {
         case 200: {
           const data = await response.json()
-          if (data.length === 0) {
-            throw new Error(ErrorMessage.TRANSACTIONS_NOT_FOUND);
-          }
-          transactions.value = data
+          transactions.value = data || []
           break
         }
         default: {
@@ -75,6 +72,7 @@ export const useFetchTransaction = () => {
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+      transactions.value = []
     } finally {
       loading.value = false
     }

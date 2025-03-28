@@ -9,19 +9,27 @@ export const useBudgetStore = defineStore('budget', () => {
   const error = ref<string | null>(null)
   const loading = ref(false)
 
+  const clearTransactions = () => {
+    transactions.value = []
+    error.value = null
+  }
+
   const loadTransactions = async () => {
     try {
       loading.value = true
       error.value = null
 
+      if (!userStore.user.id) {
+        throw new Error('ID utilisateur non disponible')
+      }
 
-
-      // Toujours copier les transactions pour garantir la réactivité
-      transactions.value = [...(userStore.user.transactions || [])]
+      await userStore.transactionService.GET_TRANSACTIONS_BY_USER_ID(userStore.user.id)
+      transactions.value = userStore.transactionService.transactions || []
       console.log('Transactions chargées :', transactions.value)
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Erreur de chargement des transactions'
       console.error(error.value)
+      transactions.value = []
     } finally {
       loading.value = false
     }
@@ -136,6 +144,7 @@ export const useBudgetStore = defineStore('budget', () => {
     addTransactionByType,
     deleteTransaction,
     updateTransaction,
+    clearTransactions,
     error,
     loading,
   }
