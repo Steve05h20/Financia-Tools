@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import UserInfo from '@/components/Profil/UserInfo.vue';
-import BankingInfo from '@/components/Profil/BankingInfo.vue';
+import BankingInfoManager from '@/components/Profil/BankingInfoManager.vue';
 import AddressManager from '@/components/Profil/AddressManager.vue';
-import SchoolInfo from '@/components/Profil/SchoolInfo.vue';
+import SchoolInfoManager from '@/components/Profil/SchoolInfoManager.vue';
 import HeaderProfil from '@/components/Profil/HeaderProfil.vue';
 import BtnUpdate from '@/components/Profil/BtnUpdate.vue';
 import { useUserStore } from '@/stores/useUserSotre';
@@ -19,7 +19,6 @@ onMounted(() => {
   userStore.loadUserData("test@test.com");
 });
 
-// Fonction pour basculer l'affichage des sections
 const toggleSection = (section: AccordionSection) => {
 
   if (accordionValidation.activeSection.value === section) {
@@ -96,7 +95,7 @@ const toggleSection = (section: AccordionSection) => {
           Détails scolaires
         </div>
         <div class="collapse-content">
-          <SchoolInfo @validation-change="accordionValidation.updateSchoolDetailsValidation" />
+          <SchoolInfoManager @validation-change="accordionValidation.updateSchoolDetailsValidation" />
         </div>
       </section>
 
@@ -112,7 +111,7 @@ const toggleSection = (section: AccordionSection) => {
           Informations bancaires
         </div>
         <div class="collapse-content">
-          <BankingInfo @validation-change="accordionValidation.updateBankingInfoValidation" />
+          <BankingInfoManager @validation-change="accordionValidation.updateBankingInfoValidation" />
         </div>
       </section>
 
