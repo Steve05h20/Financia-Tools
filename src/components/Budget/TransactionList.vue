@@ -1,7 +1,12 @@
 <template>
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body">
-      <h2 class="card-title text-primary">Liste des transactions</h2>
+      <div class="flex justify-between items-center">
+        <h2 class="card-title text-primary">Liste des transactions</h2>
+        <button @click="openDeleteNonRecurrentModal" class="btn btn-warning">
+          Nouveau mois
+        </button>
+      </div>
 
       <!-- Indicateur de chargement -->
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-8">
@@ -60,7 +65,7 @@
                   :class="transaction.isDone ? 'badge badge-success' : 'badge badge-warning'"
                   class="mt-1"
                 >
-                  {{ transaction.isDone ? 'Payée' : 'En attente' }}
+                  {{ transaction.isDone ? 'Reccurent' : 'Non Reccurent' }}
                 </button>
               </div>
             </div>
@@ -92,7 +97,7 @@
                   transaction.id !== undefined &&
                   (!editingTransaction || editingTransaction.id !== transaction.id)
                 "
-                @click="handleDelete(transaction.id)"
+                @click="openDeleteSingleModal(transaction.id)"
                 class="btn btn-sm btn-error"
               >
                 Supprimer
@@ -219,13 +224,13 @@
                 <button
                   v-if="!editingTransaction || editingTransaction.id !== transaction.id"
                   @click="toggleStatus(transaction)"
-                  :class="transaction.isDone ? 'badge badge-success' : 'badge badge-warning'"
+                  :class="transaction.isDone ? 'badge badge-info' : 'badge badge-base-300'"
                 >
-                  {{ transaction.isDone ? 'Payée' : 'En attente' }}
+                  {{ transaction.isDone ? 'Reccurent' : 'Non Reccurent' }}
                 </button>
                 <div v-else class="flex items-center">
                   <input v-model="editingTransaction.isDone" type="checkbox" class="toggle toggle-sm toggle-success mr-2" />
-                  <span class="text-sm">Payée</span>
+                  <span class="text-sm">Reccurent</span>
                 </div>
               </td>
               <td>
@@ -256,7 +261,7 @@
                       transaction.id !== undefined &&
                       (!editingTransaction || editingTransaction.id !== transaction.id)
                     "
-                    @click="handleDelete(transaction.id)"
+                    @click="openDeleteSingleModal(transaction.id)"
                     class="btn btn-xs btn-error"
                   >
                     <span class="hidden sm:inline">Supprimer</span>
@@ -338,24 +343,45 @@
           </div>
         </div>
 
+        <div class="form-control mt-2">
+          <label class="label cursor-pointer justify-start gap-4">
+            <span class="label-text text-primary">Catégorie</span>
+            <input type="text" v-model="editingTransaction.category" class="input input-bordered" />
+          </label>
+        </div>
         <div class="grid grid-cols-2 gap-4 mt-2">
           <div class="form-control mt-2">
             <label class="label cursor-pointer justify-start gap-4">
-              <span class="label-text text-primary">Transaction payée</span>
+              <span class="label-text text-primary">Reccurent</span>
               <input type="checkbox" v-model="editingTransaction.isDone" class="toggle toggle-success" />
             </label>
           </div>
-          <div class="form-control mt-2">
-            <label class="label cursor-pointer justify-start gap-4">
-              <span class="label-text text-primary">Catégorie</span>
-              <input type="text" v-model="editingTransaction.category" class="input input-bordered" />
-            </label>
-          </div>
-                </div>
         </div>
+      </div>
       <div class="modal-action">
         <button @click="saveEditing" class="btn btn-success">Sauvegarder</button>
         <button @click="cancelEditing" class="btn">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmation pour la suppression des transactions non récurrentes -->
+  <input type="checkbox" id="delete-non-recurrent-modal" class="modal-toggle" v-model="isDeleteNonRecurrentModalOpen" />
+  <div class="modal" :class="{ 'modal-open': isDeleteNonRecurrentModalOpen }">
+    <div class="modal-box">
+      <h3 class="font-bold text-lg">
+        {{ deleteMode === 'month' ? 'Confirmation nouveau mois' : 'Confirmation de suppression' }}
+      </h3>
+      <p class="py-4">
+        {{ deleteMode === 'month'
+          ? 'Êtes-vous sûr de vouloir commencer un nouveau mois ? Toutes les transactions non récurrentes seront supprimées.'
+          : 'Êtes-vous sûr de vouloir supprimer cette transaction ?' }}
+      </p>
+      <div class="modal-action">
+        <button @click="handleDelete" class="btn" :class="deleteMode === 'month' ? 'btn-primary' : 'btn-error'">
+          {{ deleteMode === 'month' ? 'Confirmer' : 'Supprimer' }}
+        </button>
+        <button @click="isDeleteNonRecurrentModalOpen = false" class="btn">Annuler</button>
       </div>
     </div>
   </div>
@@ -376,6 +402,9 @@ const budgetStore = useBudgetStore()
 const isLoading = ref(true)
 const editingTransaction = ref<IEditingTransaction | null>(null)
 const isEditModalOpen = ref(false)
+const isDeleteNonRecurrentModalOpen = ref(false)
+const deleteMode = ref<'single' | 'month'>('month')
+const transactionToDelete = ref<number | null>(null)
 
 // Utiliser computed pour réagir aux changements du store
 const transactions = computed(() => budgetStore.transactions)
@@ -397,12 +426,21 @@ const toggleStatus = async (transaction: ITransaction) => {
   }
 }
 
-const handleDelete = async (id: number) => {
+const handleDelete = async () => {
   try {
-    await budgetStore.deleteTransaction(id)
+    if (deleteMode.value === 'month') {
+      const nonRecurrentTransactions = transactions.value.filter(t => !t.isDone && t.id !== undefined)
+      for (const transaction of nonRecurrentTransactions) {
+        await budgetStore.deleteTransaction(transaction.id!)
+      }
+    } else if (deleteMode.value === 'single' && transactionToDelete.value) {
+      await budgetStore.deleteTransaction(transactionToDelete.value)
+    }
+    isDeleteNonRecurrentModalOpen.value = false
+    transactionToDelete.value = null
   } catch (error) {
-    console.error('Erreur lors de la suppression de la transaction:', error)
-    alert('Une erreur est survenue lors de la suppression de la transaction.')
+    console.error('Erreur lors de la suppression:', error)
+    alert('Une erreur est survenue lors de la suppression.')
   }
 }
 
@@ -443,14 +481,23 @@ const cancelEditing = () => {
   isEditModalOpen.value = false
 }
 
-
-
 const capitalizeText = (text: string): string => {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 const getFrequencyKey = (frequency: EFrequency): keyof typeof EFrequency => {
   return EFrequency[frequency] as keyof typeof EFrequency
+}
+
+const openDeleteNonRecurrentModal = () => {
+  deleteMode.value = 'month'
+  isDeleteNonRecurrentModalOpen.value = true
+}
+
+const openDeleteSingleModal = (id: number) => {
+  deleteMode.value = 'single'
+  transactionToDelete.value = id
+  isDeleteNonRecurrentModalOpen.value = true
 }
 
 onMounted(async () => {

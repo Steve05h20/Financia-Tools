@@ -124,11 +124,11 @@
         </select>
       </div>
 
-      <!-- Statut (Payée) -->
+      <!-- Statut (reccurent) -->
       <div class="flex items-center">
         <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2"/>
-        <label class="label text-primary ">
-          {{ form.type === 'Revenue' ? 'Reçu' : 'Payée' }}
+        <label class="label text-primary " :class="{ 'text-success': form.isDone }">
+          Reccurent
         </label>
       </div>
 
