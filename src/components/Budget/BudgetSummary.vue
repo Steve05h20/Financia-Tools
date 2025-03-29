@@ -1,20 +1,20 @@
 <template>
-  <div class="flex justify-between mb-5">
-    <div class="text-center">
-      <h3 class="text-xl font-bold">REVENUS</h3>
-      <p :class="revenues >= 0 ? 'text-green-500' : 'text-red-500'" class="text-2xl font-bold">
+  <div class="flex justify-between mb-5 stats stats-vertical lg:stats-horizontal shadow">
+    <div class="stat">
+      <h3 class="text-xl max-sm:text-sm  font-bold stat-title">REVENUS</h3>
+      <p :class="revenues >= 0 ? 'text-green-500' : 'text-red-500'" class="text-xl max-sm:text-xs font-bold stat-value">
         {{ revenues.toFixed(2) }}$
       </p>
     </div>
-    <div class="text-center">
-      <h3 class="text-xl font-bold">DÉPENSES</h3>
-      <p :class="expenses > 0 ? 'text-red-500' : 'text-green-500'" class="text-2xl font-bold">
+    <div class="stat">
+      <h3 class="text-xl max-sm:text-sm font-bold stat-title ">DÉPENSES</h3>
+      <p :class="expenses > 0 ? 'text-red-500' : 'text-green-500'" class="text-xl max-sm:text-xs font-bold stat-value">
         {{ expenses.toFixed(2) }}$
       </p>
     </div>
-    <div class="text-center">
-      <h3 class="text-xl font-bold">BALANCE</h3>
-      <p :class="balance >= 0 ? 'text-green-500' : 'text-red-500'" class="text-2xl font-bold">
+    <div class="stat">
+      <h3 class="text-xl max-sm:text-sm font-bold stat-title">BALANCE</h3>
+      <p :class="balance >= 0 ? 'text-green-500' : 'text-red-500'" class="text-xl max-sm:text-xs font-bold stat-value">
         {{ balance.toFixed(2) }}$
       </p>
     </div>
