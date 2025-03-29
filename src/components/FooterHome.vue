@@ -4,7 +4,7 @@ const currentYear = new Date().getFullYear()
 
 <template>
   <footer
-    class="footer sm:footer-horizontal footer-center bg-base-100 text-base-content p-4 border-t-6 shadow-lg border-primary"
+    class="footer sm:footer-horizontal footer-center bg- text-base-content p-4 border-t-6 shadow-lg border-primary"
   >
     <aside>
       <p class="text-black font-normal text-xs">
@@ -12,5 +12,7 @@ const currentYear = new Date().getFullYear()
         <span class="text-xl text-primary m-4 font-bold">Financia</span>
       </p>
     </aside>
+
+
   </footer>
 </template>
