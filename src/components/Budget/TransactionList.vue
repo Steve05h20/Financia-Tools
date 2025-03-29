@@ -219,13 +219,13 @@
                 <button
                   v-if="!editingTransaction || editingTransaction.id !== transaction.id"
                   @click="toggleStatus(transaction)"
-                  :class="transaction.isDone ? 'badge badge-success' : 'badge badge-warning'"
+                  :class="transaction.isDone ? 'badge badge-info' : 'badge badge-base-300'"
                 >
-                  {{ transaction.isDone ? 'Payée' : 'En attente' }}
+                  {{ transaction.isDone ? 'Reccurent' : 'Non Reccurent' }}
                 </button>
                 <div v-else class="flex items-center">
                   <input v-model="editingTransaction.isDone" type="checkbox" class="toggle toggle-sm toggle-success mr-2" />
-                  <span class="text-sm">Payée</span>
+                  <span class="text-sm">Reccurent</span>
                 </div>
               </td>
               <td>
@@ -338,21 +338,21 @@
           </div>
         </div>
 
+        <div class="form-control mt-2">
+          <label class="label cursor-pointer justify-start gap-4">
+            <span class="label-text text-primary">Catégorie</span>
+            <input type="text" v-model="editingTransaction.category" class="input input-bordered" />
+          </label>
+        </div>
         <div class="grid grid-cols-2 gap-4 mt-2">
           <div class="form-control mt-2">
             <label class="label cursor-pointer justify-start gap-4">
-              <span class="label-text text-primary">Transaction payée</span>
+              <span class="label-text text-primary">Reccurent</span>
               <input type="checkbox" v-model="editingTransaction.isDone" class="toggle toggle-success" />
             </label>
           </div>
-          <div class="form-control mt-2">
-            <label class="label cursor-pointer justify-start gap-4">
-              <span class="label-text text-primary">Catégorie</span>
-              <input type="text" v-model="editingTransaction.category" class="input input-bordered" />
-            </label>
-          </div>
-                </div>
         </div>
+      </div>
       <div class="modal-action">
         <button @click="saveEditing" class="btn btn-success">Sauvegarder</button>
         <button @click="cancelEditing" class="btn">Annuler</button>
