@@ -1,16 +1,20 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
 
-defineProps({
+const props = defineProps({
   modalText: {
     type: String,
     required: true
   },
   buttonLabel: String,
+  index: {
+    type: [Number, String],
+    default: 0
+  }
 })
 
 const emit = defineEmits(['delete-confirmed']);
-const modalId = ref('delete-modal');
+const modalId = computed(() => `delete-modal-${props.index}`);
 
 const openDeleteModal = () => {
   const modal = document.getElementById(modalId.value) as HTMLDialogElement;
@@ -51,7 +55,7 @@ const confirmDelete = () => {
       <dialog :id="modalId" class="modal modal-bottom sm:modal-middle">
         <div class="modal-box">
           <h3 class="text-lg font-bold">Confirmation de suppression</h3>
-          <p class="py-4">{{ modalText }}</p>
+          <p class="py-4">{{ props.modalText }}</p>
           <div class="modal-action">
             <button @click="cancelDelete" class="btn">Annuler</button>
             <button @click="confirmDelete" class="btn btn-error">Supprimer</button>

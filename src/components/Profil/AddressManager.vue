@@ -141,6 +141,7 @@ const removeAddress = async (index: number) => {
               v-if="editStore.isEditing"
               @delete-confirmed="removeAddress(index)"
               :modalText="'Voulez-vous vraiment supprimer cette adresse?'"
+              :index="`address-${index}`"
             />
           </div>
 

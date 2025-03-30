@@ -105,10 +105,11 @@ const removeSchoolDetails = async (index: number) => {
 
       <div class="flex justify-end mb-2" v-if="editStore.isEditing">
         <BtnDelete
-            v-if="editStore.isEditing"
-            @delete-confirmed="removeSchoolDetails(index)"
-            :modalText="'Voulez-vous vraiment supprimer ces détails scolaires?'"
-          />
+          v-if="editStore.isEditing"
+          @delete-confirmed="removeSchoolDetails(index)"
+          :modalText="'Voulez-vous vraiment supprimer ces détails scolaires?'"
+          :index="`school-${index}`"
+        />
       </div>
 
       <!-- Formulaire de détails scolaires -->

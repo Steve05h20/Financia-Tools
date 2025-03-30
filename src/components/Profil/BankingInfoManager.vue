@@ -97,10 +97,11 @@ const removeBankingDetails = async (index: number) => {
 
       <div class="flex justify-end mb-2" v-if="editStore.isEditing">
         <BtnDelete
-            v-if="editStore.isEditing"
-            @delete-confirmed="removeBankingDetails(index)"
-            :modalText="'Voulez-vous vraiment supprimer ces détails bancaires?'"
-          />
+          v-if="editStore.isEditing"
+          @delete-confirmed="removeBankingDetails(index)"
+          :modalText="'Voulez-vous vraiment supprimer ces détails bancaires?'"
+          :index="`banking-${index}`"
+        />
       </div>
 
       <BankingInfo
