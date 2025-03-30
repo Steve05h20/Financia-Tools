@@ -38,85 +38,102 @@ const toggleSection = (section: AccordionSection) => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 pt-10 pb-28">
-    <div v-if="userStore.loading" class="flex justify-center items-center h-64">
+  <div class="container mx-auto px-4 pt-52 md:pt-10 pb-28">
+    <div v-if="userStore.loading" class="flex justify-center items-center h-20">
       <span class="loading loading-spinner text-info"></span>
     </div>
 
     <div class="flex justify-between items-center mb-8">
       <HeaderProfil />
-      <div class="hidden sm:block">
+      <div class="fixed sm:static top-0 sm:bottom-auto left-0 sm:left-auto right-0 sm:right-auto
+            bg-white sm:bg-transparent shadow-lg sm:shadow-none z-50 sm:z-auto
+            w-full sm:w-auto p-4 sm:p-0 text-center sm:text-left">
         <BtnUpdate />
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full">
-      <!-- Informations personnelles -->
-      <section
-        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
-        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.PERSONAL_INFO, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.PERSONAL_INFO}"
-      >
-        <div
-          class="collapse-title font-semibold"
-          @click="toggleSection(AccordionSection.PERSONAL_INFO)"
+    <!-- Structure en deux colonnes fixes -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+      <!-- Colonne de gauche -->
+      <div class="flex flex-col gap-6">
+        <!-- Informations personnelles -->
+        <section
+          class="collapse collapse-arrow bg-base-100 border border-base-300"
+          :class="{
+            'collapse-open': accordionValidation.activeSection.value === AccordionSection.PERSONAL_INFO,
+            'collapse-close': accordionValidation.activeSection.value !== AccordionSection.PERSONAL_INFO
+          }"
         >
-          Informations personnelles
-        </div>
-        <div class="collapse-content">
-          <UserInfo @validation-change="accordionValidation.updatePersonalInfoValidation" />
-        </div>
-      </section>
+          <div
+            class="collapse-title font-semibold"
+            @click="toggleSection(AccordionSection.PERSONAL_INFO)"
+          >
+            Informations personnelles
+          </div>
+          <div class="collapse-content">
+            <UserInfo @validation-change="accordionValidation.updatePersonalInfoValidation" />
+          </div>
+        </section>
 
-      <!-- Adresses -->
-      <section
-        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
-        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.ADDRESSES, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.ADDRESSES}"
-      >
-        <div
-          class="collapse-title font-semibold"
-          @click="toggleSection(AccordionSection.ADDRESSES)"
+        <!-- Détails scolaires -->
+        <section
+          class="collapse collapse-arrow bg-base-100 border border-base-300"
+          :class="{
+            'collapse-open': accordionValidation.activeSection.value === AccordionSection.SCHOOL_DETAILS,
+            'collapse-close': accordionValidation.activeSection.value !== AccordionSection.SCHOOL_DETAILS
+          }"
         >
-          Adresses
-        </div>
-        <div class="collapse-content">
-          <AddressManager @validation-change="accordionValidation.updateAddressesValidation" />
-        </div>
-      </section>
+          <div
+            class="collapse-title font-semibold"
+            @click="toggleSection(AccordionSection.SCHOOL_DETAILS)"
+          >
+            Détails scolaires
+          </div>
+          <div class="collapse-content">
+            <SchoolInfoManager @validation-change="accordionValidation.updateSchoolDetailsValidation" />
+          </div>
+        </section>
+      </div>
 
-      <!-- Détails scolaires -->
-      <section
-        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
-        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.SCHOOL_DETAILS, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.SCHOOL_DETAILS}"
-      >
-        <div
-          class="collapse-title font-semibold"
-          @click="toggleSection(AccordionSection.SCHOOL_DETAILS)"
+      <!-- Colonne de droite -->
+      <div class="flex flex-col gap-6">
+        <!-- Adresses -->
+        <section
+          class="collapse collapse-arrow bg-base-100 border border-base-300"
+          :class="{
+            'collapse-open': accordionValidation.activeSection.value === AccordionSection.ADDRESSES,
+            'collapse-close': accordionValidation.activeSection.value !== AccordionSection.ADDRESSES
+          }"
         >
-          Détails scolaires
-        </div>
-        <div class="collapse-content">
-          <SchoolInfoManager @validation-change="accordionValidation.updateSchoolDetailsValidation" />
-        </div>
-      </section>
+          <div
+            class="collapse-title font-semibold"
+            @click="toggleSection(AccordionSection.ADDRESSES)"
+          >
+            Adresses
+          </div>
+          <div class="collapse-content">
+            <AddressManager @validation-change="accordionValidation.updateAddressesValidation" />
+          </div>
+        </section>
 
-      <!-- Informations bancaires -->
-      <section
-        class="collapse collapse-arrow bg-base-100 border border-base-300 mb-8 lg:col-span-4 w-full"
-        :class="{'collapse-open': accordionValidation.activeSection.value === AccordionSection.BANKING_INFO, 'collapse-close': accordionValidation.activeSection.value !== AccordionSection.BANKING_INFO}"
-      >
-        <div
-          class="collapse-title font-semibold"
-          @click="toggleSection(AccordionSection.BANKING_INFO)"
+        <!-- Informations bancaires -->
+        <section
+          class="collapse collapse-arrow bg-base-100 border border-base-300"
+          :class="{
+            'collapse-open': accordionValidation.activeSection.value === AccordionSection.BANKING_INFO,
+            'collapse-close': accordionValidation.activeSection.value !== AccordionSection.BANKING_INFO
+          }"
         >
-          Informations bancaires
-        </div>
-        <div class="collapse-content">
-          <BankingInfoManager @validation-change="accordionValidation.updateBankingInfoValidation" />
-        </div>
-      </section>
-
-      <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50 w-full p-4 text-center">
-        <BtnUpdate />
+          <div
+            class="collapse-title font-semibold"
+            @click="toggleSection(AccordionSection.BANKING_INFO)"
+          >
+            Informations bancaires
+          </div>
+          <div class="collapse-content">
+            <BankingInfoManager @validation-change="accordionValidation.updateBankingInfoValidation" />
+          </div>
+        </section>
       </div>
     </div>
   </div>
