@@ -17,7 +17,7 @@ const emit = defineEmits(['add'])
   <div v-if="!loading" class="flex justify-center my-5">
     <button
       @click="$emit('add')"
-      class="btn-primary"
+      class="btn btn-primary"
     >
       {{ buttonText }}
     </button>
