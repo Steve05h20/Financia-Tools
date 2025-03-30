@@ -5,18 +5,22 @@ import BtnDelete from './BtnDelete.vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import { useEditStore } from '@/stores/profil/useEditStore';
 import { EAddressType, EProvince, ECountry } from '@/models/address.interface';
+import BtnAddDataForm from "./BtnAddDataForm.vue";
+import useAddFormToggle from '@/services/useAddFormToggle ';
 
 
 const userStore = useUserStore();
 const editStore = useEditStore();
 
+const { showForm: showAddressForm } = useAddFormToggle();
+
+const emit = defineEmits(['validation-change']);
+const addressesHaveErrors = ref(false);
+
 const addressCount = computed(() => {
   const addresses = userStore.user?.addresses || [];
   return addresses.length;
 });
-
-const emit = defineEmits(['validation-change']);
-const addressesHaveErrors = ref(false);
 
 const updateAddressValidation = (hasErrors: boolean) => {
   addressesHaveErrors.value = hasErrors;
@@ -25,9 +29,49 @@ const updateAddressValidation = (hasErrors: boolean) => {
 
 const showAddButton = ref<boolean>(false);
 
+watch(
+  () => [userStore.user, userStore.loading],
+  ([user, loading]) => {
+    if (user && !loading) {
+      if (userStore.user.addresses && userStore.user.addresses.length > 0) {
+        console.log('Adresses trouvées, affichage du formulaire');
+        showAddressForm.value = true;
+      } else {
+        console.log('Aucune adresse trouvée');
+        showAddressForm.value = false;
+      }
+    }
+  },
+  { immediate: true }
+);
+
 watch([addressCount, () => editStore.isEditing], ([newCount, isEditing]) => {
-  showAddButton.value = isEditing && newCount <= 1;
+  showAddButton.value = isEditing && newCount === 1;
 }, { immediate: true });
+
+const initializeAddress = () => {
+  if (!userStore.user.addresses) {
+    userStore.user.addresses = [];
+  }
+
+  if (userStore.user.addresses.length === 0) {
+    const newAddress = {
+      type: EAddressType.WORK,
+      streetNumber: '',
+      streetName: '',
+      city: '',
+      province: EProvince.QUEBEC,
+      country: ECountry.CANADA,
+      user: userStore.user
+    };
+
+    userStore.user.addresses.push(newAddress);
+  }
+
+  showAddressForm.value = true;
+  editStore.isEditing = true;
+  console.log("Adresse initialisée:", userStore.user.addresses);
+};
 
 const addNewAddress = () => {
   if (!userStore.user.addresses) {
@@ -54,16 +98,22 @@ const removeAddress = async (index: number) => {
 
     userStore.user.addresses.splice(index, 1);
 
+    if (userStore.user.addresses.length === 0) {
+      showAddressForm.value = false;
+    }
 
     if (userId && addressToRemove.type) {
       try {
         await userStore.addressService.deleteAddressByType(userId, addressToRemove.type);
         userStore.notificationService.message("Adresse supprimée avec succès", "success");
       } catch (error) {
-
         userStore.user.addresses.splice(index, 0, addressToRemove);
         const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression de l'adresse";
         userStore.notificationService.message(errorMessage, "error");
+
+        if (userStore.user.addresses.length > 0) {
+          showAddressForm.value = true;
+        }
       }
     }
   }
@@ -72,41 +122,49 @@ const removeAddress = async (index: number) => {
 </script>
 
 <template>
-  <div>
-    <div v-for="(address, index) in userStore.user?.addresses || []" :key="index" class="mb-8 w-full">
-      <div class="divider collapse-title font-semibold">
-        Adresse {{ index + 1 }}
-      </div>
-      <div class="flex justify-between">
-          <span v-if="address.type" class="text-sm font-normal ml-2">{{ address.type }}</span>
-          <BtnDelete
-            v-if="editStore.isEditing"
-            @delete-confirmed="removeAddress(index)"
-            :modalText="'Voulez-vous vraiment supprimer cette adresse?'"
+
+
+    <div v-if="!showAddressForm && !userStore.loading" class="flex justify-center my-5">
+      <BtnAddDataForm
+        buttonText="Ajouter une adresse"
+        @click="initializeAddress"
+      />
+    </div>
+    <div v-if="showAddressForm && (userStore.user?.addresses?.length || 0) > 0">
+      <div v-for="(address, index) in userStore.user?.addresses || []" :key="index" class="mb-8 w-full">
+        <div class="divider collapse-title font-semibold">
+          Adresse {{ index + 1 }}
+        </div>
+        <div class="flex justify-between">
+            <span v-if="address.type" class="text-sm font-normal ml-2">{{ address.type }}</span>
+            <BtnDelete
+              v-if="editStore.isEditing"
+              @delete-confirmed="removeAddress(index)"
+              :modalText="'Voulez-vous vraiment supprimer cette adresse?'"
+            />
+          </div>
+
+        <div class="w-full p-4">
+          <AddressInfo
+            :currentAddress="address"
+            @validation-change="updateAddressValidation"
+            type="radio"
+            name="my-accordion-2"
           />
         </div>
-
-      <div class="w-full p-4">
-        <AddressInfo
-          :currentAddress="address"
-          @validation-change="updateAddressValidation"
-          type="radio"
-          name="my-accordion-2"
-        />
       </div>
-    </div>
 
 
-    <div
-      v-if="showAddButton"
-      class="flex justify-center mt-4 mb-8"
-    >
-      <button
-        @click="addNewAddress"
-        class="btn btn-primary"
+      <div
+        v-if="showAddButton"
+        class="flex justify-center mt-4 mb-8"
       >
-        Ajouter une adresse
-      </button>
-    </div>
+        <button
+          @click="addNewAddress"
+          class="btn btn-primary"
+        >
+          Ajouter une seconde adresse
+        </button>
+      </div>
   </div>
 </template>
