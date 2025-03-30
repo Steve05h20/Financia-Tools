@@ -45,6 +45,15 @@ watch(() => props.currentBankingDetails?.accountInfo, (newValue: string | undefi
     validation.validateAccountInfo(newValue, 'accountInfo');
   }
 });
+
+watch(() => props.currentBankingDetails?.loanInfo, (newValue: string | undefined) => {
+    validation.validateNonRequiredTextLength(newValue, 2, 50, 'loanInfo');
+});
+
+watch(() => props.currentBankingDetails?.other, (newValue: string | undefined) => {
+    validation.validateNonRequiredTextLength(newValue, 2, 50, 'other');
+});
+
 </script>
 
 <template>
@@ -72,6 +81,28 @@ watch(() => props.currentBankingDetails?.accountInfo, (newValue: string | undefi
         :disabled="!editStore.isEditing"
         :hasError="!!validation.errors.value.accountInfo"
         :errorMessage="validation.errors.value.accountInfo"
+      />
+    </div>
+    <div>
+       <InputLabelDiv
+        labelText="Numéro de prêt"
+        htmlFor="loanInfo"
+        v-model="currentBankingDetails.loanInfo"
+        placeholder="Entrez votre numéro de prêt"
+        :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.loanInfo"
+        :errorMessage="validation.errors.value.loanInfo"
+      />
+    </div>
+    <div>
+       <InputLabelDiv
+        labelText="Autre information"
+        htmlFor="other"
+        v-model="currentBankingDetails.other"
+        placeholder="Autre information"
+        :disabled="!editStore.isEditing"
+        :hasError="!!validation.errors.value.other"
+        :errorMessage="validation.errors.value.other"
       />
     </div>
   </div>

@@ -118,6 +118,23 @@ const useValidationProfil = () => {
     return isValid;
   };
 
+  const validateNonRequiredTextLength = (
+    text: string | undefined,
+    min: number,
+    max: number,
+    fieldName: keyof ValidationErrors
+  ): boolean => {
+    if (!text) {
+      errors.value[fieldName] = '';
+      return true;
+    }
+
+    const isValid = text.length >= min && text.length <= max;
+
+    errors.value[fieldName] = isValid ? '' : ErrorMessage.STRING_LENGTH;
+    return isValid;
+  };
+
   const validateLastName = (lastName: string | undefined, fieldName: keyof ValidationErrors = 'lastName'): boolean => {
     if (!lastName) {
       errors.value[fieldName] = ErrorMessage.EMPTY_LASTNAME;
@@ -355,6 +372,7 @@ const useValidationProfil = () => {
     validateText,
     validateDegitsStreet,
     validateTextLength,
+    validateNonRequiredTextLength,
     validateLastName,
     validateFirstname,
     validateCity,
