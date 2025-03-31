@@ -4,7 +4,6 @@ import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
 import { EProvince, ECountry, EAddressType } from '@/models/address.interface'
-import { useUserStore } from '@/stores/useUserSotre'
 import useValidationProfil from '@/services/useValidationProfil'
 import { useEditStore } from '@/stores/profil/useEditStore'
 
@@ -16,7 +15,6 @@ const props = defineProps({
 });
 
 const editStore = useEditStore();
-const userStore = useUserStore();
 const validation = useValidationProfil();
 
 onMounted(async () => {
