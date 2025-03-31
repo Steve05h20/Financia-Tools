@@ -10,6 +10,7 @@ import { onMounted } from 'vue';
 import useAccordionValidation from '@/services/useAccordionValidation';
 import { AccordionSection } from '@/services/useAccordionValidation';
 import useNotification from '@/services/useNotification';
+import BtnCancel from '@/components/Profil/BtnCancel.vue';
 
 const userStore = useUserStore();
 const accordionValidation = useAccordionValidation();
@@ -38,25 +39,32 @@ const toggleSection = (section: AccordionSection) => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 pt-52 md:pt-10 pb-28">
-    <div v-if="userStore.loading" class="flex justify-center items-center h-20">
-      <span class="loading loading-spinner text-info"></span>
-    </div>
-
-    <div class="flex justify-between items-center mb-8">
-      <HeaderProfil />
-      <div class="fixed sm:static top-0 sm:bottom-auto left-0 sm:left-auto right-0 sm:right-auto
-            bg-white sm:bg-transparent shadow-lg sm:shadow-none z-50 sm:z-auto
-            w-full sm:w-auto p-4 sm:p-0 text-center sm:text-left">
-        <BtnUpdate />
+    <div class="container mx-auto px-4 pt-52 md:pt-10 pb-28">
+      <div v-if="userStore.loading" class="flex justify-center items-center h-20">
+        <span class="loading loading-spinner text-info"></span>
       </div>
-    </div>
 
-    <!-- Structure en deux colonnes fixes -->
+      <div  class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8 w-full relative">
+        <div class="col-span-1 sm:col-span-2">
+          <HeaderProfil />
+        </div>
+        <div class="col-span-1 sm:col-span-2 hidden sm:flex items-center justify-end gap-8">
+          <BtnCancel />
+          <BtnUpdate />
+        </div>
+      </div>
+
+      <!-- Mobile buttons -->
+      <div class="fixed sm:hidden top-0 left-0 right-0 bg-white shadow-lg z-50 w-full p-4 flex justify-center items-center">
+        <div class="flex items-center space-x-4">
+          <BtnCancel />
+          <BtnUpdate />
+        </div>
+      </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-      <!-- Colonne de gauche -->
       <div class="flex flex-col gap-6">
-        <!-- Informations personnelles -->
+        <!-- Personnal Info -->
         <section
           class="collapse collapse-arrow bg-base-100 border border-base-300"
           :class="{
@@ -75,7 +83,7 @@ const toggleSection = (section: AccordionSection) => {
           </div>
         </section>
 
-        <!-- Détails scolaires -->
+        <!-- School Info -->
         <section
           class="collapse collapse-arrow bg-base-100 border border-base-300"
           :class="{
@@ -95,7 +103,6 @@ const toggleSection = (section: AccordionSection) => {
         </section>
       </div>
 
-      <!-- Colonne de droite -->
       <div class="flex flex-col gap-6">
         <!-- Adresses -->
         <section
@@ -116,7 +123,7 @@ const toggleSection = (section: AccordionSection) => {
           </div>
         </section>
 
-        <!-- Informations bancaires -->
+        <!-- Banking Info -->
         <section
           class="collapse collapse-arrow bg-base-100 border border-base-300"
           :class="{

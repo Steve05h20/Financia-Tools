@@ -4,7 +4,7 @@ export interface IBankingDetails {
 id?: number
 institutionName:string
 accountInfo: string //Correction typo accountinfo
-loaninfo?: string
+loanInfo?: string //Correction typo loaninfo
 other?: string
 user: IUser
 }
