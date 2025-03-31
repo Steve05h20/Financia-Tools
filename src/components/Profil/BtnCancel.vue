@@ -6,7 +6,7 @@ const editStore = useEditStore();
 
 <template>
     <button
-      :class="editStore.isEditing ? 'btn btn-soft lg:my-0 lg:w-full btn-lg' : 'hidden'"
+      :class="editStore.isEditing ? 'btn btn-soft lg:my-0 btn-lg' : 'hidden'"
       @click="editStore.cancelEditing()"
     >
       Annuler

@@ -11,13 +11,10 @@ import useAccordionValidation from '@/services/useAccordionValidation';
 import { AccordionSection } from '@/services/useAccordionValidation';
 import useNotification from '@/services/useNotification';
 import BtnCancel from '@/components/Profil/BtnCancel.vue';
-import { useEditStore } from '@/stores/profil/useEditStore';
 
 const userStore = useUserStore();
 const accordionValidation = useAccordionValidation();
 const notification = useNotification();
-const editStore = useEditStore();
-
 
 onMounted(() => {
   userStore.loadUserData("test@test.com");
@@ -47,14 +44,17 @@ const toggleSection = (section: AccordionSection) => {
         <span class="loading loading-spinner text-info"></span>
       </div>
 
-      <div class="flex flex-wrap justify-between items-center mb-8 w-full relative">
-        <HeaderProfil />
-        <div class="hidden sm:flex items-center space-x-4 mt-4 sm:mt-0">
+      <div  class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8 w-full relative">
+        <div class="col-span-1 sm:col-span-2">
+          <HeaderProfil />
+        </div>
+        <div class="col-span-1 sm:col-span-2 hidden sm:flex items-center justify-end gap-8">
           <BtnCancel />
           <BtnUpdate />
         </div>
       </div>
 
+      <!-- Mobile buttons -->
       <div class="fixed sm:hidden top-0 left-0 right-0 bg-white shadow-lg z-50 w-full p-4 flex justify-center items-center">
         <div class="flex items-center space-x-4">
           <BtnCancel />
@@ -64,7 +64,7 @@ const toggleSection = (section: AccordionSection) => {
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
       <div class="flex flex-col gap-6">
-        <!-- Informations personnelles -->
+        <!-- Personnal Info -->
         <section
           class="collapse collapse-arrow bg-base-100 border border-base-300"
           :class="{
@@ -83,7 +83,7 @@ const toggleSection = (section: AccordionSection) => {
           </div>
         </section>
 
-        <!-- Détails scolaires -->
+        <!-- School Info -->
         <section
           class="collapse collapse-arrow bg-base-100 border border-base-300"
           :class="{
@@ -103,7 +103,6 @@ const toggleSection = (section: AccordionSection) => {
         </section>
       </div>
 
-      <!-- Colonne de droite -->
       <div class="flex flex-col gap-6">
         <!-- Adresses -->
         <section
@@ -124,7 +123,7 @@ const toggleSection = (section: AccordionSection) => {
           </div>
         </section>
 
-        <!-- Informations bancaires -->
+        <!-- Banking Info -->
         <section
           class="collapse collapse-arrow bg-base-100 border border-base-300"
           :class="{
