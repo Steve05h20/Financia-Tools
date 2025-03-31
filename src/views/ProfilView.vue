@@ -10,10 +10,12 @@ import { onMounted } from 'vue';
 import useAccordionValidation from '@/services/useAccordionValidation';
 import { AccordionSection } from '@/services/useAccordionValidation';
 import useNotification from '@/services/useNotification';
+import BtnCancel from '@/components/Profil/BtnCancel.vue';
 
 const userStore = useUserStore();
 const accordionValidation = useAccordionValidation();
 const notification = useNotification();
+
 
 onMounted(() => {
   userStore.loadUserData("test@test.com");
@@ -48,6 +50,7 @@ const toggleSection = (section: AccordionSection) => {
       <div class="fixed sm:static top-0 sm:bottom-auto left-0 sm:left-auto right-0 sm:right-auto
             bg-white sm:bg-transparent shadow-lg sm:shadow-none z-50 sm:z-auto
             w-full sm:w-auto p-4 sm:p-0 text-center sm:text-left">
+        <BtnCancel />
         <BtnUpdate />
       </div>
     </div>

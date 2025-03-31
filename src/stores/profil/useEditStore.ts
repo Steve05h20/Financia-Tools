@@ -11,7 +11,59 @@ export const useEditStore = defineStore('edit', () => {
   const attemptedSave = ref<boolean>(false);
 
   const toggleEditing = (): void => {
+    if (!isEditing.value) {
+      saveOriginalData();
+    }
     isEditing.value = !isEditing.value;
+  };
+
+  const cancelEditing = (): void => {
+    restoreOriginalData();
+    isEditing.value = false;
+  };
+
+  const originalUserData = ref<any>(null);
+  const originalAddresses = ref<any[]>([]);
+  const originalSchoolDetails = ref<any[]>([]);
+  const originalBankingDetails = ref<any[]>([]);
+
+  const saveOriginalData = () => {
+    originalUserData.value = { ...userStore.user };
+
+    if (userStore.user.addresses) {
+      originalAddresses.value = userStore.user.addresses.map(addressDetail => ({ ...addressDetail }));
+    }
+
+    if (userStore.user.schoolDetails) {
+      originalSchoolDetails.value = userStore.user.schoolDetails.map(schoolDetail => ({ ...schoolDetail }));
+    }
+
+    if (userStore.user.bankingDetails) {
+      originalBankingDetails.value = userStore.user.bankingDetails.map(bankingDetail => ({ ...bankingDetail }));
+    }
+  };
+
+  const restoreOriginalData = () => {
+    if (originalUserData.value) {
+      userStore.user.firstName = originalUserData.value.firstName;
+      userStore.user.lastName = originalUserData.value.lastName;
+      userStore.user.email = originalUserData.value.email;
+      userStore.user.phone = originalUserData.value.phone;
+      userStore.user.birthDate = originalUserData.value.birthDate;
+
+      if (originalAddresses.value.length > 0) {
+        userStore.user.addresses = originalAddresses.value.map(address => ({ ...address }));
+      }
+
+      if (originalSchoolDetails.value.length > 0) {
+        userStore.user.schoolDetails = originalSchoolDetails.value.map(detail => ({ ...detail }));
+      }
+
+      if (originalBankingDetails.value.length > 0) {
+        userStore.user.bankingDetails = originalBankingDetails.value.map(detail => ({ ...detail }));
+      }
+    }
+    validation.resetErrors();
   };
 
   const saveChanges = async (): Promise<void> => {
@@ -75,6 +127,7 @@ export const useEditStore = defineStore('edit', () => {
         });
       }
 
+      saveOriginalData();
       isEditing.value = false;
       attemptedSave.value = false;
 
@@ -89,6 +142,9 @@ export const useEditStore = defineStore('edit', () => {
     isEditing,
     toggleEditing,
     saveChanges,
-    attemptedSave
+    attemptedSave,
+    saveOriginalData,
+    restoreOriginalData,
+    cancelEditing
   };
 });
