@@ -30,7 +30,14 @@ Cette application a été développée par :
 
 ## Technologies Utilisées
 
+- **Gestion de projet** : Trello
+- **Design** : Figma
+- **Board** : FigJam
+- **Communication** : Discord&Teams
+- **Workflow** : Git, Github
+
 - **Frontend** : Vue.js 3, TypeScript, Pinia, Vue Router
+- **Api** : Node.js, Nest.js ,Swagger
 - **UI** : Tailwind CSS, DaisyUI
 - **Build Tool** : Vite
 - **Linters/Formatters** : ESLint, Prettier
