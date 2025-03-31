@@ -14,7 +14,7 @@ const handleBtnClick = () => {
 
 <template>
   <button
-    class="btn btn-primary my-10 lg:my-0 lg:col-start-4 lg:col-span-1 lg:w-full btn-lg"
+    class="btn btn-primary my-10 lg:my-0 lg:w-full btn-lg"
     @click="handleBtnClick"
     :class="{ 'btn-primary': !editStore.isEditing, 'btn-success': editStore.isEditing }"
   >
