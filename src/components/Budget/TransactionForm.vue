@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white p-2 sm:p-3 md:p-4 rounded-lg shadow-md mb-2 sm:mb-3 md:mb-4">
     <h2 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 md:mb-4">
-      {{ form.category === 'Revenue' ? 'Ajouter un revenu' : 'Ajouter une dépense' }}
+      {{ form.type === 'Revenue' ? 'Ajouter un revenu' : 'Ajouter une dépense' }}
     </h2>
     <form
       @submit.prevent="handleSubmit"
