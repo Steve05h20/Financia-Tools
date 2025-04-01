@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { defineProps, withDefaults } from 'vue';
+import { useEditStore } from '@/stores/profil/useEditStore';
+
+const editStore = useEditStore();
 
 interface LabelProps {
   text: string;
@@ -13,11 +16,16 @@ withDefaults(defineProps<LabelProps>(), {
   required: false,
 });
 
+
 </script>
 
 <template>
-  <label :for="htmlFor" class="label w-full text-info">
+  <label :for="htmlFor" class="label w-full text-info relative group">
     {{ text }}
-    <span v-if="required" class="text-error" >*</span>
+    <span v-if="required"
+      :class="{'hidden' : !editStore.isEditing, 'text-error': editStore.isEditing }"
+      >
+      *
+    </span>
   </label>
 </template>

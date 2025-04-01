@@ -67,7 +67,7 @@ export const useFetchBankingDetails = () => {
     }
   }
 
-  const putBankingDetailsByUserId = async (userId: number, details: IBankingDetails) => {
+  const putBankingDetailsByUserId = async (userId: number, details: Partial<IBankingDetails>) => {
     validateUserId(userId);
     error.value = null;
 
