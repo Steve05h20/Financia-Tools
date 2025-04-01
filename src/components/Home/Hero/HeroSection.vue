@@ -10,35 +10,19 @@ const { texts, images, nameSection } = HeroDataSection()
 
 const router = useRouter()
 const userStore = useUserStore()
-const isModalOpen = ref(false)
-const currentAction = ref<'connexion' | 'inscription'>('inscription')
+const inscriptionModalRef = ref<HTMLDialogElement | null>(null)
 
-const openSignupModal = () => {
-  currentAction.value = 'inscription'
-  isModalOpen.value = true
-}
-
-const closeModal = () => {
-  isModalOpen.value = false
-}
-
-const handleChangeAction = (newAction: any) => {
-  if (newAction === 'connexion' || newAction === 'inscription') {
-    currentAction.value = newAction
-  } else {
-    console.error('Action non reconnue:', newAction)
+const fermerModal = () => {
+  if (inscriptionModalRef.value) {
+    inscriptionModalRef.value.close()
   }
-}
-
-const handleAuthSuccess = () => {
-  closeModal()
 }
 
 const handleButtonClick = () => {
   if (userStore.isConnected) {
     router.push('/budget')
   } else {
-    openSignupModal()
+    inscriptionModalRef.value?.showModal()
   }
 }
 </script>
@@ -66,7 +50,7 @@ const handleButtonClick = () => {
           <div>
             <button
               @click="handleButtonClick"
-              class="btn btn-primary btn-lg p-6 mt-15"
+              class="btn btn-primary btn-lg p-6 sm:mt-15 mt-2"
             >
               {{ !userStore.isConnected ? 'S\'inscrire' : ' Budgeter '}}
             </button>
@@ -84,28 +68,16 @@ const handleButtonClick = () => {
     </SectionGrid>
   </div>
 
-  <!-- Modal avec AuthView -->
-  <div v-if="isModalOpen" class="fixed inset-0 flex items-center justify-center z-50">
-    <div
-      class="fixed inset-0 transition-opacity backdrop-blur-sm  bg-opacity-70"
-      @click="closeModal"
-    ></div>
-
-    <div class="relative bg-white bg-opacity-95 rounded-lg shadow-xl w-full max-w-md mx-4 z-10">
-      <button
-        @click="closeModal"
-        class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 z-20"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-
+  <dialog ref="inscriptionModalRef" class="modal w-96 h-auto m-auto">
+    <div class="modal-box">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+      </form>
       <AuthView
-        :action="currentAction"
-        @connexion-reussie="handleAuthSuccess"
-        @change-action="handleChangeAction"
+        action="inscription"
+        @inscription-reussie="fermerModal"
+        @connexion-reussie="fermerModal"
       />
     </div>
-  </div>
+  </dialog>
 </template>
