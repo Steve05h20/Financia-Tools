@@ -247,7 +247,7 @@
                     @click="saveEditing"
                     class="btn btn-xs btn-success"
                   >
-                    Sauver
+                    Sauvegarder
                   </button>
                   <button
                     v-if="editingTransaction && editingTransaction.id === transaction.id"
