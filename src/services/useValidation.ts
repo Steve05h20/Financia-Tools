@@ -14,13 +14,22 @@ enum ErrorMessage {
   EMPTY_SELECT = 'Veuillez sélectionner une option',
   EMPTY_DATE = 'Veuillez entrer une date',
   ONLY_LETTERS = 'Veuillez entrer seulement des lettres',
-  STRING_LENGTH = 'Veuillez entrer un texte entre 2 et 50 caractères',
+  STRING_LENGTH = 'Veuillez entrer entre {min} et {max} caractères',
   INVALID_EMAIL = 'Veuillez entrer un email valide',
   INVALID_PHONE = 'Le numéro de téléphone doit être sous le format 123-456-7890',
   INVALID_BANKING_INFO = 'Numéro de compte à 10 chiffres requis',
   DATE_PREVIOUS = 'Veuillez entrer une date antérieure à la date actuelle',
   DATE_FUTURE = 'Veuillez entrer une date postérieure à la date actuelle',
   DIGIT_IN_STREET_NUMBER = 'L\'addresse doit commencer et contenir des chiffres ex:102-A',
+  USER_NOT_FOUND = 'Utilisateur non trouvé',
+  USER_DETAILS_NOT_FOUND = "Données pour l'utilisateur non trouvées",
+  PASSWORDS_DO_NOT_MATCH = 'Les mots de passe ne correspondent pas',
+  EMPTY_PASSWORD = 'Mot de passe requis',
+  INVALID_PASSWORD_UPPERCASE = 'Le mot de passe doit contenir au moins une lettre majuscule',
+  INVALID_PASSWORD_LENGTH = 'Le mot de passe doit contenir au moins 6 caractères',
+  INVALID_PASSWORD_DIGIT='Le mot de passe doit contenir au moins un chiffre',
+  INVALID_USERNAME = 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
+  EMPTY_USERNAME = 'Le nom d\'utilisateur est requis'
 }
 
 interface ValidationErrors {
@@ -36,10 +45,12 @@ interface ValidationErrors {
   birthDate: string;
   appointmentDate: string;
   select: string;
+  password: string;
+  confirmPassword: string;
   [key: string]: string;
 }
 
-const useValidationProfil = () => {
+const useValidation = () => {
 
   const errors = ref<ValidationErrors>({
     firstname: '',
@@ -53,7 +64,9 @@ const useValidationProfil = () => {
     accountInfo: '',
     birthDate: '',
     appointmentDate: '',
-    select: ''
+    select: '',
+    password: '',
+    confirmPassword: 'string'
   });
 
   const resetErrors = (): void => {
@@ -101,6 +114,10 @@ const useValidationProfil = () => {
     return isValid;
   }
 
+  const getStringLengthError = (min: number, max: number): string => {
+    return ErrorMessage.STRING_LENGTH.replace('{min}', min.toString()).replace('{max}', max.toString());
+  };
+
   const validateTextLength = (
     text: string | undefined,
     min: number,
@@ -114,7 +131,7 @@ const useValidationProfil = () => {
 
     const isValid = text.length >= min && text.length <= max;
 
-    errors.value[fieldName] = isValid ? '' : ErrorMessage.STRING_LENGTH;
+    errors.value[fieldName] = isValid ? '' : getStringLengthError(min, max);
     return isValid;
   };
 
@@ -324,6 +341,61 @@ const useValidationProfil = () => {
     return !isEmpty;
   };
 
+  const validateUserName = (userName: string | undefined, fieldName: keyof ValidationErrors = 'userName'): boolean => {
+    if (!userName) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_USERNAME;
+      return false;
+    }
+
+    if (userName.length < 3) {
+      errors.value[fieldName] = ErrorMessage.INVALID_USERNAME;
+      return false;
+    }
+
+    errors.value[fieldName] = '';
+    return true;
+  };
+
+  const validatePassword = (password: string | undefined, fieldName: keyof ValidationErrors = 'password'): boolean => {
+    if (!password) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_PASSWORD;
+      return false;
+    }
+
+    if (password.length < 6) {
+      errors.value[fieldName] = ErrorMessage.INVALID_PASSWORD_LENGTH;
+      return false;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_PASSWORD_UPPERCASE;
+      return false;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_PASSWORD_DIGIT;
+      return false;
+    }
+
+    errors.value[fieldName] = '';
+    return true;
+  };
+
+  const validateConfirmPassword = (confirmPassword: string | undefined, password: string | undefined, fieldName: keyof ValidationErrors = 'confirmPassword'): boolean => {
+    if (!confirmPassword) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_PASSWORD;
+      return false;
+    }
+
+    if (confirmPassword !== password) {
+      errors.value[fieldName] = ErrorMessage.PASSWORDS_DO_NOT_MATCH;
+      return false;
+    }
+
+    errors.value[fieldName] = '';
+    return true;
+  };
+
   const validateAll = (user: any): boolean => {
     resetErrors();
 
@@ -385,6 +457,9 @@ const useValidationProfil = () => {
     validateInstitutionName,
     validateAccountInfo,
     validateSelect,
+    validateUserName,
+    validatePassword,
+    validateConfirmPassword,
     validateAll,
     ErrorMessage,
     resetErrors,
@@ -393,4 +468,4 @@ const useValidationProfil = () => {
 
 };
 
-export default useValidationProfil;
+export default useValidation;

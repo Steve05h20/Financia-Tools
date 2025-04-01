@@ -4,6 +4,8 @@ import { useUserStore } from '@/stores/useUserSotre'
 import { useBudgetStore } from '@/stores/useBudgetStore'
 import type { IUser } from '@/models/user.interface'
 import useNotification from '@/services/useNotification'
+import useValidation from '@/services/useValidation'
+
 
 // Déclaration de l'enum des messages d'erreur
 enum ErrorMessage {
@@ -20,6 +22,7 @@ enum ErrorMessage {
 // Création du store d'authentification
 export const useAuth = defineStore('auth', () => {
   const { message } = useNotification() // Utilisez useNotification
+  const validation = useValidation()
 
   // État global de l'authentification
   const stateAcount = reactive({
@@ -51,7 +54,7 @@ export const useAuth = defineStore('auth', () => {
   /*=======================================================================
     Validation des champs
   =======================================================================*/
-  const validateEmail = (email: string): string => {
+  /* const validateEmail = (email: string): string => {
     if (!email) return "L'email est requis"
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Format d'email invalide"
     return ''
@@ -75,15 +78,36 @@ export const useAuth = defineStore('auth', () => {
     if (!userName) return "Le nom d'utilisateur est requis"
     if (userName.length < 3) return "Le nom d'utilisateur doit contenir au moins 3 caractères"
     return ''
-  }
+  } */
 
   // Met à jour l'objet validationErrors
-  const updateValidation = () => {
+  /* const updateValidation = () => {
     stateAcount.validationErrors = {
       email: validateEmail(stateAcount.email),
       pwd: validatePassword(stateAcount.pwd),
       userName: validateUserName(stateAcount.userName),
       confirmPwd: validateConfirmPassword(stateAcount.confirmPwd),
+    }
+  } */
+
+  const updateValidation = () => {
+    // Réinitialiser les erreurs
+    validation.resetErrors()
+
+    validation.validateEmail(stateAcount.email, 'email')
+    validation.validatePassword(stateAcount.pwd, 'password')
+    validation.validateUserName(stateAcount.userName, 'userName')
+
+    if (stateAcount.confirmPwd) {
+      validation.validateConfirmPassword(stateAcount.confirmPwd, stateAcount.pwd, 'confirmPassword')
+    }
+
+    // Copier les erreurs de validation dans stateAcount.validationErrors
+    stateAcount.validationErrors = {
+      email: validation.errors.value.email || '',
+      pwd: validation.errors.value.password || '',
+      userName: validation.errors.value.userName || '',
+      confirmPwd: validation.errors.value.confirmPassword || '',
     }
   }
 
@@ -98,18 +122,23 @@ export const useAuth = defineStore('auth', () => {
 
   // Fonctions de validation en temps réel
   const validateEmailRealTime = (email: string) => {
-    stateAcount.validationErrors.email = validateEmail(email)
+    validation.validateEmail(email, 'email')
+    stateAcount.validationErrors.email = validation.errors.value.email || ''
   }
 
+
   const validatePasswordRealTime = (password: string) => {
-    stateAcount.validationErrors.pwd = validatePassword(password)
+    validation.validatePassword(password, 'password')
+    stateAcount.validationErrors.pwd = validation.errors.value.password || ''
   }
 
   const validateConfirmPasswordRealTime = (confirmPwd: string) => {
-    stateAcount.validationErrors.confirmPwd = validateConfirmPassword(confirmPwd)
+    validation.validateConfirmPassword(confirmPwd, stateAcount.pwd, 'confirmPassword')
+    stateAcount.validationErrors.confirmPwd = validation.errors.value.confirmPassword || ''
   }
   const validateUserNameRealTime = (userName: string) => {
-    stateAcount.validationErrors.userName = validateUserName(userName)
+    validation.validateUserName(userName, 'userName')
+    stateAcount.validationErrors.userName = validation.errors.value.userName || ''
   }
 
   // Propriétés computed pour connaître l'état de chaque champ individuellement
@@ -130,6 +159,7 @@ export const useAuth = defineStore('auth', () => {
       pwd: '',
       confirmPwd: ''
     }
+    validation.resetErrors()
   }
 
   // Action de finalisation commune
