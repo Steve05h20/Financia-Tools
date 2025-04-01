@@ -63,10 +63,7 @@ export const useFetchTransaction = () => {
       switch (response.status) {
         case 200: {
           const data = await response.json()
-          if (data.length === 0) {
-            throw new Error(ErrorMessage.TRANSACTIONS_NOT_FOUND);
-          }
-          transactions.value = data
+          transactions.value = data || []
           break
         }
         default: {
@@ -75,6 +72,7 @@ export const useFetchTransaction = () => {
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+      transactions.value = []
     } finally {
       loading.value = false
     }
@@ -107,7 +105,7 @@ export const useFetchTransaction = () => {
     }
   }
 
-  const DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID = async (userId: number, transactionId: number) => {
+  const DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID = async (userId: number, transactionId: number): Promise<void> => {
     validateUserId(userId)
     validateTransactionId(transactionId)
     const url = API_URL.replace("{userId}", userId.toString()) + "/" + transactionId.toString()
@@ -116,7 +114,7 @@ export const useFetchTransaction = () => {
       const response = await fetch(url, { method: 'DELETE' })
       switch (response.status) {
         case 200: {
-          GET_TRANSACTIONS_BY_USER_ID(userId)
+          transactions.value = transactions.value.filter(t => t.id !== transactionId)
           break
         }
         default: {
@@ -125,12 +123,13 @@ export const useFetchTransaction = () => {
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+      throw err
     } finally {
       loading.value = false
     }
   }
 
-  const CREATE_TRANSACTION_BY_USER_ID = async (userId: number, transaction: Omit<ITransaction, "id" | "user">) => {
+  const CREATE_TRANSACTION_BY_USER_ID = async (userId: number, transaction: Omit<ITransaction, "id" | "user">): Promise<ITransaction> => {
     validateUserId(userId)
     validateTransaction(transaction)
     const url = API_URL.replace("{userId}", userId.toString())
@@ -146,23 +145,26 @@ export const useFetchTransaction = () => {
       switch (response.status) {
         case 201: {
           const data = await response.json()
-          transactions.value = data
-          break
+          transactions.value = [...transactions.value, data]
+          return data
         }
         default: {
           handleErrorResponse(response.status, await response.json())
+          return {} as ITransaction
         }
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+      throw err
     } finally {
       loading.value = false
-  }}
+    }
+  }
 
-  const UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID = async (userId: number, transactionId: number, transaction: ITransaction) => {
+  const UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID = async (userId: number, transactionId: number, transaction: Partial<ITransaction>): Promise<ITransaction> => {
     validateUserId(userId)
     validateTransactionId(transactionId)
-    validateTransaction(transaction)
+    validateTransaction(transaction as Omit<ITransaction, "id" | "user">)
     const url = API_URL.replace("{userId}", userId.toString()) + "/" + transactionId.toString()
     loading.value = true
     try {
@@ -176,15 +178,20 @@ export const useFetchTransaction = () => {
       switch (response.status) {
         case 200: {
           const data = await response.json()
-          transactions.value = data
-          break
+          const index = transactions.value.findIndex(t => t.id === transactionId)
+          if (index !== -1) {
+            transactions.value[index] = data
+          }
+          return data
         }
         default: {
           handleErrorResponse(response.status, await response.json())
+          return {} as ITransaction
         }
       }
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR
+      throw err
     } finally {
       loading.value = false
     }

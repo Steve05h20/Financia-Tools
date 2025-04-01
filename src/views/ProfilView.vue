@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+
 import UserInfo from '@/components/Profil/UserInfo.vue';
 import BankingInfoManager from '@/components/Profil/BankingInfoManager.vue';
 import AddressManager from '@/components/Profil/AddressManager.vue';
@@ -17,7 +18,7 @@ const accordionValidation = useAccordionValidation();
 const notification = useNotification();
 
 onMounted(() => {
-  userStore.loadUserData("test@test.com");
+  await userStore.loadUserData(userStore.user.email)
 });
 
 const toggleSection = (section: AccordionSection) => {
@@ -38,6 +39,7 @@ const toggleSection = (section: AccordionSection) => {
 
 </script>
 
+
 <template>
     <div class="container mx-auto px-4 pt-52 md:pt-10 pb-28">
       <div v-if="userStore.loading" class="flex justify-center items-center h-20">
@@ -48,9 +50,11 @@ const toggleSection = (section: AccordionSection) => {
         <div class="col-span-1 sm:col-span-2">
           <HeaderProfil />
         </div>
+
         <div class="col-span-1 sm:col-span-2 hidden sm:flex items-center justify-end gap-8">
           <BtnCancel />
           <BtnUpdate />
+
         </div>
       </div>
 
@@ -145,6 +149,8 @@ const toggleSection = (section: AccordionSection) => {
     </div>
   </div>
 </template>
+
+
 
 
 

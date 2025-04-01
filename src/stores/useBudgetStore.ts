@@ -1,70 +1,151 @@
-import { defineStore } from "pinia";
-import { useUserStore } from "./useUserSotre";
-import { computed } from "vue";
-import type { EType, ITransaction } from "@/models/transaction.interface";
-
-
+import { defineStore } from 'pinia'
+import { useUserStore } from './useUserSotre'
+import { ref } from 'vue'
+import type { EType, ITransaction } from '@/models/transaction.interface'
 
 export const useBudgetStore = defineStore('budget', () => {
+  const userStore = useUserStore()
+  const transactions = ref<ITransaction[]>([])
+  const error = ref<string | null>(null)
+  const loading = ref(false)
 
-
-  const userStore = useUserStore();
-  const transactions = computed(() => userStore.user.transactions);
-  const transactionService = userStore.transactionService;
+  const clearTransactions = () => {
+    transactions.value = []
+    error.value = null
+  }
 
   const loadTransactions = async () => {
-    await userStore.loadUserData(userStore.user.email);
+    try {
+      loading.value = true
+      error.value = null
+
+      if (!userStore.user.id) {
+        throw new Error('ID utilisateur non disponible')
+      }
+
+      await userStore.transactionService.GET_TRANSACTIONS_BY_USER_ID(userStore.user.id)
+      transactions.value = userStore.transactionService.transactions || []
+      console.log('Transactions chargées :', transactions.value)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Erreur de chargement des transactions'
+      console.error(error.value)
+      transactions.value = []
+    } finally {
+      loading.value = false
+    }
   }
 
   const getTotalByType = (type: EType) => {
     if (!transactions.value || !Array.isArray(transactions.value)) {
-      return 0;
+      return 0
     }
     return transactions.value
-      .filter(transaction => transaction.type === type)
-      .reduce((acc, transaction) => acc + (Number(transaction.amount) || 0), 0);
+      .filter((transaction) => transaction.type === type)
+      .reduce((acc, transaction) => acc + (Number(transaction.amount) || 0), 0)
   }
 
-
-  const addTransactionByType = async (transaction: Omit<ITransaction, "id" | "type">,type: EType) => {
-    if (typeof userStore.user.id !== 'number') {
-      throw new Error("ID utilisateur non valide");
+  const updateLocalTransaction = (idTransaction: number, updatedTransaction: Partial<ITransaction>) => {
+    const index = transactions.value.findIndex(t => t.id === idTransaction)
+    if (index !== -1) {
+      transactions.value[index] = { ...transactions.value[index], ...updatedTransaction }
     }
-    await transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {...transaction, type});
-    await loadTransactions();
+  }
+
+  const removeLocalTransaction = (idTransaction: number) => {
+    transactions.value = transactions.value.filter(t => t.id !== idTransaction)
+  }
+
+  const addLocalTransaction = (transaction: ITransaction) => {
+    transactions.value.push(transaction)
+  }
+
+  const updateTransaction = async (idTransaction: number, transaction: Partial<ITransaction>) => {
+    try {
+      if (typeof userStore.user.id !== 'number') {
+        throw new Error('ID utilisateur non valide')
+      }
+
+      loading.value = true
+      error.value = null
+
+      await userStore.transactionService.UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
+        userStore.user.id,
+        idTransaction,
+        transaction
+      )
+
+      // Mise à jour locale immédiate
+      updateLocalTransaction(idTransaction, transaction)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Erreur lors de la mise à jour de la transaction'
+      console.error(error.value)
+      throw err
+    } finally {
+      loading.value = false
+    }
   }
 
   const deleteTransaction = async (idTransaction: number) => {
-    if (typeof userStore.user.id !== 'number') {
-      throw new Error("ID utilisateur non valide");
+    try {
+      if (typeof userStore.user.id !== 'number') {
+        throw new Error('ID utilisateur non valide')
+      }
+
+      loading.value = true
+      error.value = null
+
+      await userStore.transactionService.DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(
+        userStore.user.id,
+        idTransaction
+      )
+
+      // Suppression locale immédiate
+      removeLocalTransaction(idTransaction)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Erreur lors de la suppression de la transaction'
+      console.error(error.value)
+      throw err
+    } finally {
+      loading.value = false
     }
-    await transactionService.DELETE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(userStore.user.id, idTransaction);
-    await loadTransactions();
   }
 
-  const updateTransaction = async (idTransaction: number, transaction: ITransaction) => {
-    if (typeof userStore.user.id !== 'number') {
-      throw new Error("ID utilisateur non valide");
+  const addTransactionByType = async (transaction: Omit<ITransaction, 'id' | 'type'>, type: EType) => {
+    try {
+      if (typeof userStore.user.id !== 'number') {
+        throw new Error('ID utilisateur non valide')
+      }
+
+      loading.value = true
+      error.value = null
+
+      const response = await userStore.transactionService.CREATE_TRANSACTION_BY_USER_ID(userStore.user.id, {
+        ...transaction,
+        type,
+      })
+
+      // Ajout local immédiat si la réponse est une transaction
+      if (response && typeof response === 'object' && 'id' in response) {
+        addLocalTransaction(response as ITransaction)
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Erreur lors de la création de la transaction'
+      console.error(error.value)
+      throw err
+    } finally {
+      loading.value = false
     }
-    await transactionService.UPDATE_TRANSACTION_BY_USER_ID_AND_TRANSACTION_ID(userStore.user.id, idTransaction, transaction);
-    await loadTransactions();
   }
-
-
-
-
-
-
-
 
   return {
     transactions,
-    transactionService,
     loadTransactions,
     getTotalByType,
     addTransactionByType,
     deleteTransaction,
-    updateTransaction
+    updateTransaction,
+    clearTransactions,
+    error,
+    loading,
   }
-
 })

@@ -8,22 +8,30 @@ export enum EFrequency {
   Unlimited = -1
 }
 
+export const FREQUENCY_LABELS: Record<keyof typeof EFrequency, string> = {
+  Daily: 'Journalier',
+  Weekly: 'Hebdomadaire',
+  BiWeekly: 'Bi-Hebdomadaire',
+  Monthly: 'Mensuel',
+  Unlimited: 'Indéfini'
+}
+
 export enum EType {
   REVENUE = "Revenue",
   EXPENSE = "Expense"
 }
 
-export interface ITransaction{
-id?: number
-description?: string
-category?: string
-isDone: boolean
-type: EType
-amount: number
-startDate: Date
-endDate?: Date
-frequency: EFrequency
-user: IUser
+export interface ITransaction {
+  id?: number
+  description?: string
+  category?: string
+  isDone: boolean
+  type: EType
+  amount: number
+  startDate: Date
+  endDate?: Date
+  frequency: EFrequency
+  user: IUser
 }
 
 
