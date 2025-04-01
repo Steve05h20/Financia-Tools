@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import ViewSection from '@/components/Home/Exemple/viewSection.vue';
-
-
+import ViewSection from '@/components/Home/TenchoLogiciel/viewSection.vue'
 </script>
 
 <template>
   <main>
     <!-- exemple -->
     <ViewSection />
-     <!-- exemple -->
-
-
-
+    <!-- exemple -->
   </main>
 </template>
