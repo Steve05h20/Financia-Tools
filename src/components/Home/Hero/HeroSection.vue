@@ -3,9 +3,13 @@ import { ref } from 'vue'
 import { HeroDataSection } from './HeroDataSection'
 import SectionGrid from "@/components/Home/SectionGrid.vue"
 import AuthView from '@/views/AuthView.vue'
+import { useUserStore } from '@/stores/useUserSotre'
+import { useRouter } from 'vue-router'
 
 const { texts, images, nameSection } = HeroDataSection()
 
+const router = useRouter()
+const userStore = useUserStore()
 const isModalOpen = ref(false)
 const currentAction = ref<'connexion' | 'inscription'>('inscription')
 
@@ -29,6 +33,14 @@ const handleChangeAction = (newAction: any) => {
 const handleAuthSuccess = () => {
   closeModal()
 }
+
+const handleButtonClick = () => {
+  if (userStore.isConnected) {
+    router.push('/budget')
+  } else {
+    openSignupModal()
+  }
+}
 </script>
 
 <template>
@@ -45,22 +57,29 @@ const handleAuthSuccess = () => {
       colsMobile="1"
       class="relative z-10 h-full flex items-center"
     >
-      <div class="col-span-12 text-center md:text-left lg:col-span-7 md:col-span-6 text-white m-8">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 md:mb-6">{{ texts.title }}</h1>
-        <p class="text-base md:text-lg mb-6 md:mb-8 max-w-xl">
-          {{ texts.description }}
-        </p>
-        <button
-          @click="openSignupModal"
-          class="btn btn-primary btn-lg p-6 mt-15">S'inscrire</button>
-      </div>
+      <div class="flex flex-row items-center w-full px-8">
+        <div class="col-span-12 text-center md:text-left lg:col-span-7 md:col-span-6 text-white m-8">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4 md:mb-6">{{ texts.title }}</h1>
+          <p class="text-base md:text-lg mb-6 md:mb-8 max-w-xl">
+            {{ texts.description }}
+          </p>
+          <div>
+            <button
+              @click="handleButtonClick"
+              class="btn btn-primary btn-lg p-6 mt-15"
+            >
+              {{ !userStore.isConnected ? 'S\'inscrire' : ' Budgeter '}}
+            </button>
+          </div>
+        </div>
 
-      <div class="col-span-12 lg:col-span-5 md:col-span-6 flex justify-center items-center mt-6 lg:mt-0">
-        <img
-          :src="images.imagePhone.url"
-          :alt="images.imagePhone.alt"
-          class="object-contain hidden md:inline-block md:w-[150px] lg:w-[220px] drop-shadow-2xl"
-        />
+        <div class="hidden md:w-2/5 lg:w-1/3 md:flex justify-center items-center">
+          <img
+            :src="images.imagePhone.url"
+            :alt="images.imagePhone.alt"
+            class="object-contain md:w-[180px] lg:w-[250px] drop-shadow-2xl"
+          />
+        </div>
       </div>
     </SectionGrid>
   </div>
