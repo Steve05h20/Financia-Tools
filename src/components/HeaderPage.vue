@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faUser, faWallet, faHome, faRightToBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import HeaderAvatar from './HeaderAvatar.vue'
 import { useUserStore } from '@/stores/useUserSotre'
+import { useAuth } from '@/services/useAuth'
 
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
+const auth = useAuth()
 
 // Références pour les modals
 const inscriptionModalRef = ref<HTMLDialogElement | null>(null)
@@ -18,9 +20,11 @@ const connexionModalRef = ref<HTMLDialogElement | null>(null)
 const toggleModal = () => {
   if (inscriptionModalRef.value?.open) {
     inscriptionModalRef.value.close()
+    auth.resetForm()
     connexionModalRef.value?.showModal()
   } else {
     connexionModalRef.value?.close()
+    auth.resetForm()
     inscriptionModalRef.value?.showModal()
   }
 }
@@ -30,7 +34,13 @@ const fermerModal = () => {
   if (connexionModalRef.value && inscriptionModalRef.value) {
     connexionModalRef.value.close()
     inscriptionModalRef.value.close()
+    auth.resetForm()
   }
+}
+
+// Fonction pour gérer la fermeture manuelle des modales
+const handleCloseModal = () => {
+  auth.resetForm()
 }
 </script>
 <template>
@@ -97,9 +107,9 @@ const fermerModal = () => {
   <dialog ref="inscriptionModalRef" class="modal w-96 h-auto m-auto">
     <div class="modal-box">
       <form method="dialog">
-        <button class="btn btn-sm btn-circle btn-ghost  absolute right-2 top-2">✕</button>
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" @click="handleCloseModal">✕</button>
       </form>
-      <AuthView action="inscription"  @change-action="toggleModal" @inscription-reussie="fermerModal" @connexion-reussie="fermerModal" />
+      <AuthView action="inscription" @change-action="toggleModal" @inscription-reussie="fermerModal" @connexion-reussie="fermerModal" />
     </div>
   </dialog>
 
@@ -107,11 +117,9 @@ const fermerModal = () => {
   <dialog ref="connexionModalRef" class="modal w-96 h-auto m-auto">
     <div class="modal-box">
       <form method="dialog">
-        <button @click="fermerModal" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-          ✕
-        </button>
+        <button @click="handleCloseModal" class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
       </form>
-      <AuthView action="connexion"  @inscription-reussie="fermerModal" @connexion-reussie="fermerModal" @change-action="toggleModal" />
+      <AuthView action="connexion" @inscription-reussie="fermerModal" @connexion-reussie="fermerModal" @change-action="toggleModal" />
     </div>
   </dialog>
 </template>

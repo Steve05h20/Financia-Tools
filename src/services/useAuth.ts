@@ -118,14 +118,24 @@ export const useAuth = defineStore('auth', () => {
   const isUserNameValid = computed(() => !stateAcount.validationErrors.userName)
   const isConfirmPasswordValid = computed(() => !stateAcount.validationErrors.confirmPwd)
 
+  const resetForm = () => {
+    stateAcount.userName = ''
+    stateAcount.email = ''
+    stateAcount.pwd = ''
+    stateAcount.confirmPwd = ''
+    stateAcount.errorMessage = ''
+    stateAcount.validationErrors = {
+      userName: '',
+      email: '',
+      pwd: '',
+      confirmPwd: ''
+    }
+  }
+
   // Action de finalisation commune
   const finallyAction = () => {
     stateAcount.loading = false
-    stateAcount.email = ''
-    stateAcount.pwd = ''
-    setTimeout(() => {
-      stateAcount.errorMessage = ''
-    }, 5000)
+    resetForm()
   }
 
   /*=======================================================================
@@ -186,34 +196,52 @@ export const useAuth = defineStore('auth', () => {
     updateValidation()
 
     if (stateAcount.pwd !== stateAcount.confirmPwd) {
-      stateAcount.errorMessage = ErrorMessage.PASSWORDS_DO_NOT_MATCH // Utilisation de l'enum
+      stateAcount.errorMessage = ErrorMessage.PASSWORDS_DO_NOT_MATCH
       message(stateAcount.errorMessage, 'error')
       return
     }
 
     if (!isValid.value || !stateAcount.userName || stateAcount.pwd !== stateAcount.confirmPwd) {
-      message('Veuillez corriger les erreurs de validation', 'error') // Utilisez message
+      message('Veuillez corriger les erreurs de validation', 'error')
       return
     }
     stateAcount.loading = true
     stateAcount.errorMessage = ''
     try {
+      // Ne pas inclure le téléphone s'il n'est pas défini ou vide
       const newUser = {
         firstName: stateAcount.userName,
         email: stateAcount.email,
         password: stateAcount.pwd,
-        isActive: true,
+        isActive: true
       }
+
+      console.log('Données utilisateur avant création:', JSON.stringify(newUser, null, 2))
       await userService.POST_USER(newUser)
-      userStore.loadUserData(stateAcount.email)
-      userStore.isConnected = true
-      stateAcount.lastActivity = new Date()
-      message('Compte créé avec succès !', 'success') // Utilisez message
+
+      // Récupérer l'utilisateur créé
+      await userService.GET_USER_BY_EMAIL(stateAcount.email)
+      console.log('Données utilisateur après récupération:', JSON.stringify(userService.user, null, 2))
+
+      // Mettre à jour l'état de l'utilisateur
+      if (userService.user) {
+        stateAcount.utilisateur = userService.user
+        userStore.isConnected = true
+        userStore.user = userService.user
+
+        // Charger toutes les données de l'utilisateur
+        await userStore.loadUserData(stateAcount.utilisateur.email)
+        console.log('Données utilisateur après chargement:', JSON.stringify(userStore.user, null, 2))
+
+        stateAcount.lastActivity = new Date()
+        message('Compte créé avec succès !', 'success')
+      }
     } catch (error: unknown) {
+      console.error('Erreur lors de la création:', error)
       const errorMsg =
         error instanceof Error && error.message ? error.message : ErrorMessage.CREATE_ACCOUNT_ERROR
       stateAcount.errorMessage = errorMsg
-      message(errorMsg, 'error') // Utilisez message
+      message(errorMsg, 'error')
     } finally {
       finallyAction()
     }
@@ -258,5 +286,6 @@ export const useAuth = defineStore('auth', () => {
     isPasswordValid,
     isUserNameValid,
     isConfirmPasswordValid,
+    resetForm
   }
 })

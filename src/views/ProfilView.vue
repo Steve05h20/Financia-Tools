@@ -17,7 +17,7 @@ const userStore = useUserStore();
 const accordionValidation = useAccordionValidation();
 const notification = useNotification();
 
-onMounted(() => {
+onMounted(async () => {
   await userStore.loadUserData(userStore.user.email)
 });
 
