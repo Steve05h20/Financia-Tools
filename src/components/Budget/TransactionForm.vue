@@ -119,7 +119,7 @@
         <select v-model="form.type" class="select select-bordered w-full input-sm" :class="{ 'border-red-500': errors.type }">
           <option value="" disabled selected>Sélectionnez un type</option>
           <option v-for="(value, key) in EType" :key="key" :value="value">
-            {{ key === 'REVENUE' ? 'Revenue' : 'Dépense' }}
+            {{ key === 'REVENUE' ? 'Revenu' : 'Dépense' }}
           </option>
         </select>
       </div>
@@ -138,7 +138,7 @@
           type="submit"
           class="btn btn-primary "
         >
-          {{ form.category === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la dépense' }}
+          {{ form.type === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la dépense' }}
         </button>
       </div>
     </form>
