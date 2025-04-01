@@ -55,6 +55,8 @@ const initializeAddress = () => {
   }
 
   if (userStore.user.addresses.length === 0) {
+    const userRef = { id: userStore.user.id } as unknown as typeof userStore.user;
+
     const newAddress: IAddress = {
       type: EAddressType.WORK,
       streetNumber: '',
@@ -62,7 +64,7 @@ const initializeAddress = () => {
       city: '',
       province: EProvince.QUEBEC,
       country: ECountry.CANADA,
-      user: { id: userStore.user.id } as any // Éviter erreur circulaire
+      user: userRef
     };
 
     userStore.user.addresses.push(newAddress);
@@ -78,6 +80,8 @@ const addNewAddress = () => {
     userStore.user.addresses = [];
   }
 
+  const userRef = { id: userStore.user.id } as unknown as typeof userStore.user;
+
   const newAddress: IAddress = {
     type: EAddressType.WORK,
     streetNumber: '',
@@ -85,7 +89,7 @@ const addNewAddress = () => {
     city: '',
     province: EProvince.QUEBEC,
     country: ECountry.CANADA,
-    user: { id: userStore.user.id } as any // Éviter références circulaires
+    user: userRef
   };
 
   userStore.user.addresses.push(newAddress);

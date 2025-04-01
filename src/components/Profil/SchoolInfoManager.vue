@@ -51,12 +51,15 @@ const initializeSchoolDetails = () => {
   }
 
   if (userStore.user.schoolDetails.length === 0) {
+
+    const userRef = { id: userStore.user.id } as unknown as typeof userStore.user;
+
     userStore.user.schoolDetails.push({
       schoolName: '',
       fieldOfStudy: '' as EFieldOfStudy,
       startDate: new Date(),
       projectedEndDate: '',
-      user: { id: userStore.user.id } as any
+      user: userRef
     });
   }
 
@@ -65,7 +68,6 @@ const initializeSchoolDetails = () => {
   console.log("Détails scolaires initialisés:", userStore.user.schoolDetails);
 };
 
-// Fonction pour supprimer les détails scolaires
 const removeSchoolDetails = async (index: number) => {
   if (userStore.user?.schoolDetails && index < (userStore.user.schoolDetails?.length ?? 0)) {
     const detailsToRemove = userStore.user.schoolDetails[index];
