@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/useUserSotre';
-import useValidationProfil from "@/services/useValidationProfil";
+import useValidation from "@/services/useValidation";
 
 export const useEditStore = defineStore('edit', () => {
-  const validation = useValidationProfil();
+  const validation = useValidation();
   const isEditing = ref<boolean>(false);
   const userStore = useUserStore();
 

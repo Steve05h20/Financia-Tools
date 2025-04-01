@@ -5,7 +5,7 @@ import { EFieldOfStudy } from '@/models/schoolDetails.interface'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import { useEditStore } from '@/stores/profil/useEditStore'
-import useValidationProfil from '@/services/useValidationProfil'
+import useValidation from '@/services/useValidation'
 
 const props = defineProps({
   currentSchoolDetails: {
@@ -15,7 +15,7 @@ const props = defineProps({
 });
 
 const editStore = useEditStore();
-const validation = useValidationProfil();
+const validation = useValidation();
 
 onMounted(() => {
   validation.resetErrors();

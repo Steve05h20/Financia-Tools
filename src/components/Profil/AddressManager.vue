@@ -4,10 +4,9 @@ import AddressInfo from './AddressInfo.vue';
 import BtnDelete from './BtnDelete.vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import { useEditStore } from '@/stores/profil/useEditStore';
-import { EAddressType, EProvince, ECountry } from '@/models/address.interface';
+import { EAddressType, EProvince, ECountry, type IAddress } from '@/models/address.interface';
 import BtnAddDataForm from "./BtnAddDataForm.vue";
 import useAddFormToggle from '@/services/useAddFormToggle ';
-
 
 const userStore = useUserStore();
 const editStore = useEditStore();
@@ -33,20 +32,21 @@ watch(
   () => [userStore.user, userStore.loading],
   ([user, loading]) => {
     if (user && !loading) {
-      if (userStore.user.addresses && userStore.user.addresses.length > 0) {
-        console.log('Adresses trouvées, affichage du formulaire');
-        showAddressForm.value = true;
-      } else {
-        console.log('Aucune adresse trouvée');
-        showAddressForm.value = false;
-      }
+      const hasAddresses = Boolean(userStore.user.addresses && userStore.user.addresses.length > 0);
+      showAddressForm.value = hasAddresses;
+
+      console.log(
+        hasAddresses
+          ? 'Adresses trouvées, affichage du formulaire'
+          : 'Aucune adresse trouvée'
+      );
     }
   },
   { immediate: true }
 );
 
 watch([addressCount, () => editStore.isEditing], ([newCount, isEditing]) => {
-  showAddButton.value = isEditing && newCount === 1;
+  showAddButton.value = Boolean(isEditing && newCount === 1);
 }, { immediate: true });
 
 const initializeAddress = () => {
@@ -55,14 +55,14 @@ const initializeAddress = () => {
   }
 
   if (userStore.user.addresses.length === 0) {
-    const newAddress = {
+    const newAddress: IAddress = {
       type: EAddressType.WORK,
       streetNumber: '',
       streetName: '',
       city: '',
       province: EProvince.QUEBEC,
       country: ECountry.CANADA,
-      user: userStore.user
+      user: { id: userStore.user.id } as any // Éviter erreur circulaire
     };
 
     userStore.user.addresses.push(newAddress);
@@ -78,52 +78,53 @@ const addNewAddress = () => {
     userStore.user.addresses = [];
   }
 
-  const newAddress = {
+  const newAddress: IAddress = {
     type: EAddressType.WORK,
     streetNumber: '',
     streetName: '',
     city: '',
     province: EProvince.QUEBEC,
     country: ECountry.CANADA,
-    user: userStore.user
+    user: { id: userStore.user.id } as any // Éviter références circulaires
   };
 
   userStore.user.addresses.push(newAddress);
 };
 
 const removeAddress = async (index: number) => {
-  if (userStore.user?.addresses && index < (userStore.user.addresses?.length ?? 0)) {
-    const addressToRemove = userStore.user.addresses[index];
-    const userId = userStore.user.id;
+  if (!userStore.user?.addresses || index >= userStore.user.addresses.length) {
+    return;
+  }
 
-    userStore.user.addresses.splice(index, 1);
+  const addressToRemove = userStore.user.addresses[index];
+  const userId = userStore.user.id;
 
-    if (userStore.user.addresses.length === 0) {
-      showAddressForm.value = false;
-    }
+  userStore.user.addresses.splice(index, 1);
 
-    if (userId && addressToRemove.type) {
-      try {
-        await userStore.addressService.deleteAddressByType(userId, addressToRemove.type);
-        userStore.notificationService.message("Adresse supprimée avec succès", "success");
-      } catch (error) {
-        userStore.user.addresses.splice(index, 0, addressToRemove);
-        const errorMessage = error instanceof Error ? error.message : "Erreur lors de la suppression de l'adresse";
-        userStore.notificationService.message(errorMessage, "error");
+  if (userStore.user.addresses.length === 0) {
+    showAddressForm.value = false;
+  }
 
-        if (userStore.user.addresses.length > 0) {
-          showAddressForm.value = true;
-        }
+  if (userId && addressToRemove.type) {
+    try {
+      await userStore.addressService.deleteAddressByType(userId, addressToRemove.type);
+      userStore.notificationService.message("Adresse supprimée avec succès", "success");
+    } catch (error) {
+      userStore.user.addresses.splice(index, 0, addressToRemove);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : "Erreur lors de la suppression de l'adresse";
+      userStore.notificationService.message(errorMessage, "error");
+
+      if (userStore.user.addresses.length > 0) {
+        showAddressForm.value = true;
       }
     }
   }
 };
-
 </script>
 
 <template>
-
-
     <div v-if="!showAddressForm && !userStore.loading" class="flex justify-center my-5">
       <BtnAddDataForm
         buttonText="Ajouter une adresse"
