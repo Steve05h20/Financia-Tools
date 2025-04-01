@@ -5,7 +5,7 @@
     </h2>
     <form
       @submit.prevent="handleSubmit"
-      class="grid grid-cols-1 md:grid-cols-2 gap-3"
+      class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end"
     >
       <!-- Description -->
       <div>
@@ -114,7 +114,7 @@
       </div>
 
       <!-- type  -->
-      <div class="flex items-center gap-2">
+      <div>
         <label class="label text-primary "> Type </label>
         <select v-model="form.type" class="select select-bordered w-full input-sm" :class="{ 'border-red-500': errors.type }">
           <option value="" disabled selected>Sélectionnez un type</option>
@@ -128,7 +128,7 @@
       <div class="flex items-center">
         <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2"/>
         <label class="label text-primary " :class="{ 'text-success': form.isDone }">
-          Reccurent
+          Récurrent
         </label>
       </div>
 
