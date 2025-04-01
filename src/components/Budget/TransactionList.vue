@@ -65,7 +65,7 @@
                   :class="transaction.isDone ? 'badge badge-success' : 'badge badge-warning'"
                   class="mt-1"
                 >
-                  {{ transaction.isDone ? 'Reccurent' : 'Non Reccurent' }}
+                  {{ transaction.isDone ? 'Récurrent' : 'Non Récurrent' }}
                 </button>
               </div>
             </div>
@@ -226,11 +226,11 @@
                   @click="toggleStatus(transaction)"
                   :class="transaction.isDone ? 'badge badge-info' : 'badge badge-base-300'"
                 >
-                  {{ transaction.isDone ? 'Reccurent' : 'Non Reccurent' }}
+                  {{ transaction.isDone ? 'Récurrent' : 'Non Récurrent' }}
                 </button>
                 <div v-else class="flex items-center">
                   <input v-model="editingTransaction.isDone" type="checkbox" class="toggle toggle-sm toggle-success mr-2" />
-                  <span class="text-sm">Reccurent</span>
+                  <span class="text-sm">Récurrent</span>
                 </div>
               </td>
               <td>
@@ -352,7 +352,7 @@
         <div class="grid grid-cols-2 gap-4 mt-2">
           <div class="form-control mt-2">
             <label class="label cursor-pointer justify-start gap-4">
-              <span class="label-text text-primary">Reccurent</span>
+              <span class="label-text text-primary">Récurrent</span>
               <input type="checkbox" v-model="editingTransaction.isDone" class="toggle toggle-success" />
             </label>
           </div>
