@@ -396,48 +396,61 @@ const useValidation = () => {
     return true;
   };
 
-  const validateAll = (user: any): boolean => {
-    resetErrors();
+  // Dans useValidation.ts
+  // Dans useValidation.ts
+const validateAll = (user: any): boolean => {
+  resetErrors();
+  let isValid = true;
 
-    let isValid = true;
+  // Validation des informations de base de l'utilisateur (toujours requises)
+  if (!validateLastName(user.lastName)) isValid = false;
+  if (!validateFirstname(user.firstName)) isValid = false;
+  if (!validateEmail(user.email)) isValid = false;
+  if (!validatePhone(user.phone)) isValid = false;
+  if (!validatePrevDate(user.birthDate, 'birthDate')) isValid = false;
 
-    // Validation des informations de base de l'utilisateur
-    if (!validateLastName(user.lastName)) isValid = false;
-    if (!validateFirstname(user.firstName)) isValid = false;
-    if (!validateEmail(user.email)) isValid = false;
-    if (!validatePhone(user.phone)) isValid = false;
-    if (!validatePrevDate(user.birthDate, 'birthDate')) isValid = false;
+  // Validation des informations bancaires - seulement si des données sont présentes
+  if (user.bankingDetails && user.bankingDetails.length > 0) {
+    const banking = user.bankingDetails[0];
+    const hasBankingData = banking.institutionName || banking.accountInfo || banking.loanInfo || banking.other;
 
-    // Validation des informations bancaires
-    if (user.bankingDetails && user.bankingDetails.length > 0) {
-      const banking = user.bankingDetails[0];
+    if (hasBankingData) {
       if (!validateInstitutionName(banking.institutionName, 'institutionName')) isValid = false;
       if (!validateAccountInfo(banking.accountInfo, 'accountInfo')) isValid = false;
     }
+  }
 
-    // Validation des informations scolaires
-    if (user.schoolDetails && user.schoolDetails.length > 0) {
-      const school = user.schoolDetails[0];
-      if (!validateInstitutionName(school.schoolName, 'schoolName')) isValid = false;
+  // Validation des informations scolaires - seulement si des données sont présentes
+  if (user.schoolDetails && user.schoolDetails.length > 0) {
+    const school = user.schoolDetails[0];
+    const hasSchoolData = school.schoolName || school.fieldOfStudy || school.startDate || school.projectedEndDate;
+
+    if (hasSchoolData) {
+      if (!validateSchoolName(school.schoolName, 'schoolName')) isValid = false;
       if (!validateSelect(school.fieldOfStudy, 'fieldOfStudy')) isValid = false;
       if (!validatePrevDate(school.startDate, 'startDate')) isValid = false;
       if (!validateFutureDate(school.projectedEndDate, 'projectedEndDate')) isValid = false;
     }
+  }
 
-    // Validation des adresses
-    if (user.addresses && user.addresses.length > 0) {
-      for (const address of user.addresses) {
+  // Validation des adresses - seulement si des données sont présentes
+  if (user.addresses && user.addresses.length > 0) {
+    for (const address of user.addresses) {
+      const hasAddressData = address.streetNumber || address.streetName || address.city || address.province || address.country || address.type;
 
+      if (hasAddressData) {
         if (!validateAddress(address.streetNumber, 'streetNumber')) isValid = false;
         if (!validateStreet(address.streetName, 'streetName')) isValid = false;
         if (!validateCity(address.city, 'city')) isValid = false;
         if (!validateSelect(address.province, 'province')) isValid = false;
         if (!validateSelect(address.country, 'country')) isValid = false;
+        if (!validateSelect(address.type, 'type')) isValid = false;
       }
     }
+  }
 
-    return isValid;
-  };
+  return isValid;
+};
 
   return{
     validateEmail,

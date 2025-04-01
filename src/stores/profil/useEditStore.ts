@@ -67,7 +67,6 @@ export const useEditStore = defineStore('edit', () => {
   };
 
   const saveChanges = async (): Promise<void> => {
-
     if (!validation.validateAll(userStore.user)) {
       userStore.notificationService.message("Veuillez corriger les erreurs avant de sauvegarder", "error");
       return;
