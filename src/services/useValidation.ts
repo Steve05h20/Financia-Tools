@@ -29,7 +29,8 @@ enum ErrorMessage {
   INVALID_PASSWORD_LENGTH = 'Le mot de passe doit contenir au moins 6 caractères',
   INVALID_PASSWORD_DIGIT='Le mot de passe doit contenir au moins un chiffre',
   INVALID_USERNAME = 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
-  EMPTY_USERNAME = 'Le nom d\'utilisateur est requis'
+  EMPTY_USERNAME = 'Le nom d\'utilisateur est requis',
+  INVALID_FIRSTNAME='Le prénom doit contenir seulement des lettres',
 }
 
 interface ValidationErrors {
@@ -166,6 +167,12 @@ const useValidation = () => {
   const validateFirstname = (firstname: string | undefined, fieldName: keyof ValidationErrors = 'firstName'): boolean => {
     if (!firstname) {
       errors.value[fieldName] = ErrorMessage.EMPTY_FIRSTNAME;
+      return false;
+    }
+
+    const regex = /^[a-zA-Z_]+$/;
+    if (!regex.test(firstname)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
       return false;
     }
 
