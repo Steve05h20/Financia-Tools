@@ -127,6 +127,8 @@ export const useEditStore = defineStore('edit', () => {
           ...(userStore.user.bankingDetails[0].id && { id: userStore.user.bankingDetails[0].id }),
           institutionName: userStore.user.bankingDetails[0].institutionName,
           accountInfo: userStore.user.bankingDetails[0].accountInfo,
+          loanInfo: userStore.user.bankingDetails[0].loanInfo,
+          other: userStore.user.bankingDetails[0].other
         });
       }
 
