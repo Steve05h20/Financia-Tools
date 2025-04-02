@@ -58,7 +58,7 @@ const initializeSchoolDetails = () => {
       schoolName: '',
       fieldOfStudy: '' as EFieldOfStudy,
       startDate: new Date(),
-      projectedEndDate: '',
+      projectedEndDate: undefined,
       user: userRef
     });
   }
