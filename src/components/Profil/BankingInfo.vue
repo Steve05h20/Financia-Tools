@@ -2,7 +2,7 @@
 import InputLabelDiv from '../InputLabelDiv.vue';
 import { watch, onMounted } from 'vue';
 import { useEditStore } from '@/stores/profil/useEditStore';
-import useValidationProfil from '@/services/useValidationProfil';
+import useValidation from '@/services/useValidation';
 
 const props = defineProps({
   currentBankingDetails: {
@@ -12,7 +12,7 @@ const props = defineProps({
 });
 
 const editStore = useEditStore();
-const validation = useValidationProfil();
+const validation = useValidation();
 
 onMounted(() => {
   validation.resetErrors();

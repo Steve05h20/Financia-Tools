@@ -3,19 +3,20 @@ import { watch, onMounted } from 'vue'
 import AppLabel from '../AppLabel.vue'
 import AppSelect from '../AppSelect.vue'
 import InputLabelDiv from '../InputLabelDiv.vue'
-import { EProvince, ECountry, EAddressType } from '@/models/address.interface'
-import useValidationProfil from '@/services/useValidationProfil'
+import { EProvince, ECountry, EAddressType, type IAddress } from '@/models/address.interface'
+import useValidation from '@/services/useValidation'
 import { useEditStore } from '@/stores/profil/useEditStore'
+import type { PropType } from 'vue'
 
 const props = defineProps({
   currentAddress: {
-    type: Object,
+    type: Object as PropType<IAddress>,
     required: true
   }
 });
 
 const editStore = useEditStore();
-const validation = useValidationProfil();
+const validation = useValidation();
 
 onMounted(async () => {
   validation.resetErrors();
@@ -33,48 +34,60 @@ watch(() => validation.errors.value, () => {
   emitValidationState();
 }, { deep: true });
 
-watch(() => props.currentAddress.streetNumber, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+watch(() => props.currentAddress?.streetNumber, (newValue) => {
+  if (newValue === undefined) return;
+
+  if (newValue.trim() === '') {
     validation.errors.value.streetNumber = validation.ErrorMessage.EMPTY_ADDRESS;
   } else {
     validation.validateAddress(newValue, 'streetNumber');
   }
 });
 
-watch(() => props.currentAddress.streetName, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+watch(() => props.currentAddress?.streetName, (newValue) => {
+  if (newValue === undefined) return;
+
+  if (newValue.trim() === '') {
     validation.errors.value.streetName = validation.ErrorMessage.EMPTY_STREET;
   } else {
     validation.validateStreet(newValue, 'streetName');
   }
 });
 
-watch(() => props.currentAddress.city, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+watch(() => props.currentAddress?.city, (newValue) => {
+  if (newValue === undefined) return;
+
+  if (newValue.trim() === '') {
     validation.errors.value.city = validation.ErrorMessage.EMPTY_CITY;
   } else {
     validation.validateCity(newValue, 'city');
   }
 });
 
-watch(() => props.currentAddress.province, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+watch(() => props.currentAddress?.province, (newValue) => {
+  if (newValue === undefined) return;
+
+  if (newValue.trim() === '') {
     validation.errors.value.province = validation.ErrorMessage.EMPTY_SELECT;
   } else {
     validation.validateSelect(newValue, 'province');
   }
 });
 
-watch(() => props.currentAddress.country, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+watch(() => props.currentAddress?.country, (newValue) => {
+  if (newValue === undefined) return;
+
+  if (newValue.trim() === '') {
     validation.errors.value.country = validation.ErrorMessage.EMPTY_SELECT;
   } else {
     validation.validateSelect(newValue, 'country');
   }
 });
 
-watch(() => props.currentAddress.type, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+watch(() => props.currentAddress?.type, (newValue) => {
+  if (newValue === undefined) return;
+
+  if (newValue.trim() === '') {
     validation.errors.value.type = validation.ErrorMessage.EMPTY_SELECT;
   } else {
     validation.validateSelect(newValue, 'type');

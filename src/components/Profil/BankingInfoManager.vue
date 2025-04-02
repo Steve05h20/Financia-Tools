@@ -46,10 +46,12 @@ const initializeBankingDetails = () => {
   }
 
   if (userStore.user.bankingDetails.length === 0) {
+    const userRef = { id: userStore.user.id } as unknown as typeof userStore.user;
+
     userStore.user.bankingDetails.push({
       institutionName: '',
       accountInfo: '',
-      user: { id: userStore.user.id } as any
+      user: userRef
     });
   }
 

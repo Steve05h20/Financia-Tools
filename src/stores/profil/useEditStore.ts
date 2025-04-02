@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/useUserSotre';
-import useValidationProfil from "@/services/useValidationProfil";
+import useValidation from "@/services/useValidation";
 
 export const useEditStore = defineStore('edit', () => {
-  const validation = useValidationProfil();
+  const validation = useValidation();
   const isEditing = ref<boolean>(false);
   const userStore = useUserStore();
 
@@ -67,7 +67,6 @@ export const useEditStore = defineStore('edit', () => {
   };
 
   const saveChanges = async (): Promise<void> => {
-
     if (!validation.validateAll(userStore.user)) {
       userStore.notificationService.message("Veuillez corriger les erreurs avant de sauvegarder", "error");
       return;

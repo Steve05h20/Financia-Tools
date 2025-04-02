@@ -2,11 +2,11 @@
 import InputLabelDiv from '../InputLabelDiv.vue'
 import { watch, onMounted } from 'vue'
 import { useUserStore } from '@/stores/useUserSotre'
-import useValidationProfil from '@/services/useValidationProfil'
+import useValidation from '@/services/useValidation'
 import { useEditStore } from '@/stores/profil/useEditStore';
 
 const userStore = useUserStore();
-const validation = useValidationProfil();
+const validation = useValidation();
 const editStore = useEditStore();
 
 onMounted(async () => {

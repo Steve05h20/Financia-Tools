@@ -14,13 +14,24 @@ enum ErrorMessage {
   EMPTY_SELECT = 'Veuillez sélectionner une option',
   EMPTY_DATE = 'Veuillez entrer une date',
   ONLY_LETTERS = 'Veuillez entrer seulement des lettres',
-  STRING_LENGTH = 'Veuillez entrer un texte entre 2 et 50 caractères',
+  STRING_LENGTH = 'Veuillez entrer entre {min} et {max} caractères',
   INVALID_EMAIL = 'Veuillez entrer un email valide',
   INVALID_PHONE = 'Le numéro de téléphone doit être sous le format 123-456-7890',
   INVALID_BANKING_INFO = 'Numéro de compte à 10 chiffres requis',
   DATE_PREVIOUS = 'Veuillez entrer une date antérieure à la date actuelle',
   DATE_FUTURE = 'Veuillez entrer une date postérieure à la date actuelle',
   DIGIT_IN_STREET_NUMBER = 'L\'addresse doit commencer et contenir des chiffres ex:102-A',
+  USER_NOT_FOUND = 'Utilisateur non trouvé',
+  USER_DETAILS_NOT_FOUND = "Données pour l'utilisateur non trouvées",
+  PASSWORDS_DO_NOT_MATCH = 'Les mots de passe ne correspondent pas',
+  EMPTY_PASSWORD = 'Mot de passe requis',
+  INVALID_PASSWORD_UPPERCASE = 'Le mot de passe doit contenir au moins une lettre majuscule',
+  INVALID_PASSWORD_LENGTH = 'Le mot de passe doit contenir au moins 6 caractères',
+  INVALID_PASSWORD_DIGIT='Le mot de passe doit contenir au moins un chiffre',
+  INVALID_USERNAME = 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
+  EMPTY_USERNAME = 'Le nom d\'utilisateur est requis',
+  INVALID_FIRSTNAME='Le prénom doit contenir seulement des lettres',
+  INVALID_LASTNAME='Le nom de famille doit contenir seulement des lettres',
 }
 
 interface ValidationErrors {
@@ -36,10 +47,12 @@ interface ValidationErrors {
   birthDate: string;
   appointmentDate: string;
   select: string;
+  password: string;
+  confirmPassword: string;
   [key: string]: string;
 }
 
-const useValidationProfil = () => {
+const useValidation = () => {
 
   const errors = ref<ValidationErrors>({
     firstname: '',
@@ -53,7 +66,9 @@ const useValidationProfil = () => {
     accountInfo: '',
     birthDate: '',
     appointmentDate: '',
-    select: ''
+    select: '',
+    password: '',
+    confirmPassword: 'string'
   });
 
   const resetErrors = (): void => {
@@ -101,6 +116,10 @@ const useValidationProfil = () => {
     return isValid;
   }
 
+  const getStringLengthError = (min: number, max: number): string => {
+    return ErrorMessage.STRING_LENGTH.replace('{min}', min.toString()).replace('{max}', max.toString());
+  };
+
   const validateTextLength = (
     text: string | undefined,
     min: number,
@@ -114,7 +133,7 @@ const useValidationProfil = () => {
 
     const isValid = text.length >= min && text.length <= max;
 
-    errors.value[fieldName] = isValid ? '' : ErrorMessage.STRING_LENGTH;
+    errors.value[fieldName] = isValid ? '' : getStringLengthError(min, max);
     return isValid;
   };
 
@@ -141,9 +160,14 @@ const useValidationProfil = () => {
       return false;
     }
 
-    const isValid = validateText(lastName, fieldName);
+    const regex = /^[a-zA-Z_]+$/;
+    if (!regex.test(lastName)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_LASTNAME;
+      return false;
+    }
 
-    return isValid;
+    errors.value[fieldName] = '';
+    return true;
   };
 
   const validateFirstname = (firstname: string | undefined, fieldName: keyof ValidationErrors = 'firstName'): boolean => {
@@ -152,9 +176,13 @@ const useValidationProfil = () => {
       return false;
     }
 
-    const isValid = validateText(firstname, fieldName);
-
-    return isValid;
+    const regex = /^[a-zA-Z]+$/;
+    if (!regex.test(firstname)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
+      return false;
+    }
+    errors.value[fieldName] = '';
+    return true;
   };
 
   const validateCity = (city: string | undefined, fieldName: keyof ValidationErrors = 'city'): boolean => {
@@ -324,48 +352,116 @@ const useValidationProfil = () => {
     return !isEmpty;
   };
 
-  const validateAll = (user: any): boolean => {
-    resetErrors();
+  const validateUserName = (userName: string | undefined, fieldName: keyof ValidationErrors = 'userName'): boolean => {
+    if (!userName) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_USERNAME;
+      return false;
+    }
 
-    let isValid = true;
+    if (userName.length < 3) {
+      errors.value[fieldName] = ErrorMessage.INVALID_USERNAME;
+      return false;
+    }
 
-    // Validation des informations de base de l'utilisateur
-    if (!validateLastName(user.lastName)) isValid = false;
-    if (!validateFirstname(user.firstName)) isValid = false;
-    if (!validateEmail(user.email)) isValid = false;
-    if (!validatePhone(user.phone)) isValid = false;
-    if (!validatePrevDate(user.birthDate, 'birthDate')) isValid = false;
+    errors.value[fieldName] = '';
+    return true;
+  };
 
-    // Validation des informations bancaires
-    if (user.bankingDetails && user.bankingDetails.length > 0) {
-      const banking = user.bankingDetails[0];
+  const validatePassword = (password: string | undefined, fieldName: keyof ValidationErrors = 'password'): boolean => {
+    if (!password) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_PASSWORD;
+      return false;
+    }
+
+    if (password.length < 6) {
+      errors.value[fieldName] = ErrorMessage.INVALID_PASSWORD_LENGTH;
+      return false;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_PASSWORD_UPPERCASE;
+      return false;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_PASSWORD_DIGIT;
+      return false;
+    }
+
+    errors.value[fieldName] = '';
+    return true;
+  };
+
+  const validateConfirmPassword = (confirmPassword: string | undefined, password: string | undefined, fieldName: keyof ValidationErrors = 'confirmPassword'): boolean => {
+    if (!confirmPassword) {
+      errors.value[fieldName] = ErrorMessage.EMPTY_PASSWORD;
+      return false;
+    }
+
+    if (confirmPassword !== password) {
+      errors.value[fieldName] = ErrorMessage.PASSWORDS_DO_NOT_MATCH;
+      return false;
+    }
+
+    errors.value[fieldName] = '';
+    return true;
+  };
+
+  // Dans useValidation.ts
+  // Dans useValidation.ts
+const validateAll = (user: any): boolean => {
+  resetErrors();
+  let isValid = true;
+
+  // Validation des informations de base de l'utilisateur (toujours requises)
+  if (!validateLastName(user.lastName)) isValid = false;
+  if (!validateFirstname(user.firstName)) isValid = false;
+  if (!validateEmail(user.email)) isValid = false;
+  if (!validatePhone(user.phone)) isValid = false;
+  if (!validatePrevDate(user.birthDate, 'birthDate')) isValid = false;
+
+  // Validation des informations bancaires - seulement si des données sont présentes
+  if (user.bankingDetails && user.bankingDetails.length > 0) {
+    const banking = user.bankingDetails[0];
+    const hasBankingData = banking.institutionName || banking.accountInfo || banking.loanInfo || banking.other;
+
+    if (hasBankingData) {
       if (!validateInstitutionName(banking.institutionName, 'institutionName')) isValid = false;
       if (!validateAccountInfo(banking.accountInfo, 'accountInfo')) isValid = false;
     }
+  }
 
-    // Validation des informations scolaires
-    if (user.schoolDetails && user.schoolDetails.length > 0) {
-      const school = user.schoolDetails[0];
-      if (!validateInstitutionName(school.schoolName, 'schoolName')) isValid = false;
+  // Validation des informations scolaires - seulement si des données sont présentes
+  if (user.schoolDetails && user.schoolDetails.length > 0) {
+    const school = user.schoolDetails[0];
+    const hasSchoolData = school.schoolName || school.fieldOfStudy || school.startDate || school.projectedEndDate;
+
+    if (hasSchoolData) {
+      if (!validateSchoolName(school.schoolName, 'schoolName')) isValid = false;
       if (!validateSelect(school.fieldOfStudy, 'fieldOfStudy')) isValid = false;
       if (!validatePrevDate(school.startDate, 'startDate')) isValid = false;
       if (!validateFutureDate(school.projectedEndDate, 'projectedEndDate')) isValid = false;
     }
+  }
 
-    // Validation des adresses
-    if (user.addresses && user.addresses.length > 0) {
-      for (const address of user.addresses) {
+  // Validation des adresses - seulement si des données sont présentes
+  if (user.addresses && user.addresses.length > 0) {
+    for (const address of user.addresses) {
+      const hasAddressData = address.streetNumber || address.streetName || address.city || address.province || address.country || address.type;
 
+      if (hasAddressData) {
         if (!validateAddress(address.streetNumber, 'streetNumber')) isValid = false;
         if (!validateStreet(address.streetName, 'streetName')) isValid = false;
         if (!validateCity(address.city, 'city')) isValid = false;
         if (!validateSelect(address.province, 'province')) isValid = false;
         if (!validateSelect(address.country, 'country')) isValid = false;
+        if (!validateSelect(address.type, 'type')) isValid = false;
       }
     }
+  }
 
-    return isValid;
-  };
+  return isValid;
+};
 
   return{
     validateEmail,
@@ -385,6 +481,9 @@ const useValidationProfil = () => {
     validateInstitutionName,
     validateAccountInfo,
     validateSelect,
+    validateUserName,
+    validatePassword,
+    validateConfirmPassword,
     validateAll,
     ErrorMessage,
     resetErrors,
@@ -393,4 +492,4 @@ const useValidationProfil = () => {
 
 };
 
-export default useValidationProfil;
+export default useValidation;
