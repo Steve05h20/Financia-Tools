@@ -239,11 +239,14 @@ export const useAuth = defineStore('auth', () => {
     stateAcount.errorMessage = ''
     try {
       // Ne pas inclure le téléphone s'il n'est pas défini ou vide
-      const newUser = {
+      const newUser:IUser = {
         firstName: stateAcount.userName,
         email: stateAcount.email,
         password: stateAcount.pwd,
-        isActive: true
+        isActive: true,
+        phone: "0000000000",
+        birthDate: "0001-01-01",
+        lastName: "______"
       }
 
       console.log('Données utilisateur avant création:', JSON.stringify(newUser, null, 2))
