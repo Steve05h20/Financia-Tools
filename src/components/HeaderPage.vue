@@ -49,9 +49,11 @@ const handleCloseModal = () => {
       class="navbar bg-base-100 text-base-content flex justify-around border-b-6 shadow-lg border-primary max-lg:flex-col max-lg:items-center transition-all"
     >
       <div class="flex justify-between items-center">
-        <h1 class="text-3xl text-primary m-4 font-bold">
-          Financia/<span class="text-black font-normal text-xs">Tools</span>
-        </h1>
+        <RouterLink to="/">
+          <h1 class="text-3xl text-primary m-4 font-bold">
+            Financia/<span class="text-black font-normal text-xs">Tools</span>
+          </h1>
+        </RouterLink>
         <button
           class="btn btn-xl hidden max-sm:block pt-1.5"
           :class="{ 'btn-neutral': isMenuOpen }"
