@@ -12,6 +12,10 @@ const props = defineProps({
   currentAddress: {
     type: Object as PropType<IAddress>,
     required: true
+  },
+  usedType: {
+    type: String,
+    default: ''
   }
 });
 
@@ -186,10 +190,9 @@ watch(() => props.currentAddress?.type, (newValue) => {
       placeholder="Choisissez un type d'adresse"
       id="type"
       :disabled="!editStore.isEditing"
-      :options="[
-        EAddressType.PERSONAL,
-        EAddressType.WORK,
-      ]"
+      :options="props.usedType && props.currentAddress.type !== props.usedType
+        ? [EAddressType.PERSONAL, EAddressType.WORK].filter(type => type !== props.usedType)
+        : [EAddressType.PERSONAL, EAddressType.WORK]"
     />
     <div v-if="!!validation.errors.value.type" class="text-red-500 text-sm mt-1">
        {{ validation.errors.value.type }}

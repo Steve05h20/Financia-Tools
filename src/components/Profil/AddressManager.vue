@@ -14,7 +14,8 @@ const editStore = useEditStore();
 const { showForm: showAddressForm } = useAddFormToggle();
 
 const emit = defineEmits(['validation-change']);
-const addressesHaveErrors = ref(false);
+const addressesHaveErrors = ref<Boolean>(false);
+const usedAddressType = ref<string>('');
 
 const addressCount = computed(() => {
   const addresses = userStore.user?.addresses || [];
@@ -75,6 +76,19 @@ const initializeAddress = () => {
   console.log("Adresse initialisée:", userStore.user.addresses);
 };
 
+watch(() => userStore.user?.addresses, (addresses) => {
+  if (!addresses || addresses.length <= 1) {
+    usedAddressType.value = '';
+    return;
+  }
+
+  if (addresses[0] && addresses[0].type) {
+    usedAddressType.value = addresses[0].type;
+  }
+}, { deep: true, immediate: true });
+
+
+
 const addNewAddress = () => {
   if (!userStore.user.addresses) {
     userStore.user.addresses = [];
@@ -126,6 +140,8 @@ const removeAddress = async (index: number) => {
     }
   }
 };
+
+
 </script>
 
 <template>
@@ -156,6 +172,7 @@ const removeAddress = async (index: number) => {
             @validation-change="updateAddressValidation"
             type="radio"
             name="my-accordion-2"
+            :usedType="index === 1 ? usedAddressType : ''"
           />
         </div>
       </div>
