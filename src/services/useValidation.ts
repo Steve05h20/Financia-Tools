@@ -32,6 +32,8 @@ enum ErrorMessage {
   EMPTY_USERNAME = 'Le nom d\'utilisateur est requis',
   INVALID_FIRSTNAME='Le prénom doit contenir seulement des lettres',
   INVALID_LASTNAME='Le nom de famille doit contenir seulement des lettres',
+  ONLY_NUMBERS='Doit contenir seulement des chiffres',
+  INVALID_LOANINFO='Le numéro de compte doit contenir 12 chiffres',
 }
 
 interface ValidationErrors {
@@ -136,6 +138,27 @@ const useValidation = () => {
     errors.value[fieldName] = isValid ? '' : getStringLengthError(min, max);
     return isValid;
   };
+
+  const validateLoanInfo = (loanInfo: string | undefined, fieldName: keyof ValidationErrors = 'loanInfo'): boolean => {
+    if (!loanInfo || loanInfo === '') {
+      errors.value[fieldName] = '';
+      return true;
+    }
+
+    const regexDigits = /^\d+$/;
+    const isValidDigits = regexDigits.test(loanInfo);
+
+    if (!isValidDigits) {
+      errors.value[fieldName] = ErrorMessage.ONLY_NUMBERS;
+      return false;
+    }
+
+    const regex = /^\d{12}$/;
+    const isValid = regex.test(loanInfo);
+
+    errors.value[fieldName] = isValid ? '' : ErrorMessage.INVALID_LOANINFO;
+    return isValid;
+  }
 
   const validateNonRequiredTextLength = (
     text: string | undefined,
@@ -468,7 +491,7 @@ const validateAll = (user: any): boolean => {
     validateText,
     validateDegitsStreet,
     validateTextLength,
-    validateNonRequiredTextLength,
+    validateLoanInfo,
     validateLastName,
     validateFirstname,
     validateCity,
@@ -484,6 +507,7 @@ const validateAll = (user: any): boolean => {
     validateUserName,
     validatePassword,
     validateConfirmPassword,
+    validateNonRequiredTextLength,
     validateAll,
     ErrorMessage,
     resetErrors,
