@@ -68,7 +68,7 @@ const handleButtonClick = () => {
     </SectionGrid>
   </div>
 
-  <dialog ref="inscriptionModalRef" class="modal w-96 h-auto m-auto">
+  <dialog ref="inscriptionModalRef" class="modal w-full md:w-96 h-auto m-auto">
     <div class="modal-box">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
