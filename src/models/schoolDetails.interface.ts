@@ -29,6 +29,6 @@ export interface ISchoolDetails {
   schoolName: string
   fieldOfStudy: string
   startDate: Date | string /* ajout string API date-string */
-  projectedEndDate?: Date | string /* ajout string API date-string */
+  projectedEndDate?: Date | string | undefined /* ajout string API date-string */
   user:IUser
 }
