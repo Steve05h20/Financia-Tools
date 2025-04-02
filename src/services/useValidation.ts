@@ -166,9 +166,8 @@ const useValidation = () => {
       return false;
     }
 
-    const isValid = validateText(lastName, fieldName);
-
-    return isValid;
+    errors.value[fieldName] = '';
+    return true;
   };
 
   const validateFirstname = (firstname: string | undefined, fieldName: keyof ValidationErrors = 'firstName'): boolean => {
@@ -182,10 +181,8 @@ const useValidation = () => {
       errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
       return false;
     }
-
-    const isValid = validateText(firstname, fieldName);
-
-    return isValid;
+    errors.value[fieldName] = '';
+    return true;
   };
 
   const validateCity = (city: string | undefined, fieldName: keyof ValidationErrors = 'city'): boolean => {
