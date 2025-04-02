@@ -160,7 +160,7 @@ const useValidation = () => {
       return false;
     }
 
-    const regex = /^[a-zA-Z_]+$/;
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_']+$/;
     if (!regex.test(lastName)) {
       errors.value[fieldName] = ErrorMessage.INVALID_LASTNAME;
       return false;
@@ -176,7 +176,7 @@ const useValidation = () => {
       return false;
     }
 
-    const regex = /^[a-zA-Z]+$/;
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_']+$/;
     if (!regex.test(firstname)) {
       errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
       return false;
