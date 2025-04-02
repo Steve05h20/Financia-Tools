@@ -31,6 +31,7 @@ enum ErrorMessage {
   INVALID_USERNAME = 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
   EMPTY_USERNAME = 'Le nom d\'utilisateur est requis',
   INVALID_FIRSTNAME='Le prénom doit contenir seulement des lettres',
+  INVALID_LASTNAME='Le nom de famille doit contenir seulement des lettres',
 }
 
 interface ValidationErrors {
@@ -159,6 +160,12 @@ const useValidation = () => {
       return false;
     }
 
+    const regex = /^[a-zA-Z_]+$/;
+    if (!regex.test(lastName)) {
+      errors.value[fieldName] = ErrorMessage.INVALID_LASTNAME;
+      return false;
+    }
+
     const isValid = validateText(lastName, fieldName);
 
     return isValid;
@@ -170,7 +177,7 @@ const useValidation = () => {
       return false;
     }
 
-    const regex = /^[a-zA-Z_]+$/;
+    const regex = /^[a-zA-Z]+$/;
     if (!regex.test(firstname)) {
       errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
       return false;
