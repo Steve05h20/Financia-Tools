@@ -7,14 +7,13 @@ const { images, platformDescriptions, nameSection } = dataSection()
 <template>
   <div class="py-12 sm:py-20 md:py-24 bg-base-100">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Image Carousel -->
       <div
         class="flex flex-nowrap items-center justify-center gap-6 overflow-x-auto py-6 bg-base-200 rounded-xl shadow-sm"
       >
         <div
           v-for="(image, key) in images"
           :key="key"
-          class="flex items-center justify-center flex-shrink-0 w-20 sm:w-24 md:w-28 lg:w-32 transition-transform duration-300 hover:scale-110"
+          class="flex items-center justify-center flex-shrink-0 w-11 sm:w-16 md:w-20 lg:w-24 transition-transform duration-300 hover:scale-110"
         >
           <img
             :src="image.url"
@@ -24,7 +23,6 @@ const { images, platformDescriptions, nameSection } = dataSection()
         </div>
       </div>
 
-      <!-- Cards Section with Title -->
       <SectionGrid :id="nameSection" colsDesktop="12" colsTablet="6" colsMobile="1">
         <h1 class="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">
           Notre utilisation des plateformes de développement
