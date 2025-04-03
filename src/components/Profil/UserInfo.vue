@@ -26,18 +26,32 @@ watch(() => validation.errors.value, () => {
 }, { deep: true });
 
 watch(() => userStore.user.lastName, (newValue: string | undefined) => {
+  let isValid = true;
+
   if (!newValue || newValue.trim() === '') {
+    isValid = false;
     validation.validateLastName(newValue, 'lastName');
   } else {
-    validation.validateTextLength(newValue, 2, 50, 'lastName');
+    isValid = validation.validateTextLength(newValue, 2, 50, 'lastName');
+
+    if (isValid) {
+      validation.validateLastName(newValue, 'lastName');
+    }
   }
 });
 
 watch(() => userStore.user.firstName, (newValue: string) => {
-  if (!newValue || newValue.trim() === '') {
-    validation.validateFirstname(newValue, 'firstName');
+  let isValid = true;
+
+  if (newValue && newValue.trim() !== '') {
+    isValid = validation.validateTextLength(newValue, 2, 50, 'firstName');
   } else {
-    validation.validateTextLength(newValue, 2, 50, 'firstName');
+    isValid = false;
+    validation.validateFirstname(newValue, 'firstName');
+  }
+
+  if (isValid) {
+    validation.validateFirstname(newValue, 'firstName');
   }
 });
 
