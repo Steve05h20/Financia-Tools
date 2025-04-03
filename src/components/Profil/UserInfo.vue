@@ -25,36 +25,55 @@ watch(() => validation.errors.value, () => {
   emitValidationState();
 }, { deep: true });
 
+
 watch(() => userStore.user.lastName, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
+  if (newValue && typeof newValue === 'string' && newValue.length > 0) {
+    if (newValue.charAt(0) !== newValue.charAt(0).toUpperCase()) {
+      userStore.user.lastName = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      return;
+    }
+  }
+
+  const isLengthValid = validation.validateNonRequiredTextLength(newValue, 2, 50, 'lastName');
+
+  if (isLengthValid) {
     validation.validateLastName(newValue, 'lastName');
-  } else {
-    validation.validateTextLength(newValue, 2, 50, 'lastName');
   }
 });
 
 watch(() => userStore.user.firstName, (newValue: string) => {
-  if (!newValue || newValue.trim() === '') {
-    validation.validateFirstname(newValue, 'firstName');
+  if (newValue && typeof newValue === 'string' && newValue.length > 0) {
+    if (newValue.charAt(0) !== newValue.charAt(0).toUpperCase()) {
+      userStore.user.firstName = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      return;
+    }
+  }
+
+  let isValid = true;
+
+  if (newValue && newValue.trim() !== '') {
+    isValid = validation.validateTextLength(newValue, 2, 50, 'firstName');
   } else {
-    validation.validateTextLength(newValue, 2, 50, 'firstName');
+    isValid = false;
+    validation.validateFirstname(newValue, 'firstName');
+  }
+
+  if (isValid) {
+    validation.validateFirstname(newValue, 'firstName');
   }
 });
 
+
 watch(() => userStore.user.birthDate, (newValue: string | Date | undefined) => {
   if (!newValue) {
-    validation.errors.value.birthDate = validation.ErrorMessage.EMPTY_DATE;
+    validation.errors.value.birthDate = '';
   } else {
     validation.validatePrevDate(newValue, 'birthDate');
   }
 });
 
 watch(() => userStore.user.phone, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
-    validation.errors.value.phone = validation.ErrorMessage.EMPTY_PHONE;
-  } else {
-    validation.validatePhone(newValue, 'phone');
-  }
+  validation.validatePhone(newValue, 'phone');
 });
 
 watch(() => userStore.user.email, (newValue: string) => {
@@ -63,6 +82,11 @@ watch(() => userStore.user.email, (newValue: string) => {
   } else {
     validation.validateEmail(newValue, 'email');
   }
+});
+
+watch(() => userStore.user.phone, (newValue: string | undefined) => {
+  console.log("Phone value type:", typeof newValue, "Value:", newValue);
+  validation.validatePhone(newValue, 'phone');
 });
 </script>
 
@@ -73,7 +97,6 @@ watch(() => userStore.user.email, (newValue: string) => {
       <InputLabelDiv
         labelText="Nom de famille"
         htmlFor="lastName"
-        required
         v-model="userStore.user.lastName"
         placeholder="placeholder"
         :hasError="!!validation.errors.value.lastName"
@@ -99,7 +122,6 @@ watch(() => userStore.user.email, (newValue: string) => {
       <InputLabelDiv
         labelText="Date de naissance"
         htmlFor="birthDate"
-        required
         v-model="userStore.user.birthDate"
         placeholder="placeholder"
         type="date"
@@ -113,9 +135,8 @@ watch(() => userStore.user.email, (newValue: string) => {
       <InputLabelDiv
         labelText="Téléphone"
         htmlFor="phone"
-        required
         v-model="userStore.user.phone"
-        placeholder="123-456-7890"
+        placeholder="1234567890"
         type="tel"
         :hasError="!!validation.errors.value.phone"
         :errorMessage="validation.errors.value.phone"

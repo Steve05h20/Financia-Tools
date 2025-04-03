@@ -31,10 +31,16 @@ watch(() => validation.errors.value, () => {
 }, { deep: true });
 
 watch(() => props.currentBankingDetails?.institutionName, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
-    validation.validateInstitutionName(newValue, 'institutionName');
+  let isValid = true;
+  if (newValue && newValue.trim() !== '') {
+    isValid = validation.validateTextLength(newValue, 2, 50, 'institutionName');
   } else {
-    validation.validateTextLength(newValue, 2, 50, 'institutionName');
+    isValid = false;
+    validation.validateInstitutionName(newValue, 'institutionName');
+  }
+
+  if (isValid) {
+    validation.validateInstitutionName(newValue, 'institutionName');
   }
 });
 

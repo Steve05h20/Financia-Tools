@@ -16,7 +16,7 @@ enum ErrorMessage {
   ONLY_LETTERS = 'Veuillez entrer seulement des lettres',
   STRING_LENGTH = 'Veuillez entrer entre {min} et {max} caractères',
   INVALID_EMAIL = 'Veuillez entrer un email valide',
-  INVALID_PHONE = 'Le numéro de téléphone doit être sous le format 123-456-7890',
+  INVALID_PHONE = 'Le numéro de téléphone doit être sous le format 1234567890',
   INVALID_BANKING_INFO = 'Numéro de compte à 10 chiffres requis',
   DATE_PREVIOUS = 'Veuillez entrer une date antérieure à la date actuelle',
   DATE_FUTURE = 'Veuillez entrer une date postérieure à la date actuelle',
@@ -173,19 +173,20 @@ const useValidation = () => {
 
     const isValid = text.length >= min && text.length <= max;
 
-    errors.value[fieldName] = isValid ? '' : ErrorMessage.STRING_LENGTH;
+    errors.value[fieldName] = isValid ? '' : getStringLengthError(min, max);
     return isValid;
   };
 
   const validateLastName = (lastName: string | undefined, fieldName: keyof ValidationErrors = 'lastName'): boolean => {
     if (!lastName) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_LASTNAME;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
-    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_']+$/;
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_' ]+$/;
     if (!regex.test(lastName)) {
       errors.value[fieldName] = ErrorMessage.INVALID_LASTNAME;
+      console.log('Error set to:', errors.value[fieldName]);
       return false;
     }
 
@@ -199,7 +200,7 @@ const useValidation = () => {
       return false;
     }
 
-    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_']+$/;
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_' ]+$/;
     if (!regex.test(firstname)) {
       errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
       return false;
@@ -253,11 +254,11 @@ const useValidation = () => {
 
   const validatePhone = (phone: string | undefined, fieldName: keyof ValidationErrors = 'phone'): boolean => {
     if (!phone) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_PHONE;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
-    const regex = /^\d{10}$|^\d{3}-\d{3}-\d{4}$/;
+    const regex = /^\d{10}$/;
     const isValid = regex.test(phone);
 
     errors.value[fieldName] = isValid ? '' : ErrorMessage.INVALID_PHONE;
@@ -269,8 +270,8 @@ const useValidation = () => {
     fieldName: keyof ValidationErrors = 'birthDate'
   ): boolean => {
     if (!date) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_DATE;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
     let dateObj: Date;

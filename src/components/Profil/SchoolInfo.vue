@@ -34,10 +34,14 @@ watch(() => validation.errors.value, () => {
 }, { deep: true });
 
 watch(() => props.currentSchoolDetails?.schoolName, (newValue: string | undefined) => {
-  if (!newValue || newValue.trim() === '') {
-    validation.validateSchoolName(newValue, 'schoolName');
-  } else {
+  if (!newValue) {
+    validation.errors.value.schoolName = "Le nom de l'école est requis";
+    return;
+  }
+  if (newValue.trim().length < 2 || newValue.trim().length > 50) {
     validation.validateTextLength(newValue, 2, 50, 'schoolName');
+  } else {
+    validation.validateSchoolName(newValue, 'schoolName');
   }
 });
 
@@ -59,7 +63,7 @@ watch(() => props.currentSchoolDetails?.startDate, (newValue: string | Date | un
 
 watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Date | undefined) => {
   if (!newValue) {
-    validation.errors.value.projectedEndDate = validation.ErrorMessage.EMPTY_DATE;
+    validation.errors.value.projectedEndDate = '';
   } else {
     validation.validateFutureDate(newValue, 'projectedEndDate');
   }
