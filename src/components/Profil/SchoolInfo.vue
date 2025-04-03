@@ -34,14 +34,13 @@ watch(() => validation.errors.value, () => {
 }, { deep: true });
 
 watch(() => props.currentSchoolDetails?.schoolName, (newValue: string | undefined) => {
-  let isValid = true;
-  if (newValue && newValue.trim() === '') {
+  if (!newValue) {
+    validation.errors.value.schoolName = "Le nom de l'école est requis";
+    return;
+  }
+  if (newValue.trim().length < 2 || newValue.trim().length > 50) {
     validation.validateTextLength(newValue, 2, 50, 'schoolName');
   } else {
-    isValid = false;
-    validation.validateSchoolName(newValue, 'schoolName');
-  }
-  if (isValid) {
     validation.validateSchoolName(newValue, 'schoolName');
   }
 });
