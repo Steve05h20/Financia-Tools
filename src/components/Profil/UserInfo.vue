@@ -21,16 +21,19 @@ const emitValidationState = () => {
   emit('validation-change', hasErrors);
 };
 
-const capitalizeFirstLetter = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
 watch(() => validation.errors.value, () => {
   emitValidationState();
 }, { deep: true });
 
 
 watch(() => userStore.user.lastName, (newValue: string | undefined) => {
+  if (newValue && typeof newValue === 'string' && newValue.length > 0) {
+    if (newValue.charAt(0) !== newValue.charAt(0).toUpperCase()) {
+      userStore.user.lastName = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      return;
+    }
+  }
+
   const isLengthValid = validation.validateNonRequiredTextLength(newValue, 2, 50, 'lastName');
 
   if (isLengthValid) {
@@ -39,6 +42,13 @@ watch(() => userStore.user.lastName, (newValue: string | undefined) => {
 });
 
 watch(() => userStore.user.firstName, (newValue: string) => {
+  if (newValue && typeof newValue === 'string' && newValue.length > 0) {
+    if (newValue.charAt(0) !== newValue.charAt(0).toUpperCase()) {
+      userStore.user.firstName = newValue.charAt(0).toUpperCase() + newValue.slice(1);
+      return;
+    }
+  }
+
   let isValid = true;
 
   if (newValue && newValue.trim() !== '') {
