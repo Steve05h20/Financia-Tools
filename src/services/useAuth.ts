@@ -205,9 +205,9 @@ export const useAuth = defineStore('auth', () => {
         email: stateAcount.email,
         password: stateAcount.pwd,
         isActive: true,
-        phone: "0000000000",
-        birthDate: "0001-01-01",
-        lastName: "______"
+        phone: '0000000000',
+        birthDate: undefined,
+        lastName: undefined
       }
 
       console.log('Données utilisateur avant création:', JSON.stringify(newUser, null, 2))

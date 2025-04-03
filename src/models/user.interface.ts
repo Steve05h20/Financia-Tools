@@ -6,10 +6,10 @@ import type { ITransaction } from "./transaction.interface"
 export interface IUser {
   id?: number | undefined
   firstName: string,
-  lastName?: string,
-  birthDate?: Date | string,
+  lastName?: string | undefined,
+  birthDate?: Date | string | undefined,
   isActive: boolean,
-  phone?: string,
+  phone?: string | undefined,
   email: string,
   password: string,
   addresses?: IAddress[]

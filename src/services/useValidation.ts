@@ -179,8 +179,8 @@ const useValidation = () => {
 
   const validateLastName = (lastName: string | undefined, fieldName: keyof ValidationErrors = 'lastName'): boolean => {
     if (!lastName) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_LASTNAME;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
     const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_' ]+$/;
@@ -254,8 +254,8 @@ const useValidation = () => {
 
   const validatePhone = (phone: string | undefined, fieldName: keyof ValidationErrors = 'phone'): boolean => {
     if (!phone) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_PHONE;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
     const regex = /^\d{10}$/;
@@ -270,8 +270,8 @@ const useValidation = () => {
     fieldName: keyof ValidationErrors = 'birthDate'
   ): boolean => {
     if (!date) {
-      errors.value[fieldName] = ErrorMessage.EMPTY_DATE;
-      return false;
+      errors.value[fieldName] = '';
+      return true;
     }
 
     let dateObj: Date;
