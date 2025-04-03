@@ -28,8 +28,8 @@ enum ErrorMessage {
   INVALID_PASSWORD_UPPERCASE = 'Le mot de passe doit contenir au moins une lettre majuscule',
   INVALID_PASSWORD_LENGTH = 'Le mot de passe doit contenir au moins 6 caractères',
   INVALID_PASSWORD_DIGIT='Le mot de passe doit contenir au moins un chiffre',
-  INVALID_USERNAME = 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
-  EMPTY_USERNAME = 'Le nom d\'utilisateur est requis',
+  INVALID_USERNAME = 'Le prénom doit contenir au moins 2 caractères',
+  EMPTY_USERNAME = 'Le prénom est requis',
   INVALID_FIRSTNAME='Le prénom doit contenir seulement des lettres',
   INVALID_LASTNAME='Le nom de famille doit contenir seulement des lettres',
   ONLY_NUMBERS='Doit contenir seulement des chiffres',
@@ -381,7 +381,7 @@ const useValidation = () => {
       return false;
     }
 
-    if (userName.length < 3) {
+    if (userName.length < 2) {
       errors.value[fieldName] = ErrorMessage.INVALID_USERNAME;
       return false;
     }
