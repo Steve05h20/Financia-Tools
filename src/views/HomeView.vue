@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import ViewConference from '@/components/Home/Conferences/viewConference.vue'
-import ViewSection from '@/components/Home/Exemple/viewSection.vue'
+import ViewSection from '@/components/Home/TenchoLogiciel/viewSection.vue'
+import HeroSection from '@/components/Home/Hero/HeroSection.vue';
 </script>
 
 <template>
   <main>
-    <!-- exemple -->
+    <HeroSection />
     <ViewSection />
-    <!-- exemple -->
     <ViewConference />
   </main>
 </template>
