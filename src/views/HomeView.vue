@@ -5,7 +5,7 @@ import HeroSection from '@/components/Home/Hero/HeroSection.vue';
 </script>
 
 <template>
-  <main>
+  <main class="bg-white">
     <HeroSection />
     <ViewSection />
     <ViewConference />

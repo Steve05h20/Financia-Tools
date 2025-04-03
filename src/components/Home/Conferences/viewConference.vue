@@ -55,29 +55,29 @@ const formatTime = (timeString: string) => {
 <template>
   <div class="bg-white min-h-screen">
     <div class="container mx-auto px-4 py-12 lg:py-20">
-      <div class="flex flex-col lg:flex-row gap-8 lg:gap-10 items-stretch">
+      <div class="flex flex-col items-center gap-8 lg:gap-10 ">
         <!-- Contenu principal (titre, texte et cartes) - 60% -->
-        <div class="lg:w-[60%] w-full flex flex-col order-2 lg:order-1">
+        <div class=" w-full flex flex-col order-2 lg:order-1">
           <!-- Titre et description -->
           <div class="mb-6 lg:mb-8">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 leading-tight">
+            <h1 class="text-4xl text-center md:text-5xl lg:text-6xl font-bold text-primary mb-4 leading-tight">
               {{ texts.title }}
             </h1>
-            <p class="text-lg md:text-xl text-gray-600">
+            <p class="text-lg md:text-2xl font-semibold text-gray-600 text-center max-lg:w-2/3 mx-auto">
               {{ texts.description }}
             </p>
           </div>
 
           <!-- Cartes d'événements - 3 colonnes -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-grow">
+          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 flex-grow">
             <div
               v-for="event in dataConferences.events"
               :key="event.id"
               class="card bg-white shadow-lg border border-gray-100 rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col"
             >
               <div class="card-body p-5 text-gray-800 flex flex-col h-full">
-                <div class="flex-grow">
-                  <h3 class="card-title text-lg font-bold text-gray-900 mb-2">{{ event.title }}</h3>
+                <div class="flex-grow ">
+                  <h3 class="card-title text-xl font-bold text-primary h-24 mb-4">{{ event.title }}</h3>
 
                   <!-- Date et heure -->
                   <div class="flex items-center text-gray-600 mb-2 text-sm">
@@ -106,7 +106,7 @@ const formatTime = (timeString: string) => {
                   <details class="dropdown w-full">
                     <summary class="btn btn-primary w-full py-2 text-sm">
                       <font-awesome-icon :icon="['fas', 'calendar-plus']" class="mr-2" />
-                      Ajouter à mon agenda
+                      Je participe
                     </summary>
                     <ul
                       class="dropdown-content menu p-2 shadow bg-white rounded-box w-full border border-gray-200 mt-1"
@@ -138,12 +138,12 @@ const formatTime = (timeString: string) => {
         </div>
 
         <!-- Image à droite - 40% -->
-        <div class="lg:w-[40%] w-full lg:order-2 lg:pl-4 order-1">
+        <div class=" w-full lg:order-2 lg:pl-4 order-1 ">
           <div class="w-full h-auto max-h-[600px] object-contain rounded-xl shadow-xl">
             <img
               :src="images.imageConferences.url"
               :alt="images.imageConferences.alt"
-              class="w-full h-full rounded-xl shadow-xl object-cover lg:object-center"
+              class="w-full h-full lg:h-58 rounded-xl shadow-xl object-cover lg:object-center"
             />
           </div>
         </div>
@@ -152,23 +152,3 @@ const formatTime = (timeString: string) => {
   </div>
 </template>
 
-<style scoped>
-/* Alignement des hauteurs */
-.flex-col.lg\:w-\[60\%\] {
-  min-height: 100%;
-}
-
-/* Ajustements responsive */
-@media (max-width: 1023px) {
-  .grid-cols-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .grid-cols-3,
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
