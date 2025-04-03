@@ -1,11 +1,11 @@
 <template>
   <div class="bg-white p-2 sm:p-3 md:p-4 rounded-lg shadow-md mb-2 sm:mb-3 md:mb-4">
     <h2 class="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 md:mb-4">
-      {{ form.category === 'Revenue' ? 'Ajouter un revenu' : 'Ajouter une dépense' }}
+      {{ form.type === 'Revenue' ? 'Ajouter un revenu' : 'Ajouter une dépense' }}
     </h2>
     <form
       @submit.prevent="handleSubmit"
-      class="grid grid-cols-1 md:grid-cols-2 gap-3"
+      class="grid grid-cols-1 md:grid-cols-2 gap-3 items-end"
     >
       <!-- Description -->
       <div>
@@ -114,12 +114,12 @@
       </div>
 
       <!-- type  -->
-      <div class="flex items-center gap-2">
+      <div>
         <label class="label text-primary "> Type </label>
         <select v-model="form.type" class="select select-bordered w-full input-sm" :class="{ 'border-red-500': errors.type }">
           <option value="" disabled selected>Sélectionnez un type</option>
           <option v-for="(value, key) in EType" :key="key" :value="value">
-            {{ key === 'REVENUE' ? 'Revenue' : 'Dépense' }}
+            {{ key === 'REVENUE' ? 'Revenu' : 'Dépense' }}
           </option>
         </select>
       </div>
@@ -128,7 +128,7 @@
       <div class="flex items-center">
         <input v-model="form.isDone" type="checkbox" class="toggle toggle-success mr-2"/>
         <label class="label text-primary " :class="{ 'text-success': form.isDone }">
-          Reccurent
+          Récurrent
         </label>
       </div>
 
@@ -138,7 +138,7 @@
           type="submit"
           class="btn btn-primary "
         >
-          {{ form.category === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la dépense' }}
+          {{ form.type === 'Revenue' ? 'Ajouter le revenu' : 'Ajouter la dépense' }}
         </button>
       </div>
     </form>

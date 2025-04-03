@@ -26,21 +26,23 @@ const handleSubmit = async (e: Event) => {
   e.preventDefault()
   try {
     if (isSignUp.value) {
-      await auth.creerUtilisateur(e) // Créer un compte
+      await auth.creerUtilisateur(e)
     } else {
-      await auth.connecterUtilisateur(e) // Se connecter
+      await auth.connecterUtilisateur(e)
     }
 
     // Si la connexion/inscription est réussie
-    if (userStore.isConnected) {
-      console.log('Utilisateur connecté, redirection vers /budget') // Debug
-      connexionReussie() // Émettre l'événement pour fermer la modal
-      // Attendre un court instant pour que la modal se ferme
-      setTimeout(() => {
-        router.push('/budget') // Rediriger vers la page budget
-      }, 100)
+    if (userStore.user.id !== 0 && userStore.user.email !== '' && userStore.isConnected !== false) {
+      // Émettre l'événement de connexion réussie pour fermer le modal
+      connexionReussie()
+
+      // Attendre un court instant pour que le modal se ferme
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // Rediriger vers le profil
+      router.push('/profile')
     } else {
-      console.log('Utilisateur non connecté, redirection annulée') // Debug
+      console.log('Utilisateur non connecté, redirection annulée')
     }
   } catch (error) {
     console.error('Erreur lors de la connexion/inscription:', error)
@@ -49,7 +51,6 @@ const handleSubmit = async (e: Event) => {
 const emits = defineEmits(['connexion-reussie', 'change-action'])
 
 const connexionReussie = () => {
-  // Simuler une connexion réussie (à remplacer par ta logique réelle)
   console.log('Connexion réussie')
   emits('connexion-reussie')
 }
@@ -141,7 +142,6 @@ const toggleAction = () => {
       <!-- Bouton de soumission -->
       <div>
         <button
-          @click="connexionReussie"
           type="submit"
           :disabled="!auth.isValid || auth.stateAcount.loading"
           class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-focus focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-300 disabled:cursor-not-allowed"

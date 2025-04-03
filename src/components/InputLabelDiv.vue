@@ -10,6 +10,8 @@ interface InputLabelDivProps {
   modelValue: string | number | Date | undefined;
   type?: 'text' | 'email' | 'date' | 'tel' | 'password' | 'number' | 'select';
   placeholder?: string;
+  hasError?: boolean;
+  errorMessage?: string;
 }
 
 withDefaults(defineProps<InputLabelDivProps>(), {
@@ -35,6 +37,8 @@ const emit = defineEmits(['update:modelValue']);
       :modelValue="modelValue"
       @update:modelValue="(value: any) => emit('update:modelValue', value)"
       v-bind="$attrs"
+      :hasError="hasError"
+      :errorMessage="errorMessage"
     />
   </div>
 </template>

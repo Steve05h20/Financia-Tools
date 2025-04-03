@@ -175,5 +175,7 @@ export const useUserStore = defineStore('user', () => {
     // Méthodes utilitaires
     resetUser,
     loadUserData,
-  }
-})
+  };
+});
+
+

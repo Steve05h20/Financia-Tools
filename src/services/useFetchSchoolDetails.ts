@@ -1,5 +1,6 @@
 import type { ISchoolDetails } from '@/models/schoolDetails.interface'
 import { ref } from 'vue'
+import useDateFormatter from '@/services/useDateFormatter';
 
 const API_URL = 'https://money-pie-3.fly.dev/api/v1/users/{userId}/school-details'
 
@@ -31,7 +32,7 @@ export const useFetchSchoolDetails = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const GET_SCHOOL_DETAILS_BY_USER_ID = async (userId: number): Promise<void> => {
+  /* const GET_SCHOOL_DETAILS_BY_USER_ID = async (userId: number): Promise<void> => {
     validateUserId(userId)
     error.value = null
     loading.value = true
@@ -59,14 +60,52 @@ export const useFetchSchoolDetails = () => {
     } finally {
       loading.value = false
     }
-  }
+  } */
 
-  const PUT_SCHOOL_DETAILS_BY_USER_ID = async (userId: number, details: ISchoolDetails) => {
+  const GET_SCHOOL_DETAILS_BY_USER_ID = async (userId: number): Promise<void> => {
+    validateUserId(userId);
+    error.value = null;
+    loading.value = true;
+
+    // Récupérer la fonction de formatage
+    const { formatSchoolDates } = useDateFormatter();
+
+    try {
+      const response = await fetch(API_URL.replace('{userId}', userId.toString()));
+
+      switch (response.status) {
+        case 200: {
+          const data = await response.json();
+          if (!data) {
+            throw new Error(ErrorMessage.SCHOOL_DETAILS_NOT_FOUND);
+          }
+
+          // Formater les dates immédiatement après récupération
+          formatSchoolDates(data);
+
+          schoolDetails.value = data;
+          break;
+        }
+        default: {
+          const errorData = await response.json();
+          handleErrorResponse(response.status, errorData);
+        }
+      }
+    } catch (err: unknown) {
+      schoolDetails.value = null;
+      error.value = err instanceof Error ? err.message : ErrorMessage.SERVER_ERROR;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const PUT_SCHOOL_DETAILS_BY_USER_ID = async (userId: number, details: Partial<ISchoolDetails>) => {
     validateUserId(userId)
     error.value = null
     loading.value = true
 
     try {
+
       const response = await fetch(API_URL.replace('{userId}', userId.toString()), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
