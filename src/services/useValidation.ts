@@ -173,7 +173,7 @@ const useValidation = () => {
 
     const isValid = text.length >= min && text.length <= max;
 
-    errors.value[fieldName] = isValid ? '' : ErrorMessage.STRING_LENGTH;
+    errors.value[fieldName] = isValid ? '' : getStringLengthError(min, max);
     return isValid;
   };
 
