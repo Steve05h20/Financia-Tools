@@ -7,7 +7,7 @@ import SchoolInfoManager from '@/components/Profil/SchoolInfoManager.vue';
 import HeaderProfil from '@/components/Profil/HeaderProfil.vue';
 import BtnUpdate from '@/components/Profil/BtnUpdate.vue';
 import { useUserStore } from '@/stores/useUserSotre';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import useAccordionValidation from '@/services/useAccordionValidation';
 import { AccordionSection } from '@/services/useAccordionValidation';
 import useNotification from '@/services/useNotification';
@@ -41,7 +41,7 @@ const toggleSection = (section: AccordionSection) => {
 
 
 <template>
-  <div class="container mx-auto pt-28 md:pt-10 flex flex-col bg-base-100">
+  <div class="container mx-auto pt-16 md:pt-10 flex flex-col bg-base-100">
     <div v-if="userStore.loading" class="flex justify-center items-center h-20">
       <span class="loading loading-spinner text-info"></span>
     </div>
@@ -56,14 +56,15 @@ const toggleSection = (section: AccordionSection) => {
       </div>
     </div>
 
-    <div class="sticky w-full mb-10 sm:hidden top-0 left-0 right-0 bg-white shadow-lg z-50 flex justify-center items-center py-2">
+   <!--  Mobile version -->
+    <div class="fixed w-full mb-10 sm:hidden bottom-10 left-0 right-0 bg-white shadow-lg z-50 flex justify-center items-center">
       <div class="flex items-center space-x-4">
         <BtnCancel />
         <BtnUpdate />
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full px-4 flex-grow pb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full px-4 flex-grow pb-10 pt-6">
 
       <div class="flex flex-col gap-6 flex-grow">
         <section

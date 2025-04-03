@@ -42,7 +42,7 @@ const handleButtonClick = () => {
       class="relative z-10 h-full flex items-center"
     >
       <div class="flex flex-row items-center w-full px-8">
-        <div class="col-span-12 text-center md:text-left lg:col-span-7 md:col-span-6 text-white m-8">
+        <div class="col-span-12 text-center lg:text-left lg:col-span-7 md:col-span-6 text-white m-8">
           <h1 class="text-4xl md:text-5xl font-bold mb-4 md:mb-6">{{ texts.title }}</h1>
           <p class="text-base md:text-lg mb-6 md:mb-8 max-w-xl">
             {{ texts.description }}
@@ -68,7 +68,7 @@ const handleButtonClick = () => {
     </SectionGrid>
   </div>
 
-  <dialog ref="inscriptionModalRef" class="modal w-96 h-auto m-auto">
+  <dialog ref="inscriptionModalRef" class="modal w-full md:w-96 h-auto m-auto">
     <div class="modal-box">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>

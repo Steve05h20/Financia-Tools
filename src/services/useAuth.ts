@@ -51,45 +51,6 @@ export const useAuth = defineStore('auth', () => {
   // Utilisateur actuel avec ref
   const user = ref<IUser | null>(null)
 
-  /*=======================================================================
-    Validation des champs
-  =======================================================================*/
-  /* const validateEmail = (email: string): string => {
-    if (!email) return "L'email est requis"
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Format d'email invalide"
-    return ''
-  }
-
-  const validatePassword = (password: string): string => {
-    if (!password) return 'Le mot de passe est requis'
-    if (password.length < 6) return 'Le mot de passe doit contenir au moins 6 caractères'
-    if (!/[A-Z]/.test(password)) return 'Le mot de passe doit contenir au moins une majuscule'
-    if (!/[0-9]/.test(password)) return 'Le mot de passe doit contenir au moins un chiffre'
-    return ''
-  }
-
-  const validateConfirmPassword = (confirmPwd: string): string => {
-    if (!confirmPwd) return 'La confirmation du mot de passe est requise'
-    if (confirmPwd !== stateAcount.pwd) return ErrorMessage.PASSWORDS_DO_NOT_MATCH
-    return ''
-  }
-
-  const validateUserName = (userName: string): string => {
-    if (!userName) return "Le nom d'utilisateur est requis"
-    if (userName.length < 3) return "Le nom d'utilisateur doit contenir au moins 3 caractères"
-    return ''
-  } */
-
-  // Met à jour l'objet validationErrors
-  /* const updateValidation = () => {
-    stateAcount.validationErrors = {
-      email: validateEmail(stateAcount.email),
-      pwd: validatePassword(stateAcount.pwd),
-      userName: validateUserName(stateAcount.userName),
-      confirmPwd: validateConfirmPassword(stateAcount.confirmPwd),
-    }
-  } */
-
   const updateValidation = () => {
     // Réinitialiser les erreurs
     validation.resetErrors()

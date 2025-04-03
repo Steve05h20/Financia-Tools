@@ -51,7 +51,7 @@ watch(() => props.currentSchoolDetails?.fieldOfStudy, (newValue: string | undefi
 
 watch(() => props.currentSchoolDetails?.startDate, (newValue: string | Date | undefined) => {
   if (!newValue) {
-    validation.errors.value.startDate = validation.ErrorMessage.EMPTY_DATE;
+    validation.errors.value.startDate = '';
   } else {
     validation.validatePrevDate(newValue, 'startDate');
   }

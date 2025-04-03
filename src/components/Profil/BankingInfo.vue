@@ -47,7 +47,7 @@ watch(() => props.currentBankingDetails?.accountInfo, (newValue: string | undefi
 });
 
 watch(() => props.currentBankingDetails?.loanInfo, (newValue: string | undefined) => {
-    validation.validateNonRequiredTextLength(newValue, 2, 50, 'loanInfo');
+  validation.validateLoanInfo(newValue, 'loanInfo');
 });
 
 watch(() => props.currentBankingDetails?.other, (newValue: string | undefined) => {

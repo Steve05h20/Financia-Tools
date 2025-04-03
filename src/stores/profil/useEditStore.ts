@@ -2,6 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/useUserSotre';
 import useValidation from "@/services/useValidation";
+import type { IUser } from "@/models/user.interface";
+import type { IAddress } from "@/models/address.interface";
+import type { ISchoolDetails } from "@/models/schoolDetails.interface";
+import type { IBankingDetails } from "@/models/bankingDetails.interface";
 
 export const useEditStore = defineStore('edit', () => {
   const validation = useValidation();
@@ -22,10 +26,10 @@ export const useEditStore = defineStore('edit', () => {
     isEditing.value = false;
   };
 
-  const originalUserData = ref<any>(null);
-  const originalAddresses = ref<any[]>([]);
-  const originalSchoolDetails = ref<any[]>([]);
-  const originalBankingDetails = ref<any[]>([]);
+  const originalUserData = ref<IUser | null>(null);
+  const originalAddresses = ref<IAddress[]>([]);
+  const originalSchoolDetails = ref<ISchoolDetails[]>([]);
+  const originalBankingDetails = ref<IBankingDetails[]>([]);
 
   const saveOriginalData = () => {
     originalUserData.value = { ...userStore.user };
@@ -123,6 +127,8 @@ export const useEditStore = defineStore('edit', () => {
           ...(userStore.user.bankingDetails[0].id && { id: userStore.user.bankingDetails[0].id }),
           institutionName: userStore.user.bankingDetails[0].institutionName,
           accountInfo: userStore.user.bankingDetails[0].accountInfo,
+          loanInfo: userStore.user.bankingDetails[0].loanInfo,
+          other: userStore.user.bankingDetails[0].other
         });
       }
 

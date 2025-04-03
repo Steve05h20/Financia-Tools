@@ -51,6 +51,8 @@ const initializeBankingDetails = () => {
     userStore.user.bankingDetails.push({
       institutionName: '',
       accountInfo: '',
+      loanInfo: '',
+      other: '',
       user: userRef
     });
   }

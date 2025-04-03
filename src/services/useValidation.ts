@@ -28,10 +28,12 @@ enum ErrorMessage {
   INVALID_PASSWORD_UPPERCASE = 'Le mot de passe doit contenir au moins une lettre majuscule',
   INVALID_PASSWORD_LENGTH = 'Le mot de passe doit contenir au moins 6 caractères',
   INVALID_PASSWORD_DIGIT='Le mot de passe doit contenir au moins un chiffre',
-  INVALID_USERNAME = 'Le nom d\'utilisateur doit contenir au moins 3 caractères',
-  EMPTY_USERNAME = 'Le nom d\'utilisateur est requis',
+  INVALID_USERNAME = 'Le prénom doit contenir au moins 2 caractères',
+  EMPTY_USERNAME = 'Le prénom est requis',
   INVALID_FIRSTNAME='Le prénom doit contenir seulement des lettres',
   INVALID_LASTNAME='Le nom de famille doit contenir seulement des lettres',
+  ONLY_NUMBERS='Doit contenir seulement des chiffres',
+  INVALID_LOANINFO='Le numéro de compte doit contenir 12 chiffres',
 }
 
 interface ValidationErrors {
@@ -137,6 +139,27 @@ const useValidation = () => {
     return isValid;
   };
 
+  const validateLoanInfo = (loanInfo: string | undefined, fieldName: keyof ValidationErrors = 'loanInfo'): boolean => {
+    if (!loanInfo || loanInfo === '') {
+      errors.value[fieldName] = '';
+      return true;
+    }
+
+    const regexDigits = /^\d+$/;
+    const isValidDigits = regexDigits.test(loanInfo);
+
+    if (!isValidDigits) {
+      errors.value[fieldName] = ErrorMessage.ONLY_NUMBERS;
+      return false;
+    }
+
+    const regex = /^\d{12}$/;
+    const isValid = regex.test(loanInfo);
+
+    errors.value[fieldName] = isValid ? '' : ErrorMessage.INVALID_LOANINFO;
+    return isValid;
+  }
+
   const validateNonRequiredTextLength = (
     text: string | undefined,
     min: number,
@@ -160,7 +183,7 @@ const useValidation = () => {
       return false;
     }
 
-    const regex = /^[a-zA-Z_]+$/;
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_']+$/;
     if (!regex.test(lastName)) {
       errors.value[fieldName] = ErrorMessage.INVALID_LASTNAME;
       return false;
@@ -176,7 +199,7 @@ const useValidation = () => {
       return false;
     }
 
-    const regex = /^[a-zA-Z]+$/;
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\-_']+$/;
     if (!regex.test(firstname)) {
       errors.value[fieldName] = ErrorMessage.INVALID_FIRSTNAME;
       return false;
@@ -358,7 +381,7 @@ const useValidation = () => {
       return false;
     }
 
-    if (userName.length < 3) {
+    if (userName.length < 2) {
       errors.value[fieldName] = ErrorMessage.INVALID_USERNAME;
       return false;
     }
@@ -468,7 +491,7 @@ const validateAll = (user: any): boolean => {
     validateText,
     validateDegitsStreet,
     validateTextLength,
-    validateNonRequiredTextLength,
+    validateLoanInfo,
     validateLastName,
     validateFirstname,
     validateCity,
@@ -484,6 +507,7 @@ const validateAll = (user: any): boolean => {
     validateUserName,
     validatePassword,
     validateConfirmPassword,
+    validateNonRequiredTextLength,
     validateAll,
     ErrorMessage,
     resetErrors,

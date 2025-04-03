@@ -78,13 +78,13 @@ const toggleAction = () => {
 
       <!-- Champ Nom d'utilisateur (uniquement pour l'inscription) -->
       <div v-if="isSignUp">
-        <label for="username" class="label text-primary font-semibold">Nom d'utilisateur</label>
+        <label for="firstName" class="label text-primary font-semibold">Prénom</label>
         <input
           type="text"
           v-model="auth.stateAcount.userName"
           @input="auth.validateUserNameRealTime(auth.stateAcount.userName)"
-          id="username"
-          placeholder="Entrez un nom d'utilisateur"
+          id="firstName"
+          placeholder="Entrez votre prénom"
           class="input w-full "
         />
         <p v-if="auth.stateAcount.validationErrors.userName" class="mt-1 text-sm text-red-600">
