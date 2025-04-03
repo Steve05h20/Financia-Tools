@@ -5,28 +5,27 @@ import { dataSection } from './dataSection'
 const { images, platformDescriptions, nameSection } = dataSection()
 </script>
 <template>
-  <div class="py-12 sm:py-20 md:py-24 bg-base-100">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="bg-base-100">
+    <div class="mx-auto">
       <div
-        class="flex flex-nowrap items-center justify-center gap-6 overflow-x-auto py-6 bg-base-200 rounded-xl shadow-sm"
+        class=" bg-linear-to-b from-base-100 to-slate-200 shadow-sm"
       >
-        <div
-          v-for="(image, key) in images"
-          :key="key"
-          class="flex items-center justify-center flex-shrink-0 w-11 sm:w-16 md:w-20 lg:w-24 transition-transform duration-300 hover:scale-110"
-        >
-          <img
-            :src="image.url"
-            :alt="image.alt"
-            class="w-full h-auto object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
-          />
-        </div>
+    <div class="flex mx-auto h-48 max-sm:h-50 max-sm:flex-wrap max-lg:flex-wrap  items-center justify-between gap-6 w-3/4 max-sm:w-[80%]">
+      <img
+      v-for="(image, key) in images"
+      :key="key"
+        :src="image.url"
+        :alt="image.alt"
+        class="h-14 max-sm:h-9 max-lg:h-10 max-md:h-9 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300  transition-transform duration-300 hover:scale-110"
+      />
+    </div>
+
       </div>
 
       <SectionGrid :id="nameSection" colsDesktop="12" colsTablet="6" colsMobile="1">
-        <h1 class="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">
           Notre utilisation des plateformes de développement
-        </h1>
+        </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
           <div
             class="card card-border bg-base-100 w-full shadow-lg hover:shadow-xl transition-shadow duration-300"
