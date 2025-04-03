@@ -22,8 +22,12 @@ onMounted(async () => {
 });
 
 const toggleSection = (section: AccordionSection) => {
-
   if (accordionValidation.activeSection.value === section) {
+    if (accordionValidation.hasActiveErrors.value) {
+      notification.message("Veuillez corriger les erreurs avant de fermer cette section.", "error");
+      return;
+    }
+
     accordionValidation.activeSection.value = null;
     return;
   }
@@ -33,7 +37,6 @@ const toggleSection = (section: AccordionSection) => {
     notification.message("Veuillez corriger les erreurs avant de changer de section.", "error");
     return;
   }
-
   accordionValidation.activeSection.value = section;
 };
 
