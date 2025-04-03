@@ -64,7 +64,7 @@ watch(() => props.currentSchoolDetails?.startDate, (newValue: string | Date | un
 
 watch(() => props.currentSchoolDetails?.projectedEndDate, (newValue: string | Date | undefined) => {
   if (!newValue) {
-    validation.errors.value.projectedEndDate = validation.ErrorMessage.EMPTY_DATE;
+    validation.errors.value.projectedEndDate = '';
   } else {
     validation.validateFutureDate(newValue, 'projectedEndDate');
   }
